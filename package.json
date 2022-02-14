@@ -1,0 +1,16 @@
+{
+  "name": "novel_scripts",
+  "version": "0.0.1",
+  "author": {
+    "name": "Nay"
+  },
+  "devDependencies": {
+    "css-loader": "6.6.0",
+    "style-loader": "^3.3.1",
+    "webpack": "5.68.0",
+    "webpack-cli": "^4.9.2"
+  },
+  "scripts": {
+    "Watch": "npx webpack --watch --mode production --color"
+  }
+}

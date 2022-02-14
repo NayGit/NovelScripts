@@ -1,0 +1,29 @@
+#idGlava {
+    background: lightgray;
+}
+#divPanel { position: fixed; top: 0; right: 0; z-index: 999999; max-width: 450px; }
+input.iMain {
+    height: 100px;
+    width: 100%;
+    background: black;
+    color: gray;
+    margin: 1px;
+}
+#divPanel input[type=radio] { height:35px; width:35px; vertical-align: middle; background: black; color: gray }
+#divPanel input[type=submit] { height: 50px; width: 100%; background: black; color: gray }
+#showHide { z-index: -999; height: 150px; width: 100%; background: black; color: gray; }
+.tcError, .tcUp, .tcDown {
+    height: 35px;
+    width: auto;
+    min-width: 25px;
+    margin: 3px;
+}
+input.tcError {
+    background: red;
+}
+input.tcUp {
+    background: lime;
+}
+input.tcDown {
+    background: orange;
+}

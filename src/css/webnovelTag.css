@@ -1,0 +1,251 @@
+#divMain {
+    width: 100%;
+    margin-top: 100px;
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
+}
+
+#divBook {
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 14px;
+    padding-right: 14px;
+    list-style: none;
+    box-sizing: border-box;
+}
+
+.globalTag {
+    padding: 0;
+    padding-top: 0.5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    margin: 0;
+    color: rgba(18,18,23,.9);
+    font: inherit;
+    font-size: 1.25rem;
+    font-weight: 500;
+    line-height: 2rem;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    text-transform: capitalize;
+    box-sizing: border-box;
+}
+
+.navButton {
+    box-shadow: inset 0 -1px 0 rgb(18 18 23 / 10%);
+    text-align: center;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 0.3rem 0.5rem;
+}
+
+.newButton {
+    padding: 1px 6px;
+    border-width: 2px;
+    border-style: outset;
+    border-image: initial;
+    border-radius: 2px 2px 0 0;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    text-decoration: none;
+    justify-content: center;
+    flex: 1 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    font: inherit;
+    box-sizing: border-box;
+    background: lightgray;
+}
+
+.chapter {
+    display: list-item;
+    font-size: 0;
+    margin: 0.15rem -0.75rem;
+    box-sizing: border-box;
+}
+
+.chapterLeft, .chapterRight {
+    display: inline-block;
+    width: 25%;
+    vertical-align: top;
+    box-sizing: border-box;
+}
+
+.chapterLeftImg {
+    position: relative;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: auto 96 / 128;
+    border-radius: 0.25rem;
+    box-sizing: border-box;
+}
+
+.chapterRight {
+    width: 75%;
+    padding-left: 0.475rem;
+}
+
+.chapterRightTags {
+    margin-bottom: 0.25rem;
+    font-size: 0;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.chapterRightTag {
+    display: inline-block;
+    color: #3b66f5;
+    font-size: .75rem;
+    font-weight: 500;
+    line-height: 1rem;
+    margin-right: 0.5rem;
+    text-transform: uppercase;
+    box-sizing: border-box;
+}
+
+.chapterRightTitle {
+    width: 100%;
+    margin: 0;
+    margin-bottom: 0.25rem;
+    font-size: .875rem;
+    line-height: 1.125rem;
+    letter-spacing: .1px;
+    font-weight: 500;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: rgba(18,18,23,.9);
+    box-sizing: border-box;
+}
+
+.chapterRightDesc {
+    margin: 0;
+    max-height: 5rem;
+    overflow: hidden;
+    line-height: 1rem;
+    font-size: .85rem;
+    box-sizing: border-box;
+}
+
+.chapterRightOther {
+    color: #000;
+    line-height: 1.25rem;
+    font-size: .75rem;
+    padding-right: 1rem;
+    display: inline-block;
+    box-sizing: border-box;
+    font-weight: bold;
+    box-sizing: border-box;
+}
+
+@media (min-width: 980px) {
+    #divMain {
+        width: 1050px;
+        margin-top: 0;
+        box-sizing: border-box;
+    }
+
+    #divBook {
+    }
+
+    .chapter {
+        width: 490px;
+        display: inline-block;
+        box-sizing: border-box;
+        padding: 0.75rem 1.625rem;
+        margin: 0 -1rem;
+    }
+
+    .chapterLeft {
+        height: 186px;
+        width: 31%;
+        box-sizing: border-box;
+    }
+
+    .chapterLeftImg {
+        aspect-ratio: auto 140 / 186;
+        box-sizing: border-box;
+    }
+
+    .chapterRight {
+        width: 69%;
+        box-sizing: border-box;
+    }
+
+    .chapterRightTag {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        display: inline-block;
+        height: 18px;
+        line-height: 18px;
+        border: 1px solid;
+        color: #4c5fe2;
+        font-size: 12px;
+        padding: 0 0.8em;
+        border-radius: 30px;
+        margin-right: 8px;
+        vertical-align: middle;
+        transition: .2s;
+        margin-bottom: 2px;
+        cursor: pointer;
+        box-sizing: border-box;
+    }
+
+    .chapterRightTitle {
+        max-height: 48px;
+        -webkit-line-clamp: 2;
+        display: -webkit-box;
+        overflow: hidden;
+        word-wrap: break-word;
+        -webkit-box-orient: vertical;
+        line-height: 24px;
+        font-size: 20px;
+        padding-top: 4px;
+        margin-bottom: 8px;
+        font-weight: 700;
+        margin: 0;
+        padding: 0;
+        margin-block-start: 1em;
+        margin-block-end: 1em;
+        margin-inline-start: 0px;
+        margin-inline-end: 0px;
+        color: #000;
+        cursor: pointer;
+        box-sizing: border-box;
+    }
+
+    .chapterRightDesc {
+        color: #000;
+        font-size: 16px;
+        line-height: 1.5;
+        display: block;
+        max-height: 4.5em;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        box-sizing: border-box;
+    }
+
+    .chapterRightOther {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 10em;
+        margin-left: 4px;
+        line-height: 16px;
+        color: rgba(18,18,23,.9);
+        font-size: 14px;
+        box-sizing: border-box;
+    }
+}
