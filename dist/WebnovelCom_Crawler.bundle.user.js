@@ -1422,7 +1422,7 @@ class lightnovelreaderOrg extends Parser {
             return await gmfetch(this.site)
                 .then(res => domain_fetchStatusHTML(res))
                 .then(data => {
-                    return data.querySelector("div > div > dl > div:nth-child(9) > dd > a:nth-child(1)").textContent.match(/\D*(\d+)/)[1];
+                    return data.querySelector("body > section:nth-child(4) > div > div > div.col-12.col-xl-9 > div > div:nth-child(2) > div > div.novels-detail-right > ul > li:nth-child(9) > div.novels-detail-right-in-right > a:nth-child(1)").textContent.match(/\D*(\d+)/)[1];
                 })
                 .catch(err => domain_fetchCatch(err, url));
         }
@@ -2867,7 +2867,7 @@ class webnovelonlineCom extends Parser {
 // @grant       GM_xmlhttpRequest
 // @grant       GM.xmlHttpRequest
 // @require     https://raw.githubusercontent.com/maple3142/gmxhr-fetch/master/gmxhr-fetch.min.js
-// @version     0.1.1
+// @version     0.1.2
 // ==/UserScript==
 
 
