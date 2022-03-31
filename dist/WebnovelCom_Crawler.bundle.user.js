@@ -17,7 +17,7 @@
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "#idGlava {\n    background: lightgray;\n}\n#divPanel { position: fixed; top: 0; right: 0; z-index: 999999; max-width: 450px; }\ninput.iMain {\n    height: 100px;\n    width: 100%;\n    background: black;\n    color: gray;\n    margin: 1px;\n}\n#divPanel input[type=radio] { height:35px; width:35px; vertical-align: middle; background: black; color: gray }\n#divPanel input[type=submit] { height: 50px; width: 100%; background: black; color: gray }\n#showHide { z-index: -999; height: 150px; width: 100%; background: black; color: gray; }\n.tcError, .tcUp, .tcDown {\n    height: 35px;\n    width: auto;\n    min-width: 25px;\n    margin: 3px;\n}\ninput.tcError {\n    background: red;\n}\ninput.tcUp {\n    background: lime;\n}\ninput.tcDown {\n    background: orange;\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "#idGlava {\r\n    background: lightgray;\r\n}\r\n#divPanel { position: fixed; top: 0; right: 0; z-index: 999999; max-width: 450px; }\r\ninput.iMain {\r\n    height: 100px;\r\n    width: 100%;\r\n    background: black;\r\n    color: gray;\r\n    margin: 1px;\r\n}\r\n#divPanel input[type=radio] { height:35px; width:35px; vertical-align: middle; background: black; color: gray }\r\n#divPanel input[type=submit] { height: 50px; width: 100%; background: black; color: gray }\r\n#showHide { z-index: -999; height: 150px; width: 100%; background: black; color: gray; }\r\n.tcError, .tcUp, .tcDown {\r\n    height: 35px;\r\n    width: auto;\r\n    min-width: 25px;\r\n    margin: 3px;\r\n}\r\ninput.tcError {\r\n    background: red;\r\n}\r\ninput.tcUp {\r\n    background: lime;\r\n}\r\ninput.tcDown {\r\n    background: orange;\r\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -933,6 +933,9 @@ async function CheckFreeFormAsync(divInputCheck, inputRadio, site, i, _book, _ch
             site.linkRead(_book, _chapterN, _chapterTitle);
             document.querySelector("#InputChapterNext").value = res;
         });
+    }
+    else if (res === "B0" || res === "S0" || Math.abs(res) <= (_chapterN * 1 - 1)) {
+        iB.hidden = true;
     }
     else {
         iB.className = "tcDown";
@@ -2864,7 +2867,7 @@ class webnovelonlineCom extends Parser {
 // @grant       GM_xmlhttpRequest
 // @grant       GM.xmlHttpRequest
 // @require     https://raw.githubusercontent.com/maple3142/gmxhr-fetch/master/gmxhr-fetch.min.js
-// @version     0.1
+// @version     0.1.1
 // ==/UserScript==
 
 

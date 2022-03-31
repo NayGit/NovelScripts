@@ -8,7 +8,7 @@
 // @grant       GM_xmlhttpRequest
 // @grant       GM.xmlHttpRequest
 // @require     https://raw.githubusercontent.com/maple3142/gmxhr-fetch/master/gmxhr-fetch.min.js
-// @version     0.1
+// @version     0.1.1
 // ==/UserScript==
 
 'use strict';

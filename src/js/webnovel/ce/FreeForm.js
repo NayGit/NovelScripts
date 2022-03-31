@@ -120,6 +120,9 @@ async function CheckFreeFormAsync(divInputCheck, inputRadio, site, i, _book, _ch
             document.querySelector("#InputChapterNext").value = res;
         });
     }
+    else if (res === "B0" || res === "S0" || Math.abs(res) <= (_chapterN * 1 - 1)) {
+        iB.hidden = true;
+    }
     else {
         iB.className = "tcDown";
     }
