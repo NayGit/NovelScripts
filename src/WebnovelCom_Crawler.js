@@ -8,7 +8,7 @@
 // @grant       GM_xmlhttpRequest
 // @grant       GM.xmlHttpRequest
 // @require     https://raw.githubusercontent.com/maple3142/gmxhr-fetch/master/gmxhr-fetch.min.js
-// @version     0.1.2
+// @version     0.2.0
 // ==/UserScript==
 
 'use strict';
@@ -68,8 +68,8 @@ import novelgreatNet from './js/parsers/p60/novelgreatNet';
 
 // p90
 import freewebnovelCom from './js/parsers/p90/freewebnovelCom';
-import mnovelfreeCom from './js/parsers/p90/mnovelfreeCom';
 import mMylovenovelCom from './js/parsers/p90/mMylovenovelCom';
+import novelfullvipCom from './js/parsers/p90/novelfullvipCom';
 import novelscafeCom from './js/parsers/p90/novelscafeCom';
 
 // p95
@@ -91,12 +91,18 @@ import webnovelonlineCom from './js/parsers/pAll/webnovelonlineCom';
 
 const SitesAll = [
     [
+        new fastnovelNet(),
+        new lightnovelplusCom(),
+        new novelgateNet(),
+        new novelhallCom(),
+        new ranobesNet(),
+    ],
+    [
         new novelgreatNet(),
     ],
     [
         new readlightnovelMe(),
-    ],
-    [
+
         new ltnovelCom(),
         new novelmtCom(),
         new readwnCom(),
@@ -125,6 +131,7 @@ const SitesAll = [
         new allnovelfullCom(),
         new allnovelOrg(),
         new novelfullCom(),
+        //new novelgreatNet(),
 
         new oneStkissnovelLove(),
         new latestnovelNet(),
@@ -135,20 +142,14 @@ const SitesAll = [
         new webnovelonlineNet(),
 
         new freewebnovelCom(),
-        new mnovelfreeCom(),
         new mMylovenovelCom(),
+        new novelfullvipCom(),
         new novelscafeCom(),
 
         new mWuxiaworldCo(),
         new novelupdatesCc(),
         new readlightnovelCc(),
         new readlightnovelCo(),
-
-        new fastnovelNet(),
-        new lightnovelplusCom(),
-        new novelgateNet(),
-        new novelhallCom(),
-        new ranobesNet(),
 
         new lightnovelsMe(),
         new webnovelonlineCom(),
@@ -211,6 +212,9 @@ const SitesAll = [
                     isPriv = true;
                     chNum = BookChapters.length - 1;
                 }
+
+                // Fix Del
+                isPriv = false;
 
                 d.append(H1IdGlava(BookChapters[0][0], BookChapters[chNum][0]));
                 d.append(FormMain(SitesAll, chNum, BookTitle, BookChapters[0][0], BookChapters[0][2]));

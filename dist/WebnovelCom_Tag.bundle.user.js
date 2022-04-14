@@ -693,7 +693,7 @@ function domain_fetchCatch(_error, _site) {
 }
 
 function ReplaceName(name) {
-    return name.toLowerCase().replaceAll(' ', '-').replaceAll(/[.?!)(,:']/g, '');
+    return name.toLowerCase().replaceAll(' ', '-').replaceAll(/[.?!)(,:'\[\]]/g, '');
 }
 
 function copytext(el) {

@@ -16,7 +16,7 @@ https://lightnovels.me/
 https://www.lightnovelworld.com/
 https://www.ltnovel.com/
 https://madnovel.com/
-https://mnovelfree.com/
+https://novelfullvip.com/
 https://m.mylovenovel.com/
 https://novelbuddy.com/
 https://novelforest.com/

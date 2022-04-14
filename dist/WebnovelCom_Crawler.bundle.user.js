@@ -575,7 +575,7 @@ function domain_fetchCatch(_error, _site) {
 }
 
 function domain_ReplaceName(name) {
-    return name.toLowerCase().replaceAll(' ', '-').replaceAll(/[.?!)(,:']/g, '');
+    return name.toLowerCase().replaceAll(' ', '-').replaceAll(/[.?!)(,:'\[\]]/g, '');
 }
 
 function copytext(el) {
@@ -1913,7 +1913,7 @@ class readnovelfullCom extends Parser {
     }
 
     linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site + "/chapter-" + _chapterN + "-" + domain_ReplaceName(_chapterTitle) + this.endUrl);
+        window.open(this.site.replaceAll(/-v\d+$/g, '') + "/chapter-" + _chapterN + "-" + domain_ReplaceName(_chapterTitle) + this.endUrl);
     }
 
     async totalChapters(title) {
@@ -2507,65 +2507,6 @@ class freewebnovelCom extends Parser {
         return "S0";
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/p90/mnovelfreeCom.js
-
-
-
-
-class mnovelfreeCom extends Parser {
-    constructor() {
-        super(new URL('https://mnovelfree.com'), '', true);
-    }
-
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site + '/chapter-' + _chapterN + this.endUrl);
-    }
-
-    async totalChapters(title) {
-        let url = this.site.origin + '/search?q=' + title;
-
-        let isLucky = false;
-        var isError = '';
-        await gmfetch(url)
-            .then(res => domain_fetchStatusHTML(res))
-            .then(data => {
-                let block = data.querySelectorAll("#truyen-slide > div.list.list-thumbnail.col-xs-12.col-md-9 > div.row > div.col-xs-4.col-sm-3.col-md-3");
-
-                if (block.length == 0) {
-                    isError = "B0";
-                    return;
-                }
-
-                for (let book of block) {
-                    let titleParser = book.querySelector("a").title;
-
-                    let diff = tanimoto(title, titleParser);
-
-                    if (diff > 0.8) {
-                        this.site = book.querySelector("a").href;
-                        isLucky = true;
-                        break;
-                    }
-                }
-            })
-            .catch(err => domain_fetchCatch(err, url));
-
-        if (isError != '') {
-            return isError;
-        }
-
-        if (isLucky) {
-            return await gmfetch(this.site)
-                .then(res => domain_fetchStatusHTML(res))
-                .then(data => {
-                    return data.querySelector("#truyen > div.col-xs-12.col-sm-12.col-md-9.col-truyen-main > div.col-xs-12.col-info-desc > div.col-xs-12.col-sm-8.col-md-8.desc > div.l-chapter > ul > li:nth-child(1) > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
-                })
-                .catch(err => domain_fetchCatch(err, url));
-        }
-
-        return "S0";
-    }
-}
 ;// CONCATENATED MODULE: ./src/js/parsers/p90/mMylovenovelCom.js
 
 
@@ -2618,6 +2559,65 @@ class mMylovenovelCom extends Parser {
                 .then(res => domain_fetchStatusHTML(res))
                 .then(data => {
                     return data.querySelector("#info > div.main > div.detail > p.chapter > a").textContent.match(/\D*(\d+)/)[1] * -1;
+                })
+                .catch(err => domain_fetchCatch(err, url));
+        }
+
+        return "S0";
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/p90/novelfullvipCom.js
+
+
+
+
+class novelfullvipCom extends Parser {
+    constructor() {
+        super(new URL('https://novelfullvip.com'), '.html', true);
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open(this.site + '/chapter-' + _chapterN + this.endUrl);
+    }
+
+    async totalChapters(title) {
+        let url = this.site.origin + '/search?q=' + title;
+
+        let isLucky = false;
+        var isError = '';
+        await gmfetch(url)
+            .then(res => domain_fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("#truyen-slide > div.list.list-thumbnail.col-xs-12.col-md-9 > div.row > div.col-xs-4.col-sm-3.col-md-3");
+
+                if (block.length == 0) {
+                    isError = "B0";
+                    return;
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("a").title;
+
+                    let diff = tanimoto(title, titleParser);
+
+                    if (diff > 0.8) {
+                        this.site = book.querySelector("a").href;
+                        isLucky = true;
+                        break;
+                    }
+                }
+            })
+            .catch(err => domain_fetchCatch(err, url));
+
+        if (isError != '') {
+            return isError;
+        }
+
+        if (isLucky) {
+            return await gmfetch(this.site)
+                .then(res => domain_fetchStatusHTML(res))
+                .then(data => {
+                    return data.querySelector("#truyen > div.col-xs-12.col-sm-12.col-md-9.col-truyen-main > div.col-xs-12.col-info-desc > div.col-xs-12.col-sm-8.col-md-8.desc > div.l-chapter > ul > li:nth-child(1) > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
                 })
                 .catch(err => domain_fetchCatch(err, url));
         }
@@ -2787,7 +2787,7 @@ class lightnovelsMe extends Parser {
     }
 
     linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site.replace(this.endUrl, '').replace('/novel/', '/') + "/chapter-" + _chapterN + "-" + domain_ReplaceName(_chapterTitle) + this.endUrl);
+        window.open(this.site);
     }
 
     async totalChapters(title) {
@@ -2806,7 +2806,7 @@ class lightnovelsMe extends Parser {
                     let diff = tanimoto(title, titleParser);
 
                     if (diff > 0.8) {
-                        this.site = this.site.origin + book.novel_slug;
+                        this.site = this.site.origin + '/novel' + book.novel_slug;
                         return book.chapter_name.match(/\D*(\d+)/)[1];
                     }
                 }
@@ -2867,7 +2867,7 @@ class webnovelonlineCom extends Parser {
 // @grant       GM_xmlhttpRequest
 // @grant       GM.xmlHttpRequest
 // @require     https://raw.githubusercontent.com/maple3142/gmxhr-fetch/master/gmxhr-fetch.min.js
-// @version     0.1.2
+// @version     0.2.0
 // ==/UserScript==
 
 
@@ -2950,12 +2950,18 @@ class webnovelonlineCom extends Parser {
 
 const SitesAll = [
     [
+        new fastnovelNet(),
+        new lightnovelplusCom(),
+        new novelgateNet(),
+        new novelhallCom(),
+        new ranobesNet(),
+    ],
+    [
         new novelgreatNet(),
     ],
     [
         new readlightnovelMe(),
-    ],
-    [
+
         new ltnovelCom(),
         new novelmtCom(),
         new readwnCom(),
@@ -2984,6 +2990,7 @@ const SitesAll = [
         new allnovelfullCom(),
         new allnovelOrg(),
         new novelfullCom(),
+        //new novelgreatNet(),
 
         new oneStkissnovelLove(),
         new latestnovelNet(),
@@ -2994,20 +3001,14 @@ const SitesAll = [
         new webnovelonlineNet(),
 
         new freewebnovelCom(),
-        new mnovelfreeCom(),
         new mMylovenovelCom(),
+        new novelfullvipCom(),
         new novelscafeCom(),
 
         new mWuxiaworldCo(),
         new novelupdatesCc(),
         new readlightnovelCc(),
         new readlightnovelCo(),
-
-        new fastnovelNet(),
-        new lightnovelplusCom(),
-        new novelgateNet(),
-        new novelhallCom(),
-        new ranobesNet(),
 
         new lightnovelsMe(),
         new webnovelonlineCom(),
@@ -3070,6 +3071,9 @@ const SitesAll = [
                     isPriv = true;
                     chNum = BookChapters.length - 1;
                 }
+
+                // Fix Del
+                isPriv = false;
 
                 d.append(H1IdGlava(BookChapters[0][0], BookChapters[chNum][0]));
                 d.append(FormMain(SitesAll, chNum, BookTitle, BookChapters[0][0], BookChapters[0][2]));
