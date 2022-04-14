@@ -8,7 +8,7 @@ export default class lightnovelsMe extends Parser {
     }
 
     linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site.replace(this.endUrl, '').replace('/novel/', '/') + "/chapter-" + _chapterN + "-" + ReplaceName(_chapterTitle) + this.endUrl);
+        window.open(this.site);
     }
 
     async totalChapters(title) {
@@ -27,7 +27,7 @@ export default class lightnovelsMe extends Parser {
                     let diff = tanimoto(title, titleParser);
 
                     if (diff > 0.8) {
-                        this.site = this.site.origin + book.novel_slug;
+                        this.site = this.site.origin + '/novel' + book.novel_slug;
                         return book.chapter_name.match(/\D*(\d+)/)[1];
                     }
                 }

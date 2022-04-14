@@ -8,7 +8,7 @@ export default class readnovelfullCom extends Parser {
     }
 
     linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site + "/chapter-" + _chapterN + "-" + ReplaceName(_chapterTitle) + this.endUrl);
+        window.open(this.site.replaceAll(/-v\d+$/g, '') + "/chapter-" + _chapterN + "-" + ReplaceName(_chapterTitle) + this.endUrl);
     }
 
     async totalChapters(title) {
