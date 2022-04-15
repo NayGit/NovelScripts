@@ -3,6 +3,7 @@ const path = require('path');
 module.exports = {
     entry: {
         WebnovelCom_Crawler: './src/WebnovelCom_Crawler.js',
+        WebnovelCom_Replace: './src/WebnovelCom_Replace.js',
         WebnovelCom_Tag: './src/WebnovelCom_Tag.js',
     },
     output: {
