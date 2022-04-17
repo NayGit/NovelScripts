@@ -42,7 +42,7 @@ export class p4 extends Parser {
     }
 }
 
-export class p95 extends Parser {
+export class artBook extends Parser {
     linkRead(_book, _chapterN, _chapterTitle) {
         window.open(this.site);
     }

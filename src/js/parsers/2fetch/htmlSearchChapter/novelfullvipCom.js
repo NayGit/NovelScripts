@@ -38,7 +38,7 @@ export default class novelfullvipCom extends Parser {
                     }
                 }
             })
-            .catch(err => fetchCatch(err, url));
+            .catch(err => isError = fetchCatch(err, url));
 
         if (isError != '') {
             return isError;

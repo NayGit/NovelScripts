@@ -1006,7 +1006,7 @@ class p4 extends Parser {
     }
 }
 
-class p95 extends Parser {
+class artBook extends Parser {
     linkRead(_book, _chapterN, _chapterTitle) {
         window.open(this.site);
     }
@@ -1068,7 +1068,7 @@ class p95 extends Parser {
 ;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearch/artBook/mWuxiaworldCo.js
 
 
-class mWuxiaworldCo extends p95 {
+class mWuxiaworldCo extends artBook {
     constructor() {
         super(new URL('https://m.wuxiaworld.co'), '/1', true, true);
     }
@@ -1076,7 +1076,7 @@ class mWuxiaworldCo extends p95 {
 ;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearch/artBook/novelupdatesCc.js
 
 
-class novelupdatesCc extends p95 {
+class novelupdatesCc extends artBook {
     constructor() {
         super(new URL('https://www.novelupdates.cc'), '/1', true, true);
     }
@@ -1084,7 +1084,7 @@ class novelupdatesCc extends p95 {
 ;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearch/artBook/readlightnovelCc.js
 
 
-class readlightnovelCc extends p95 {
+class readlightnovelCc extends artBook {
     constructor() {
         super(new URL('https://www.readlightnovel.cc'), '/1', true, true);
     }
@@ -1092,7 +1092,7 @@ class readlightnovelCc extends p95 {
 ;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearch/artBook/readlightnovelCo.js
 
 
-class readlightnovelCo extends p95 {
+class readlightnovelCo extends artBook {
     constructor() {
         super(new URL('https://www.readlightnovel.co'), '/1', true, true);
     }
@@ -1455,7 +1455,7 @@ class mMylovenovelCom extends Parser {
                     }
                 }
             })
-            .catch(err => domain_fetchCatch(err, url));
+            .catch(err => isError = domain_fetchCatch(err, url));
 
         if (isError != '') {
             return isError;
@@ -1514,7 +1514,7 @@ class freewebnovelCom extends Parser {
                     }
                 }
             })
-            .catch(err => domain_fetchCatch(err, url));
+            .catch(err => isError = domain_fetchCatch(err, url));
 
         if (isError != '') {
             return isError;
@@ -1573,7 +1573,7 @@ class novelfullvipCom extends Parser {
                     }
                 }
             })
-            .catch(err => domain_fetchCatch(err, url));
+            .catch(err => isError = domain_fetchCatch(err, url));
 
         if (isError != '') {
             return isError;
@@ -1632,7 +1632,7 @@ class novelscafeCom extends Parser {
                     }
                 }
             })
-            .catch(err => domain_fetchCatch(err, url));
+            .catch(err => isError = domain_fetchCatch(err, url));
 
         if (isError != '') {
             return isError;
@@ -2909,7 +2909,7 @@ class ranobesNet extends p4 {
 // @grant       GM_xmlhttpRequest
 // @grant       GM.xmlHttpRequest
 // @require     https://raw.githubusercontent.com/maple3142/gmxhr-fetch/master/gmxhr-fetch.min.js
-// @version     0.2.1
+// @version     0.2.2
 // ==/UserScript==
 
 

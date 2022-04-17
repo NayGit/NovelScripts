@@ -1,6 +1,6 @@
-import { p95 } from '../../../../parser'
+import { artBook } from '../../../../parser'
 
-export default class readlightnovelCc extends p95 {
+export default class readlightnovelCc extends artBook {
     constructor() {
         super(new URL('https://www.readlightnovel.cc'), '/1', true, true);
     }
