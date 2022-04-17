@@ -8,7 +8,7 @@
 // @grant       GM_xmlhttpRequest
 // @grant       GM.xmlHttpRequest
 // @require     https://raw.githubusercontent.com/maple3142/gmxhr-fetch/master/gmxhr-fetch.min.js
-// @version     0.2.2
+// @version     0.2.3
 // ==/UserScript==
 
 'use strict';
@@ -33,6 +33,7 @@ import ltnovelCom from './js/parsers/2fetch/apiSearchChapter/bookWings/ltnovelCo
 import novelmtCom from './js/parsers/2fetch/apiSearchChapter/bookWings/novelmtCom';
 import readwnCom from './js/parsers/2fetch/apiSearchChapter/bookWings/readwnCom';
 import wuxiahereCom from './js/parsers/2fetch/apiSearchChapter/bookWings/wuxiahereCom';
+import wuxiapubCom from './js/parsers/2fetch/apiSearchChapter/bookWings/wuxiapubCom';
 
 // 2fetch/htmlSearch
 import mMylovenovelCom from './js/parsers/2fetch/htmlSearch/mMylovenovelCom';
@@ -120,6 +121,7 @@ const SitesAll = [
         new novelmtCom(),
         new readwnCom(),
         new wuxiahereCom(),
+        new wuxiapubCom(),
 
         // 2fetch/htmlSearch
         new mMylovenovelCom(),

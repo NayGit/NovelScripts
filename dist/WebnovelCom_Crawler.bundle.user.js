@@ -1414,6 +1414,71 @@ class wuxiahereCom extends Parser {
         return "S0";
     }
 }
+;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearchChapter/bookWings/wuxiapubCom.js
+
+
+
+
+class wuxiapubCom extends Parser {
+    constructor() {
+        super(new URL('https://www.wuxiapub.com'), '.html', true);
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open(this.site.replace(this.endUrl, '') + '_' + _chapterN + this.endUrl);
+    }
+
+    async totalChapters(title) {
+        let url = this.site.origin + "/e/search/index.php";
+
+        let isLucky = false;
+        var isError = '';
+        await gmfetch(url, {
+            "headers": {
+                "content-type": "application/x-www-form-urlencoded",
+            },
+            "referrer": this.site.origin + "/search.html",
+            "body": "show=title&tempid=1&tbname=news&keyboard=" + title,
+            "method": "POST",
+        })
+            .then(res => domain_fetchStatusHTML(res))
+            .then(data => {
+                if (data.title === "Message hint" || data.title == "") {
+                    isError = "B0";
+                    return;
+                }
+
+                let block = data.querySelectorAll("section > ul.novel-list.grid.col.col2 > li.novel-item");
+                for (let book of block) {
+                    let titleParser = book.querySelector("a > h4.novel-title.text2row").textContent;
+
+                    let diff = tanimoto(title, titleParser);
+
+                    if (diff > 0.8) {
+                        this.site = this.site.origin + book.querySelector("a").pathname;
+                        isLucky = true;
+                        break;
+                    }
+                }
+            })
+            .catch(err => isError = domain_fetchCatch(err, url));
+
+        if (isError != '') {
+            return isError;
+        }
+
+        if (isLucky) {
+            return await gmfetch(this.site)
+                .then(res => domain_fetchStatusHTML(res))
+                .then(data => {
+                    return data.querySelector("div.novel-info > div.header-stats > span:nth-child(1) > strong").textContent.trim();
+                })
+                .catch(err => domain_fetchCatch(err, url));
+        }
+
+        return "S0";
+    }
+}
 ;// CONCATENATED MODULE: ./src/js/parsers/2fetch/htmlSearch/mMylovenovelCom.js
 
 
@@ -2909,7 +2974,7 @@ class ranobesNet extends p4 {
 // @grant       GM_xmlhttpRequest
 // @grant       GM.xmlHttpRequest
 // @require     https://raw.githubusercontent.com/maple3142/gmxhr-fetch/master/gmxhr-fetch.min.js
-// @version     0.2.2
+// @version     0.2.3
 // ==/UserScript==
 
 
@@ -2930,6 +2995,7 @@ class ranobesNet extends p4 {
 // 2fetch/apiSearchChapter
 
 //    bookWings
+
 
 
 
@@ -3021,6 +3087,7 @@ const SitesAll = [
         new novelmtCom(),
         new readwnCom(),
         new wuxiahereCom(),
+        new wuxiapubCom(),
 
         // 2fetch/htmlSearch
         new mMylovenovelCom(),

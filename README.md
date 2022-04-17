@@ -11,7 +11,7 @@
 | https://freewebnovel.com/        |   |
 | https://latestnovel.net/         |   |
 | https://lightnovel.mobi/         |   |
-| https://lightnovel.world/        | ~ |
+| https://lightnovel.world/        |   |
 | https://lightnovelplus.com/      |   |
 | https://www.lightnovelpub.com/   |   |
 | https://lightnovelreader.org/    |   |
@@ -49,6 +49,7 @@
 | https://webnovelonline.com/      |   |
 | https://webnovelonline.net/      |   |
 | https://www.wuxiahere.com/       |   |
+| https://www.wuxiapub.com/        |   |
 | https://m.wuxiaworld.co/         |   |
 
 
