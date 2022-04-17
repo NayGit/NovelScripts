@@ -1907,6 +1907,48 @@ class lightnovelWorld extends Parser {
             .catch(err => domain_fetchCatch(err, url));
     }
 }
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearch/novelhallCom.js
+
+
+
+
+class novelhallCom extends Parser {
+    constructor() {
+        super(new URL('https://www.novelhall.com'), '', true)
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open(this.site);
+    }
+
+    async totalChapters(title) {
+        let url = this.site.origin + '/index.php?s=so&module=book&keyword=' + title + this.endUrl;
+
+        return await gmfetch(url)
+            .then(res => domain_fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("#main > div.container > div > table > tbody > tr");
+
+                if (block.length == 0) {
+                    return "B0";
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("td:nth-child(2) > a").textContent;
+
+                    let diff = tanimoto(title, titleParser);
+
+                    if (diff > 0.8) {
+                        this.site = this.site.origin + book.querySelector("td:nth-child(2) > a").pathname;
+                        return book.querySelector("a.chapter").textContent.match(/\D*(\d+)/)[1] * -1;
+                    }
+                }
+
+                return "S0";
+            })
+            .catch(err => domain_fetchCatch(err, url));
+    }
+}
 ;// CONCATENATED MODULE: ./src/js/parsers/htmlSearch/pandanovelCom.js
 
 
@@ -2939,18 +2981,6 @@ class novelgateNet extends p4 {
         window.open(this.site + _book + this.endUrl);
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/search/novelhallCom.js
-
-
-class novelhallCom extends p4 {
-    constructor() {
-        super(new URL('https://www.novelhall.com/index.php?s=so&module=book&keyword='), '', false)
-    }
-
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site + _book + this.endUrl);
-    }
-}
 ;// CONCATENATED MODULE: ./src/js/parsers/search/ranobesNet.js
 
 
@@ -2974,7 +3004,7 @@ class ranobesNet extends p4 {
 // @grant       GM_xmlhttpRequest
 // @grant       GM.xmlHttpRequest
 // @require     https://raw.githubusercontent.com/maple3142/gmxhr-fetch/master/gmxhr-fetch.min.js
-// @version     0.2.3
+// @version     0.2.4
 // ==/UserScript==
 
 
@@ -3022,6 +3052,7 @@ class ranobesNet extends p4 {
 
 
 
+
 // htmlSearchChapter
 
 //    madentertainment
@@ -3060,13 +3091,11 @@ class ranobesNet extends p4 {
 
 
 
-
 const SitesAll = [
     [
         new fastnovelNet(),
         new lightnovelplusCom(),
         new novelgateNet(),
-        new novelhallCom(),
         new ranobesNet(),
     ],
     [
@@ -3108,6 +3137,7 @@ const SitesAll = [
 
         // htmlSearch
         new lightnovelWorld(),
+        new novelhallCom(),
         new pandanovelCom(),
         new readlightnovelsNet(),
 

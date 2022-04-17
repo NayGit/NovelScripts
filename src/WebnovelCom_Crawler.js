@@ -8,7 +8,7 @@
 // @grant       GM_xmlhttpRequest
 // @grant       GM.xmlHttpRequest
 // @require     https://raw.githubusercontent.com/maple3142/gmxhr-fetch/master/gmxhr-fetch.min.js
-// @version     0.2.3
+// @version     0.2.4
 // ==/UserScript==
 
 'use strict';
@@ -53,6 +53,7 @@ import webnovelonlineCom from './js/parsers/apiSearchChapter/webnovelonlineCom';
 
 // htmlSearch
 import lightnovelWorld from './js/parsers/htmlSearch/lightnovelWorld';
+import novelhallCom from './js/parsers/htmlSearch/novelhallCom';
 import pandanovelCom from './js/parsers/htmlSearch/pandanovelCom';
 import readlightnovelsNet from './js/parsers/htmlSearch/readlightnovelsNet';
 
@@ -92,7 +93,6 @@ import lightnovelworldCom from './js/parsers/ReplaceTitle/lightnovelEWcom/lightn
 import fastnovelNet from './js/parsers/search/fastnovelNet';
 import lightnovelplusCom from './js/parsers/search/lightnovelplusCom';
 import novelgateNet from './js/parsers/search/novelgateNet';
-import novelhallCom from './js/parsers/search/novelhallCom';
 import ranobesNet from './js/parsers/search/ranobesNet';
 
 const SitesAll = [
@@ -100,7 +100,6 @@ const SitesAll = [
         new fastnovelNet(),
         new lightnovelplusCom(),
         new novelgateNet(),
-        new novelhallCom(),
         new ranobesNet(),
     ],
     [
@@ -142,6 +141,7 @@ const SitesAll = [
 
         // htmlSearch
         new lightnovelWorld(),
+        new novelhallCom(),
         new pandanovelCom(),
         new readlightnovelsNet(),
 
