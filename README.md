@@ -36,6 +36,7 @@
 | https://noveltrench.com/         |  |
 | https://www.novelupdates.cc/     |  |
 | https://octopii.co/              |  |
+| https://www.panda-novel.com/     |  |
 | https://ranobes.net/             |  |
 | https://www.readlightnovel.cc/   |  |
 | https://www.readlightnovel.co/   |  |

@@ -8,7 +8,7 @@
 // @grant       GM_xmlhttpRequest
 // @grant       GM.xmlHttpRequest
 // @require     https://raw.githubusercontent.com/maple3142/gmxhr-fetch/master/gmxhr-fetch.min.js
-// @version     0.2.0
+// @version     0.2.1
 // ==/UserScript==
 
 'use strict';
@@ -89,6 +89,8 @@ import ranobesNet from './js/parsers/p99/ranobesNet';
 import lightnovelsMe from './js/parsers/pAll/lightnovelsMe';
 import webnovelonlineCom from './js/parsers/pAll/webnovelonlineCom';
 
+import pandanovelCom from './js/parsers/pandanovelCom';
+
 const SitesAll = [
     [
         new fastnovelNet(),
@@ -153,6 +155,8 @@ const SitesAll = [
 
         new lightnovelsMe(),
         new webnovelonlineCom(),
+
+        new pandanovelCom(),
     ]
 ];
 
