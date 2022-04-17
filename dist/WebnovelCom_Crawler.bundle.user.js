@@ -1065,315 +1065,39 @@ class p95 extends Parser {
         return "S0";
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/p01/ltnovelCom.js
+;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearch/artBook/mWuxiaworldCo.js
 
 
-
-
-class ltnovelCom extends Parser {
+class mWuxiaworldCo extends p95 {
     constructor() {
-        super(new URL('https://www.ltnovel.com'), '.html', true)
-    }
-
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site.replace(this.endUrl, '') + '_' + _chapterN + this.endUrl);
-    }
-
-    async totalChapters(title) {
-        let url = this.site.origin + "/e/search/index.php";
-
-        let isLucky = false;
-        var isError = '';
-        await gmfetch(url, {
-            "headers": {
-                "content-type": "application/x-www-form-urlencoded",
-            },
-            "referrer": "https://www.ltnovel.com/search.html",
-            "body": "show=title&tempid=1&tbname=news&keyboard=" + title,
-            "method": "POST",
-        })
-            .then(res => domain_fetchStatusHTML(res))
-            .then(data => {
-                if (data.title === "Message hint" || data.title == "") {
-                    isError = "B0";
-                    return;
-                }
-
-                let block = data.querySelectorAll("section > ul.novel-list.grid.col.col2 > li.novel-item");
-                for (let book of block) {
-                    let titleParser = book.querySelector("a > h4.novel-title.text2row").textContent;
-
-                    let diff = tanimoto(title, titleParser);
-
-                    if (diff > 0.8) {
-                        this.site = this.site.origin + book.querySelector("a").pathname;
-                        isLucky = true;
-                        break;
-                    }
-                }
-            })
-            .catch(err => isError = domain_fetchCatch(err, url));
-
-        if (isError != '') {
-            return isError;
-        }
-
-        if (isLucky) {
-            return await gmfetch(this.site)
-                .then(res => domain_fetchStatusHTML(res))
-                .then(data => {
-                    return data.querySelector("div.novel-info > div.header-stats > span:nth-child(1) > strong").textContent.trim();
-                })
-                .catch(err => domain_fetchCatch(err, url));
-        }
-
-        return "S0";
+        super(new URL('https://m.wuxiaworld.co'), '/1', true, true);
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/p01/novelmtCom.js
+;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearch/artBook/novelupdatesCc.js
 
 
-
-
-class novelmtCom extends Parser {
+class novelupdatesCc extends p95 {
     constructor() {
-        super(new URL('https://www.novelmt.com'), '.html', true);
-    }
-
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site.replace(this.endUrl, '') + '_' + _chapterN + this.endUrl);
-    }
-
-    async totalChapters(title) {
-        let url = this.site.origin + "/e/search/index.php";
-
-        let isLucky = false;
-        var isError = '';
-        await gmfetch(url, {
-            "headers": {
-                "content-type": "application/x-www-form-urlencoded",
-            },
-            "referrer": "https://www.novelmt.com/search.html",
-            "body": "show=title&tempid=1&tbname=news&keyboard=" + title,
-            "method": "POST",
-        })
-            .then(res => domain_fetchStatusHTML(res))
-            .then(data => {
-                if (data.title === "Message hint" || data.title == "") {
-                    isError = "B0";
-                    return;
-                }
-
-                let block = data.querySelectorAll("section > ul.novel-list.grid.col.col2 > li.novel-item");
-                for (let book of block) {
-                    let titleParser = book.querySelector("a > h4.novel-title.text2row").textContent;
-
-                    let diff = tanimoto(title, titleParser);
-
-                    if (diff > 0.8) {
-                        this.site = this.site.origin + book.querySelector("a").pathname;
-                        isLucky = true;
-                        break;
-                    }
-                }
-            })
-            .catch(err => isError = domain_fetchCatch(err, url));
-
-        if (isError != '') {
-            return isError;
-        }
-
-        if (isLucky) {
-            return await gmfetch(this.site)
-                .then(res => domain_fetchStatusHTML(res))
-                .then(data => {
-                    return data.querySelector("div.novel-info > div.header-stats > span:nth-child(1) > strong").textContent.trim();
-                })
-                .catch(err => domain_fetchCatch(err, url));
-        }
-
-        return "S0";
+        super(new URL('https://www.novelupdates.cc'), '/1', true, true);
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/p01/readwnCom.js
+;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearch/artBook/readlightnovelCc.js
 
 
-
-
-class readwnCom extends Parser {
+class readlightnovelCc extends p95 {
     constructor() {
-        super(new URL('https://www.readwn.com'), '.html', true);
-    }
-
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site.replace(this.endUrl, '') + '_' + _chapterN + this.endUrl);
-    }
-
-    async totalChapters(title) {
-        let url = this.site.origin + "/e/search/index.php";
-
-        let isLucky = false;
-        var isError = '';
-        await gmfetch(url, {
-            "headers": {
-                "content-type": "application/x-www-form-urlencoded",
-            },
-            "referrer": "https://www.readwn.com/search.html",
-            "body": "show=title&tempid=1&tbname=news&keyboard=" + title,
-            "method": "POST",
-        })
-            .then(res => domain_fetchStatusHTML(res))
-            .then(data => {
-                if (data.title === "Message hint" || data.title == "") {
-                    isError = "B0";
-                    return;
-                }
-
-                let block = data.querySelectorAll("section > ul.novel-list.grid.col.col2 > li.novel-item");
-                for (let book of block) {
-                    let titleParser = book.querySelector("a > h4.novel-title.text2row").textContent;
-
-                    let diff = tanimoto(title, titleParser);
-
-                    if (diff > 0.8) {
-                        this.site = this.site.origin + book.querySelector("a").pathname;
-                        isLucky = true;
-                        break;
-                    }
-                }
-            })
-            .catch(err => isError = domain_fetchCatch(err, url));
-
-        if (isError != '') {
-            return isError;
-        }
-
-        if (isLucky) {
-            return await gmfetch(this.site)
-                .then(res => domain_fetchStatusHTML(res))
-                .then(data => {
-                    return data.querySelector("div.novel-info > div.header-stats > span:nth-child(1) > strong").textContent.trim();
-                })
-                .catch(err => domain_fetchCatch(err, url));
-        }
-
-        return "S0";
+        super(new URL('https://www.readlightnovel.cc'), '/1', true, true);
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/p01/wuxiahereCom.js
+;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearch/artBook/readlightnovelCo.js
 
 
-
-
-class wuxiahereCom extends Parser {
+class readlightnovelCo extends p95 {
     constructor() {
-        super(new URL('https://www.wuxiahere.com'), '.html', true);
-    }
-
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site.replace(this.endUrl, '') + '_' + _chapterN + this.endUrl);
-    }
-
-    async totalChapters(title) {
-        let url = this.site.origin + "/e/search/index.php";
-
-        let isLucky = false;
-        var isError = '';
-        await gmfetch(url, {
-            "headers": {
-                "content-type": "application/x-www-form-urlencoded",
-            },
-            "referrer": "https://www.wuxiahere.com/search.html",
-            "body": "show=title&tempid=1&tbname=news&keyboard=" + title,
-            "method": "POST",
-        })
-            .then(res => domain_fetchStatusHTML(res))
-            .then(data => {
-                if (data.title === "Message hint" || data.title == "") {
-                    isError = "B0";
-                    return;
-                }
-
-                let block = data.querySelectorAll("section > ul.novel-list.grid.col.col2 > li.novel-item");
-                for (let book of block) {
-                    let titleParser = book.querySelector("a > h4.novel-title.text2row").textContent;
-
-                    let diff = tanimoto(title, titleParser);
-
-                    if (diff > 0.8) {
-                        this.site = this.site.origin + book.querySelector("a").pathname;
-                        isLucky = true;
-                        break;
-                    }
-                }
-            })
-            .catch(err => isError = domain_fetchCatch(err, url));
-
-        if (isError != '') {
-            return isError;
-        }
-
-        if (isLucky) {
-            return await gmfetch(this.site)
-                .then(res => domain_fetchStatusHTML(res))
-                .then(data => {
-                    return data.querySelector("div.novel-info > div.header-stats > span:nth-child(1) > strong").textContent.trim();
-                })
-                .catch(err => domain_fetchCatch(err, url));
-        }
-
-        return "S0";
+        super(new URL('https://www.readlightnovel.co'), '/1', true, true);
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/p02/lightnovelpubCom.js
-
-
-
-class lightnovelpubCom extends Parser {
-    constructor() {
-        super(new URL('https://www.lightnovelpub.com'), '', true)
-    }
-
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site.origin + "/novel/" + domain_ReplaceName(_book) + '/chapter-' + _chapterN + this.endUrl);
-    }
-
-    async totalChapters(title) {
-        let url = this.site.origin + "/novel/" + domain_ReplaceName(title) + this.endUrl;
-
-        return await gmfetch(url)
-            .then(res => domain_fetchStatusHTML(res))
-            .then(data => {
-                return data.querySelector("#novel > div.novel-body.container > nav > a.grdbtn.chapter-latest-container > div > p.latest.text1row").textContent.match(/\D*(\d+)/)[1];
-            })
-            .catch(err => domain_fetchCatch(err, url));
-    }
-}
-;// CONCATENATED MODULE: ./src/js/parsers/p02/lightnovelworldCom.js
-
-
-
-class lightnovelworldCom extends Parser {
-    constructor() {
-        super(new URL('https://www.lightnovelworld.com'), '',true);
-    }
-
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site.origin + "/novel/" + domain_ReplaceName(_book) + '/chapter-' + _chapterN + this.endUrl);
-    }
-
-    async totalChapters(title) {
-        let url = this.site.origin + "/novel/" + domain_ReplaceName(title) + this.endUrl;
-
-        return await gmfetch(url)
-            .then(res => domain_fetchStatusHTML(res))
-            .then(data => {
-                return data.querySelector("#novel > div.novel-body.container > nav > a.grdbtn.chapter-latest-container > div > p.latest.text1row").textContent.match(/\D*(\d+)/)[1];
-            })
-            .catch(err => domain_fetchCatch(err, url));
-    }
-}
-;// CONCATENATED MODULE: ./src/js/parsers/p03/lightnovelreaderOrg.js
+;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearchChapter/lightnovelreaderOrg.js
 
 
 
@@ -1430,7 +1154,503 @@ class lightnovelreaderOrg extends Parser {
         return "S0";
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/p03/novelsonlineNet.js
+;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearchChapter/bookWings/ltnovelCom.js
+
+
+
+
+class ltnovelCom extends Parser {
+    constructor() {
+        super(new URL('https://www.ltnovel.com'), '.html', true)
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open(this.site.replace(this.endUrl, '') + '_' + _chapterN + this.endUrl);
+    }
+
+    async totalChapters(title) {
+        let url = this.site.origin + "/e/search/index.php";
+
+        let isLucky = false;
+        var isError = '';
+        await gmfetch(url, {
+            "headers": {
+                "content-type": "application/x-www-form-urlencoded",
+            },
+            "referrer": this.site.origin + "/search.html",
+            "body": "show=title&tempid=1&tbname=news&keyboard=" + title,
+            "method": "POST",
+        })
+            .then(res => domain_fetchStatusHTML(res))
+            .then(data => {
+                if (data.title === "Message hint" || data.title == "") {
+                    isError = "B0";
+                    return;
+                }
+
+                let block = data.querySelectorAll("section > ul.novel-list.grid.col.col2 > li.novel-item");
+                for (let book of block) {
+                    let titleParser = book.querySelector("a > h4.novel-title.text2row").textContent;
+
+                    let diff = tanimoto(title, titleParser);
+
+                    if (diff > 0.8) {
+                        this.site = this.site.origin + book.querySelector("a").pathname;
+                        isLucky = true;
+                        break;
+                    }
+                }
+            })
+            .catch(err => isError = domain_fetchCatch(err, url));
+
+        if (isError != '') {
+            return isError;
+        }
+
+        if (isLucky) {
+            return await gmfetch(this.site)
+                .then(res => domain_fetchStatusHTML(res))
+                .then(data => {
+                    return data.querySelector("div.novel-info > div.header-stats > span:nth-child(1) > strong").textContent.trim();
+                })
+                .catch(err => domain_fetchCatch(err, url));
+        }
+
+        return "S0";
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearchChapter/bookWings/novelmtCom.js
+
+
+
+
+class novelmtCom extends Parser {
+    constructor() {
+        super(new URL('https://www.novelmt.com'), '.html', true);
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open(this.site.replace(this.endUrl, '') + '_' + _chapterN + this.endUrl);
+    }
+
+    async totalChapters(title) {
+        let url = this.site.origin + "/e/search/index.php";
+
+        let isLucky = false;
+        var isError = '';
+        await gmfetch(url, {
+            "headers": {
+                "content-type": "application/x-www-form-urlencoded",
+            },
+            "referrer": this.site.origin + "/search.html",
+            "body": "show=title&tempid=1&tbname=news&keyboard=" + title,
+            "method": "POST",
+        })
+            .then(res => domain_fetchStatusHTML(res))
+            .then(data => {
+                if (data.title === "Message hint" || data.title == "") {
+                    isError = "B0";
+                    return;
+                }
+
+                let block = data.querySelectorAll("section > ul.novel-list.grid.col.col2 > li.novel-item");
+                for (let book of block) {
+                    let titleParser = book.querySelector("a > h4.novel-title.text2row").textContent;
+
+                    let diff = tanimoto(title, titleParser);
+
+                    if (diff > 0.8) {
+                        this.site = this.site.origin + book.querySelector("a").pathname;
+                        isLucky = true;
+                        break;
+                    }
+                }
+            })
+            .catch(err => isError = domain_fetchCatch(err, url));
+
+        if (isError != '') {
+            return isError;
+        }
+
+        if (isLucky) {
+            return await gmfetch(this.site)
+                .then(res => domain_fetchStatusHTML(res))
+                .then(data => {
+                    return data.querySelector("div.novel-info > div.header-stats > span:nth-child(1) > strong").textContent.trim();
+                })
+                .catch(err => domain_fetchCatch(err, url));
+        }
+
+        return "S0";
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearchChapter/bookWings/readwnCom.js
+
+
+
+
+class readwnCom extends Parser {
+    constructor() {
+        super(new URL('https://www.readwn.com'), '.html', true);
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open(this.site.replace(this.endUrl, '') + '_' + _chapterN + this.endUrl);
+    }
+
+    async totalChapters(title) {
+        let url = this.site.origin + "/e/search/index.php";
+
+        let isLucky = false;
+        var isError = '';
+        await gmfetch(url, {
+            "headers": {
+                "content-type": "application/x-www-form-urlencoded",
+            },
+            "referrer": this.site.origin + "/search.html",
+            "body": "show=title&tempid=1&tbname=news&keyboard=" + title,
+            "method": "POST",
+        })
+            .then(res => domain_fetchStatusHTML(res))
+            .then(data => {
+                if (data.title === "Message hint" || data.title == "") {
+                    isError = "B0";
+                    return;
+                }
+
+                let block = data.querySelectorAll("section > ul.novel-list.grid.col.col2 > li.novel-item");
+                for (let book of block) {
+                    let titleParser = book.querySelector("a > h4.novel-title.text2row").textContent;
+
+                    let diff = tanimoto(title, titleParser);
+
+                    if (diff > 0.8) {
+                        this.site = this.site.origin + book.querySelector("a").pathname;
+                        isLucky = true;
+                        break;
+                    }
+                }
+            })
+            .catch(err => isError = domain_fetchCatch(err, url));
+
+        if (isError != '') {
+            return isError;
+        }
+
+        if (isLucky) {
+            return await gmfetch(this.site)
+                .then(res => domain_fetchStatusHTML(res))
+                .then(data => {
+                    return data.querySelector("div.novel-info > div.header-stats > span:nth-child(1) > strong").textContent.trim();
+                })
+                .catch(err => domain_fetchCatch(err, url));
+        }
+
+        return "S0";
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearchChapter/bookWings/wuxiahereCom.js
+
+
+
+
+class wuxiahereCom extends Parser {
+    constructor() {
+        super(new URL('https://www.wuxiahere.com'), '.html', true);
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open(this.site.replace(this.endUrl, '') + '_' + _chapterN + this.endUrl);
+    }
+
+    async totalChapters(title) {
+        let url = this.site.origin + "/e/search/index.php";
+
+        let isLucky = false;
+        var isError = '';
+        await gmfetch(url, {
+            "headers": {
+                "content-type": "application/x-www-form-urlencoded",
+            },
+            "referrer": this.site.origin + "/search.html",
+            "body": "show=title&tempid=1&tbname=news&keyboard=" + title,
+            "method": "POST",
+        })
+            .then(res => domain_fetchStatusHTML(res))
+            .then(data => {
+                if (data.title === "Message hint" || data.title == "") {
+                    isError = "B0";
+                    return;
+                }
+
+                let block = data.querySelectorAll("section > ul.novel-list.grid.col.col2 > li.novel-item");
+                for (let book of block) {
+                    let titleParser = book.querySelector("a > h4.novel-title.text2row").textContent;
+
+                    let diff = tanimoto(title, titleParser);
+
+                    if (diff > 0.8) {
+                        this.site = this.site.origin + book.querySelector("a").pathname;
+                        isLucky = true;
+                        break;
+                    }
+                }
+            })
+            .catch(err => isError = domain_fetchCatch(err, url));
+
+        if (isError != '') {
+            return isError;
+        }
+
+        if (isLucky) {
+            return await gmfetch(this.site)
+                .then(res => domain_fetchStatusHTML(res))
+                .then(data => {
+                    return data.querySelector("div.novel-info > div.header-stats > span:nth-child(1) > strong").textContent.trim();
+                })
+                .catch(err => domain_fetchCatch(err, url));
+        }
+
+        return "S0";
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/2fetch/htmlSearch/mMylovenovelCom.js
+
+
+
+
+class mMylovenovelCom extends Parser {
+    constructor() {
+        super(new URL('https://m.mylovenovel.com'), '', true);
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open(this.site);
+    }
+
+    async totalChapters(title) {
+        let url = this.site.origin + '/index.php?s=so&module=book&keyword=' + title;
+
+        let isLucky = false;
+        var isError = '';
+        await gmfetch(url)
+            .then(res => domain_fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.main > ul.list > li");
+
+                if (block.length == 0) {
+                    isError = "B0";
+                    return;
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("a > p.bookname").textContent;
+
+                    let diff = tanimoto(title, titleParser);
+
+                    if (diff > 0.8) {
+                        this.site = this.site.origin + book.querySelector("a").pathname;
+                        isLucky = true;
+                        break;
+                    }
+                }
+            })
+            .catch(err => domain_fetchCatch(err, url));
+
+        if (isError != '') {
+            return isError;
+        }
+
+        if (isLucky) {
+            return await gmfetch(this.site)
+                .then(res => domain_fetchStatusHTML(res))
+                .then(data => {
+                    return data.querySelector("#info > div.main > div.detail > p.chapter > a").textContent.match(/\D*(\d+)/)[1] * -1;
+                })
+                .catch(err => domain_fetchCatch(err, url));
+        }
+
+        return "S0";
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/2fetch/htmlSearchChapter/freewebnovelCom.js
+
+
+
+
+class freewebnovelCom extends Parser {
+    constructor() {
+        super(new URL('https://freewebnovel.com'), '.html', true)
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open(this.site.replace(this.endUrl, '') + '/chapter-' + _chapterN + this.endUrl);
+    }
+
+    async totalChapters(title) {
+        let url = this.site.origin + '/search/?searchkey=' + title;
+
+        let isLucky = false;
+        var isError = '';
+        await gmfetch(url)
+            .then(res => domain_fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.col-content > div > div.li-row");
+
+                if (block.length == 1 && block[0].querySelectorAll("div.li > div.con").length == 0) {
+                    isError = "B0";
+                    return;
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("div.txt > h3.tit > a").textContent;
+
+                    let diff = tanimoto(title, titleParser);
+
+                    if (diff > 0.8) {
+                        this.site = this.site.origin + book.querySelector("div.txt > h3.tit > a").pathname;
+                        isLucky = true;
+                        break;
+                    }
+                }
+            })
+            .catch(err => domain_fetchCatch(err, url));
+
+        if (isError != '') {
+            return isError;
+        }
+
+        if (isLucky) {
+            return await gmfetch(this.site)
+                .then(res => domain_fetchStatusHTML(res))
+                .then(data => {
+                    return data.querySelector("body > div.main > div > div > div.col-content > div.m-newest1 > ul > li:nth-child(1) > a").textContent.match(/\D*(\d+)/)[1] * -1;
+                })
+                .catch(err => domain_fetchCatch(err, url));
+        }
+
+        return "S0";
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/2fetch/htmlSearchChapter/novelfullvipCom.js
+
+
+
+
+class novelfullvipCom extends Parser {
+    constructor() {
+        super(new URL('https://novelfullvip.com'), '.html', true);
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open(this.site + '/chapter-' + _chapterN + this.endUrl);
+    }
+
+    async totalChapters(title) {
+        let url = this.site.origin + '/search?q=' + title;
+
+        let isLucky = false;
+        var isError = '';
+        await gmfetch(url)
+            .then(res => domain_fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("#truyen-slide > div.list.list-thumbnail.col-xs-12.col-md-9 > div.row > div.col-xs-4.col-sm-3.col-md-3");
+
+                if (block.length == 0) {
+                    isError = "B0";
+                    return;
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("a").title;
+
+                    let diff = tanimoto(title, titleParser);
+
+                    if (diff > 0.8) {
+                        this.site = book.querySelector("a").href;
+                        isLucky = true;
+                        break;
+                    }
+                }
+            })
+            .catch(err => domain_fetchCatch(err, url));
+
+        if (isError != '') {
+            return isError;
+        }
+
+        if (isLucky) {
+            return await gmfetch(this.site)
+                .then(res => domain_fetchStatusHTML(res))
+                .then(data => {
+                    return data.querySelector("#truyen > div.col-xs-12.col-sm-12.col-md-9.col-truyen-main > div.col-xs-12.col-info-desc > div.col-xs-12.col-sm-8.col-md-8.desc > div.l-chapter > ul > li:nth-child(1) > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
+                })
+                .catch(err => domain_fetchCatch(err, url));
+        }
+
+        return "S0";
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/2fetch/htmlSearchChapter/novelscafeCom.js
+
+
+
+
+class novelscafeCom extends Parser {
+    constructor() {
+        super(new URL('https://novelscafe.com'), '/', true);
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open(this.site.replace(/\/$/, "") + '-chapter-' + _chapterN + '-' + domain_ReplaceName(_chapterTitle) + this.endUrl);
+    }
+
+    async totalChapters(title) {
+        let url = this.site.origin + '/?s=' + title;
+
+        let isLucky = false;
+        var isError = '';
+        await gmfetch(url)
+            .then(res => domain_fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.posts.row > div.col-4.col-md-3.col-lg-2.post-column.mt-3");
+
+                if (block.length == 0) {
+                    isError = "B0";
+                    return;
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("a > div.post-title").textContent;
+
+                    let diff = tanimoto(title, titleParser);
+
+                    if (diff > 0.8) {
+                        this.site = book.querySelector("a").href;
+                        isLucky = true;
+                        break;
+                    }
+                }
+            })
+            .catch(err => domain_fetchCatch(err, url));
+
+        if (isError != '') {
+            return isError;
+        }
+
+        if (isLucky) {
+            return await gmfetch(this.site)
+                .then(res => domain_fetchStatusHTML(res))
+                .then(data => {
+                    return data.querySelector("#primary > div:nth-child(2) > div.col-12.col-md-9 > div.last-10-chapters > div > div:nth-child(1) > h3 > a").textContent.match(/\D*(\d+)/)[1] * -1;
+                })
+                .catch(err => domain_fetchCatch(err, url));
+        }
+
+        return "B0";
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/2fetch/htmlSearchChapter/POST/novelsonlineNet.js
 
 
 
@@ -1499,31 +1719,87 @@ class novelsonlineNet extends Parser {
 
 
 
-;// CONCATENATED MODULE: ./src/js/parsers/p00/readlightnovelMe.js
+;// CONCATENATED MODULE: ./src/js/parsers/apiSearch/lightnovelsMe.js
 
 
 
-class readlightnovelMe extends Parser {
+
+class lightnovelsMe extends Parser {
     constructor() {
-        super(new URL('https://www.readlightnovel.me'), '', true);
+        super(new URL('https://lightnovels.me'), '.html', true)
     }
 
     linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site.origin + "/" + domain_ReplaceName(_book) + '/chapter-' + _chapterN + this.endUrl);
+        window.open(this.site);
     }
 
     async totalChapters(title) {
-        let url = this.site.origin + "/" + domain_ReplaceName(title) + this.endUrl;
+        let url = this.site.origin + "/api/search?keyword=" + title + "&index=0&limit=20";
 
         return await gmfetch(url)
-            .then(res => domain_fetchStatusHTML(res))
+            .then(res => fetchStatusJSON(res))
             .then(data => {
-                return data.querySelector("div.novel-detail-item[style='display:flex;'] > div.novel-detail-body > ul > li:first-child > a").textContent.match(/\D*(\d+)/)[1];
+                if (Object.keys(data.results).length == 0) {
+                    return "B0";
+                }
+
+                for (let book of data.results) {
+                    let titleParser = book.novel_name;
+
+                    let diff = tanimoto(title, titleParser);
+
+                    if (diff > 0.8) {
+                        this.site = this.site.origin + '/novel' + book.novel_slug;
+                        return book.chapter_name.match(/\D*(\d+)/)[1];
+                    }
+                }
+
+                return "S0";
             })
             .catch(err => domain_fetchCatch(err, url));
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/p50/lightnovelWorld.js
+;// CONCATENATED MODULE: ./src/js/parsers/apiSearchChapter/webnovelonlineCom.js
+
+
+
+
+class webnovelonlineCom extends Parser {
+    constructor() {
+        super(new URL('https://webnovelonline.com'), '', true);
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open(this.site.replace('/novel/', '/chapter/') + '/chapter-' + _chapterN + this.endUrl);
+    }
+
+    async totalChapters(title) {
+        let url = this.site.protocol + "//api." + this.site.hostname + "/api/v1/wuxia/search?name=" + title;
+
+        return await gmfetch(url)
+            .then(res => fetchStatusJSON(res))
+            .then(data => {
+                if (Object.keys(data.data).length == 0) {
+                    return "B0";
+                }
+
+                for (let book of data.data) {
+                    let titleParser = book.title;
+
+                    let diff = tanimoto(title, titleParser);
+
+                    if (diff > 0.8) {
+                        this.site = this.site.origin + new URL(book.url).pathname;
+                        return book.chap.match(/\D*(\d+)/)[1];
+                    }
+                }
+
+                return "S0";
+            })
+            .catch(err => domain_fetchCatch(err, url));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearch/lightnovelWorld.js
 
 
 
@@ -1566,1297 +1842,7 @@ class lightnovelWorld extends Parser {
             .catch(err => domain_fetchCatch(err, url));
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/p50/octopiiCo.js
-
-
-
-
-class octopiiCo extends Parser {
-    constructor() {
-        super(new URL('https://octopii.co'), '/', true)
-    }
-
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site + '-chapter-' + _chapterN + '-' + domain_ReplaceName(_chapterTitle) + this.endUrl);
-    }
-
-    async totalChapters(title) {
-        let url = this.site.origin + '/?s=' + title;
-
-        return await gmfetch(url)
-            .then(res => domain_fetchStatusHTML(res))
-            .then(data => {
-                let block = data.querySelectorAll("#primary > div > div.col-12.col-md-6.d-flex.mb-4.flex-wrap.position-relative.overflow-hidden");
-
-                if (block.length == 0) {
-                    return "B0";
-                }
-
-                for (let book of block) {
-                    let titleParser = book.querySelector("h3.novel-name.m-0 > a").textContent;
-
-                    let diff = tanimoto(title, titleParser);
-
-                    if (diff > 0.8) {
-                        this.site = this.site.origin + book.querySelector("h3.novel-name.m-0 > a").pathname.replace('/novel/', '/').replace(/\/$/, '');
-                        return book.querySelector("h4.chapter-name.m-0 > a.chapter-name").textContent.match(/\D*(\d+)/)[1] * -1;
-                    }
-                }
-
-                return "S0";
-            })
-            .catch(err => domain_fetchCatch(err, url));
-    }
-}
-;// CONCATENATED MODULE: ./src/js/parsers/p50/readlightnovelsNet.js
-
-
-
-
-class readlightnovelsNet extends Parser {
-    constructor() {
-        super(new URL('https://readlightnovels.net'), '.html', true)
-    }
-
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site);
-    }
-
-    async totalChapters(title) {
-        let url = this.site.origin + '/?s=' + title;
-
-        return await gmfetch(url)
-            .then(res => domain_fetchStatusHTML(res))
-            .then(data => {
-                let block = data.querySelectorAll("div.col-md-3.col-sm-6.col-xs-6.home-truyendecu");
-
-                if (block.length == 0) {
-                    return "B0";
-                }
-
-                for (let book of block) {
-                    let titleParser = book.querySelector("a").title;
-
-                    let diff = tanimoto(title, titleParser);
-
-                    if (diff > 0.8) {
-                        this.site = book.querySelector("a").href;
-                        return book.querySelector("a > div > small").textContent.match(/\D*(\d+)/)[1] * -1;
-                    }
-                }
-
-                return "S0";
-            })
-            .catch(err => domain_fetchCatch(err, url));
-    }
-}
-;// CONCATENATED MODULE: ./src/js/parsers/p51/madnovelCom.js
-
-
-
-
-class madnovelCom extends Parser {
-    constructor() {
-        super(new URL('https://madnovel.com'), '', true)
-    }
-
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site + "/chapter-" + _chapterN + "-" + domain_ReplaceName(_chapterTitle) + this.endUrl);
-    }
-
-    async totalChapters(title) {
-        let url = this.site.origin + '/search?q=' + title;
-
-        return await gmfetch(url)
-            .then(res => domain_fetchStatusHTML(res))
-            .then(data => {
-                let block = data.querySelectorAll("div.section-body > div.list > div.book-item");
-
-                if (block.length == 0) {
-                    return "B0";
-                }
-
-                for (let book of block) {
-                    let titleParser = book.querySelector("div.title > h3 > a").title;
-
-                    let diff = tanimoto(title, titleParser);
-
-                    if (diff > 0.8) {
-                        this.site = this.site.origin + book.querySelector("div.title > h3 > a").pathname;
-                        return book.querySelector("div.thumb > span").textContent.match(/\D*(\d+)/)[1] * -1;
-                    }
-                }
-
-                return "S0";
-            })
-            .catch(err => domain_fetchCatch(err, url));
-    }
-}
-;// CONCATENATED MODULE: ./src/js/parsers/p51/novelbuddyCom.js
-
-
-
-
-class novelbuddyCom extends Parser {
-    constructor() {
-        super(new URL('https://novelbuddy.com'), '', true)
-    }
-
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site + "/chapter-" + _chapterN + "-" + domain_ReplaceName(_chapterTitle) + this.endUrl);
-    }
-
-    async totalChapters(title) {
-        let url = this.site.origin + '/search?q=' + title;
-
-        return await gmfetch(url)
-            .then(res => domain_fetchStatusHTML(res))
-            .then(data => {
-                let block = data.querySelectorAll("div.section-body > div.list > div.book-item");
-
-                if (block.length == 0) {
-                    return "B0";
-                }
-
-                for (let book of block) {
-                    let titleParser = book.querySelector("div.title > h3 > a").title;
-
-                    let diff = tanimoto(title, titleParser);
-
-                    if (diff > 0.8) {
-                        this.site = this.site.origin + book.querySelector("div.title > h3 > a").pathname;
-                        return book.querySelector("div.thumb > span").textContent.match(/\D*(\d+)/)[1] * -1;
-                    }
-                }
-
-                return "S0";
-            })
-            .catch(err => domain_fetchCatch(err, url));
-    }
-}
-;// CONCATENATED MODULE: ./src/js/parsers/p51/novelforestCom.js
-
-
-
-
-class novelforestCom extends Parser {
-    constructor() {
-        super(new URL('https://novelforest.com'), '', true);
-    }
-
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site + "/chapter-" + _chapterN + "-" + domain_ReplaceName(_chapterTitle) + this.endUrl);
-    }
-
-    async totalChapters(title) {
-        let url = this.site.origin + '/search?q=' + title;
-
-        return await gmfetch(url)
-            .then(res => domain_fetchStatusHTML(res))
-            .then(data => {
-                let block = data.querySelectorAll("div.section-body > div.list > div.book-item");
-
-                if (block.length == 0) {
-                    return "B0";
-                }
-
-                for (let book of block) {
-                    let titleParser = book.querySelector("div.title > h3 > a").title;
-
-                    let diff = tanimoto(title, titleParser);
-
-                    if (diff > 0.8) {
-                        this.site = this.site.origin + book.querySelector("div.title > h3 > a").pathname;
-                        return book.querySelector("div.thumb > span").textContent.match(/\D*(\d+)/)[1] * -1;
-                    }
-                }
-
-                return "S0";
-            })
-            .catch(err => domain_fetchCatch(err, url));
-    }
-}
-;// CONCATENATED MODULE: ./src/js/parsers/p51/novelfullMe.js
-
-
-
-
-class novelfullMe extends Parser {
-    constructor() {
-        super(new URL('https://novelfull.me'), '', true)
-    }
-
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site + "/chapter-" + _chapterN + "-" + domain_ReplaceName(_chapterTitle) + this.endUrl);
-    }
-
-    async totalChapters(title) {
-        let url = this.site.origin + '/search?q=' + title;
-
-        return await gmfetch(url)
-            .then(res => domain_fetchStatusHTML(res))
-            .then(data => {
-                let block = data.querySelectorAll("div.section-body > div.list > div.book-item");
-
-                if (block.length == 0) {
-                    return "B0";
-                }
-
-                for (let book of block) {
-                    let titleParser = book.querySelector("div.title > h3 > a").title;
-
-                    let diff = tanimoto(title, titleParser);
-
-                    if (diff > 0.8) {
-                        this.site = this.site.origin + book.querySelector("div.title > h3 > a").pathname;
-                        return book.querySelector("div.thumb > span").textContent.match(/\D*(\d+)/)[1] * -1;
-                    }
-                }
-
-                return "S0";
-            })
-            .catch(err => domain_fetchCatch(err, url));
-    }
-}
-;// CONCATENATED MODULE: ./src/js/parsers/p59/boxnovelOrg.js
-
-
-
-
-class boxnovelOrg extends Parser {
-    constructor() {
-        super(new URL('https://boxnovel.org'), '', true);
-    }
-
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site.replace('/novel/', '/') + "-chapter-" + _chapterN + "-" + domain_ReplaceName(_chapterTitle) + this.endUrl);
-    }
-
-    async totalChapters(title) {
-        let url = this.site.origin + '/search?keyword=' + title;
-
-        return await gmfetch(url)
-            .then(res => domain_fetchStatusHTML(res))
-            .then(data => {
-                let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-novel-main.archive > div.list.list-novel.col-xs-12 > div.row");
-
-                if (block.length == 0) {
-                    return "B0";
-                }
-
-                for (let book of block) {
-                    let titleParser = book.querySelector("h3.novel-title > a").textContent;
-
-                    let diff = tanimoto(title, titleParser);
-
-                    if (diff > 0.8) {
-                        this.site = book.querySelector("h3.novel-title > a").href;
-                        return book.querySelector("div.col-xs-2.text-info > div > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
-                    }
-                }
-
-                return "S0";
-            })
-            .catch(err => domain_fetchCatch(err, url));
-    }
-}
-;// CONCATENATED MODULE: ./src/js/parsers/p59/novelfullplusCom.js
-
-
-
-
-class novelfullplusCom extends Parser {
-    constructor() {
-        super(new URL('https://novelfullplus.com/'), '', true);
-    }
-
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site + "/chapter-" + _chapterN + "-" + domain_ReplaceName(_chapterTitle) + this.endUrl);
-    }
-
-    async totalChapters(title) {
-        let url = this.site.origin + '/search?keyword=' + title;
-
-        return await gmfetch(url)
-            .then(res => domain_fetchStatusHTML(res))
-            .then(data => {
-                let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-novel-main.archive > div.list.list-novel.col-xs-12 > div.row");
-
-                if (block.length == 0) {
-                    return "B0";
-                }
-
-                for (let book of block) {
-                    let titleParser = book.querySelector("h3.novel-title > a").textContent;
-
-                    let diff = tanimoto(title, titleParser);
-
-                    if (diff > 0.8) {
-                        this.site = book.querySelector("h3.novel-title > a").href;
-                        return book.querySelector("div.col-xs-2.text-info > div > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
-                    }
-                }
-
-                return "S0";
-            })
-            .catch(err => domain_fetchCatch(err, url));
-    }
-}
-;// CONCATENATED MODULE: ./src/js/parsers/p59/readnovelfullCom.js
-
-
-
-
-class readnovelfullCom extends Parser {
-    constructor() {
-        super(new URL('https://readnovelfull.com/'), '.html', true);
-    }
-
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site.replaceAll(/-v\d+$/g, '') + "/chapter-" + _chapterN + "-" + domain_ReplaceName(_chapterTitle) + this.endUrl);
-    }
-
-    async totalChapters(title) {
-        let url = this.site.origin + '/search?keyword=' + title;
-
-        return await gmfetch(url)
-            .then(res => domain_fetchStatusHTML(res))
-            .then(data => {
-                let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-novel-main.archive > div.list.list-novel.col-xs-12 > div.row");
-
-                if (block.length == 0) {
-                    return "B0";
-                }
-
-                for (let book of block) {
-                    let titleParser = book.querySelector("h3.novel-title > a").textContent;
-
-                    let diff = tanimoto(title, titleParser);
-
-                    if (diff > 0.8) {
-                        this.site = this.site.origin + book.querySelector("h3.novel-title > a").pathname.replace(this.endUrl, '');
-                        return book.querySelector("div.col-xs-2.text-info > div > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
-                    }
-                }
-
-                return "S0";
-            })
-            .catch(err => domain_fetchCatch(err, url));
-    }
-}
-;// CONCATENATED MODULE: ./src/js/parsers/p59/topwebnovelCom.js
-
-
-
-
-class topwebnovelCom extends Parser {
-    constructor() {
-        super(new URL('https://topwebnovel.com'), '', true);
-    }
-
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site);
-    }
-
-    async totalChapters(title) {
-        let url = this.site.origin + '/search/?keyword=' + title;
-
-        return await gmfetch(url)
-            .then(res => domain_fetchStatusHTML(res))
-            .then(data => {
-                let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-novel-main.archive > div.list.list-novel.col-xs-12 > div.row");
-
-                if (block.length == 0) {
-                    return "B0";
-                }
-
-                for (let book of block) {
-                    let titleParser = book.querySelector("h3.novel-title > a").textContent;
-
-                    let diff = tanimoto(title, titleParser);
-
-                    if (diff > 0.8) {
-                        this.site = this.site.origin + book.querySelector("h3.novel-title > a").pathname.replace(this.endUrl, '');
-                        return book.querySelector("div.col-xs-2.text-info > div > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
-                    }
-                }
-
-                return "S0";
-            })
-            .catch(err => domain_fetchCatch(err, url));
-    }
-}
-;// CONCATENATED MODULE: ./src/js/parsers/p61/1stkissnovelLove.js
-
-
-
-
-class oneStkissnovelLove extends Parser {
-    constructor() {
-        super(new URL('https://1stkissnovel.love'), '/', true);
-    }
-
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site + "chapter-" + _chapterN + "-" + domain_ReplaceName(_chapterTitle) + this.endUrl);
-    }
-
-    async totalChapters(title) {
-        let url = this.site.origin + '/?s=' + title + '&post_type=wp-manga';
-
-        return await gmfetch(url)
-            .then(res => domain_fetchStatusHTML(res))
-            .then(data => {
-                let block = data.querySelectorAll("div.row.c-tabs-item__content");
-
-                if (block.length == 0) {
-                    return "B0";
-                }
-
-                for (let book of block) {
-                    let titleParser = book.querySelector("div.post-title > h3 > a").textContent;
-
-                    let diff = tanimoto(title, titleParser);
-
-                    if (diff > 0.8) {
-                        this.site = book.querySelector("div.post-title > h3 > a").href;
-                        return book.querySelector("div.tab-meta > div.meta-item.latest-chap > span.font-meta.chapter > a").textContent.match(/\D*(\d+)/)[1] * -1;
-                    }
-                }
-
-                return "S0";
-            })
-            .catch(err => domain_fetchCatch(err, url));
-    }
-}
-;// CONCATENATED MODULE: ./src/js/parsers/p61/latestnovelNet.js
-
-
-
-
-class latestnovelNet extends Parser {
-    constructor() {
-        super(new URL('https://latestnovel.net'), '', true);
-    }
-
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site + 'chapter-' + _chapterN + this.endUrl);
-    }
-
-    async totalChapters(title) {
-        let url = this.site.origin + '/?s=' + title.replace(':', '') + '&post_type=wp-manga';
-
-        return await gmfetch(url)
-            .then(res => domain_fetchStatusHTML(res))
-            .then(data => {
-                let block = data.querySelectorAll("div.row.c-tabs-item__content");
-
-                if (block.length == 0) {
-                    return "B0";
-                }
-
-                for (let book of block) {
-                    let titleParser = book.querySelector("div.post-title > h3 > a").textContent;
-
-                    let diff = tanimoto(title, titleParser);
-
-                    if (diff > 0.8) {
-                        this.site = book.querySelector("div.post-title > h3 > a").href;
-                        return book.querySelector("div.tab-meta > div.meta-item.latest-chap > span.font-meta.chapter > a").textContent.match(/\D*(\d+)/)[1] * -1;
-                    }
-                }
-
-                return "S0";
-            })
-            .catch(err => domain_fetchCatch(err, url));
-    }
-}
-;// CONCATENATED MODULE: ./src/js/parsers/p61/lightnovelMobi.js
-
-
-
-
-class lightnovelMobi extends Parser {
-    constructor() {
-        super(new URL('https://lightnovel.mobi'), '/', true);
-    }
-
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site + "chapter-" + _chapterN + "-" + domain_ReplaceName(_chapterTitle) + this.endUrl);
-    }
-
-    async totalChapters(title) {
-        let url = this.site.origin + '/?s=' + title + '&post_type=wp-manga';
-
-        return await gmfetch(url)
-            .then(res => domain_fetchStatusHTML(res))
-            .then(data => {
-                let block = data.querySelectorAll("div.row.c-tabs-item__content");
-
-                if (block.length == 0) {
-                    return "B0";
-                }
-
-                for (let book of block) {
-                    let titleParser = book.querySelector("div.post-title > h3 > a").textContent;
-
-                    let diff = tanimoto(title, titleParser);
-
-                    if (diff > 0.8) {
-                        this.site = book.querySelector("div.post-title > h3 > a").href;
-                        return book.querySelector("div.tab-meta > div.meta-item.latest-chap > span.font-meta.chapter > a").textContent.match(/\D*(\d+)/)[1] * -1;
-                    }
-                }
-
-                return "S0";
-            })
-            .catch(err => domain_fetchCatch(err, url));
-    }
-}
-;// CONCATENATED MODULE: ./src/js/parsers/p61/novelteamNet.js
-
-
-
-
-class novelteamNet extends Parser {
-    constructor() {
-        super(new URL('https://novelteam.net'), '/', true);
-    }
-
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site + 'chapter-' + _chapterN + this.endUrl);
-    }
-
-    async totalChapters(title) {
-        let url = this.site.origin + '/?s=' + title + '&post_type=wp-manga';
-
-        return await gmfetch(url)
-            .then(res => domain_fetchStatusHTML(res))
-            .then(data => {
-                let block = data.querySelectorAll("div.row.c-tabs-item__content");
-
-                if (block.length == 0) {
-                    return "B0";
-                }
-
-                for (let book of block) {
-                    let titleParser = book.querySelector("div.post-title > h3 > a").textContent;
-
-                    let diff = tanimoto(title, titleParser);
-
-                    if (diff > 0.8) {
-                        this.site = book.querySelector("div.post-title > h3 > a").href;
-                        return book.querySelector("div.tab-meta > div.meta-item.latest-chap > span.font-meta.chapter > a").textContent.match(/\D*(\d+)/)[1] * -1;
-                    }
-                }
-
-                return "S0";
-            })
-            .catch(err => domain_fetchCatch(err, url));
-    }
-}
-;// CONCATENATED MODULE: ./src/js/parsers/p61/noveltrenchCom.js
-
-
-
-
-class noveltrenchCom extends Parser {
-    constructor() {
-        super(new URL('https://noveltrench.com'), '/', true);
-    }
-
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site + 'chapter-' + _chapterN + this.endUrl);
-    }
-
-    async totalChapters(title) {
-        let url = this.site.origin + '/?s=' + title + '&post_type=wp-manga';
-
-        return await gmfetch(url)
-            .then(res => domain_fetchStatusHTML(res))
-            .then(data => {
-                let block = data.querySelectorAll("div.row.c-tabs-item__content");
-
-                if (block.length == 0) {
-                    return "B0";
-                }
-
-                for (let book of block) {
-                    let titleParser = book.querySelector("div.post-title > h3 > a").textContent;
-
-                    let diff = tanimoto(title, titleParser);
-
-                    if (diff > 0.8) {
-                        this.site = book.querySelector("div.post-title > h3 > a").href;
-                        return book.querySelector("div.tab-meta > div.meta-item.latest-chap > span.font-meta.chapter > a").textContent.match(/\D*(\d+)/)[1] * -1;
-                    }
-                }
-
-                return "S0";
-            })
-            .catch(err => domain_fetchCatch(err, url));
-    }
-}
-;// CONCATENATED MODULE: ./src/js/parsers/p61/readnovelsOrg.js
-
-
-
-
-class readnovelsOrg extends Parser {
-    constructor() {
-        super(new URL('https://readnovels.org'), '/', true);
-    }
-
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site + 'chapter-' + _chapterN + this.endUrl);
-    }
-
-    async totalChapters(title) {
-        let url = this.site.origin + '/?s=' + title + '&post_type=wp-manga';
-
-        return await gmfetch(url)
-            .then(res => domain_fetchStatusHTML(res))
-            .then(data => {
-                let block = data.querySelectorAll("div.row.c-tabs-item__content");
-
-                if (block.length == 0) {
-                    return "B0";
-                }
-
-                for (let book of block) {
-                    let titleParser = book.querySelector("div.post-title > h3 > a").textContent;
-
-                    let diff = tanimoto(title, titleParser);
-
-                    if (diff > 0.8) {
-                        this.site = book.querySelector("div.post-title > h3 > a").href;
-                        return book.querySelector("div.tab-meta > div.meta-item.latest-chap > span.font-meta.chapter > a").textContent.match(/\D*(\d+)/)[1] * -1;
-                    }
-                }
-
-                return "S0";
-            })
-            .catch(err => domain_fetchCatch(err, url));
-    }
-}
-;// CONCATENATED MODULE: ./src/js/parsers/p61/webnovelonlineNet.js
-
-
-
-
-class webnovelonlineNet extends Parser {
-    constructor() {
-        super(new URL('https://webnovelonline.net'), '/', true);
-    }
-
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site + "chapter-" + _chapterN + "-" + domain_ReplaceName(_chapterTitle) + this.endUrl);
-    }
-
-    async totalChapters(title) {
-        let url = this.site.origin + '/?s=' + title + '&post_type=wp-manga';
-
-        return await gmfetch(url)
-            .then(res => domain_fetchStatusHTML(res))
-            .then(data => {
-                let block = data.querySelectorAll("div.row.c-tabs-item__content");
-
-                if (block.length == 0) {
-                    return "B0";
-                }
-
-                for (let book of block) {
-                    let titleParser = book.querySelector("div.post-title > h3 > a").textContent;
-
-                    let diff = tanimoto(title, titleParser);
-
-                    if (diff > 0.8) {
-                        this.site = book.querySelector("div.post-title > h3 > a").href;
-                        return book.querySelector("div.tab-meta > div.meta-item.latest-chap > span.font-meta.chapter > a").textContent.match(/\D*(\d+)/)[1] * -1;
-                    }
-                }
-
-                return "S0";
-            })
-            .catch(err => domain_fetchCatch(err, url));
-    }
-}
-;// CONCATENATED MODULE: ./src/js/parsers/p60/allnovelfullCom.js
-
-
-
-
-class allnovelfullCom extends p3 {
-    constructor() {
-        super(new URL('https://allnovelfull.com'), '.html', true);
-    }
-
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site + "/chapter-" + _chapterN + "-" + domain_ReplaceName(_chapterTitle) + this.endUrl);
-    }
-
-    async totalChapters(title) {
-        let url = this.site.origin + '/search?keyword=' + title;
-
-        return await gmfetch(url)
-            .then(res => domain_fetchStatusHTML(res))
-            .then(data => {
-                let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-truyen-main.archive > div.list.list-truyen.col-xs-12 > div.row");
-
-                if (block.length == 0) {
-                    return "B0";
-                }
-
-                for (let book of block) {
-                    let titleParser = book.querySelector("h3.truyen-title > a").textContent;
-
-                    let diff = tanimoto(title, titleParser);
-
-                    if (diff > 0.8) {
-                        this.site = this.site.origin + book.querySelector("h3.truyen-title > a").pathname.replace(this.endUrl, '');
-                        return book.querySelector("div.col-xs-2.text-info > div > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
-                    }
-                }
-
-                return "S0";
-            })
-            .catch(err => domain_fetchCatch(err, url));
-    }
-}
-;// CONCATENATED MODULE: ./src/js/parsers/p60/allnovelOrg.js
-
-
-
-
-class allnovelOrg extends p3 {
-    constructor() {
-        super(new URL('https://allnovel.org'), '.html', true);
-    }
-
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site + "/chapter-" + _chapterN + "-" + domain_ReplaceName(_chapterTitle) + this.endUrl);
-    }
-
-    async totalChapters(title) {
-        let url = this.site.origin + '/search?keyword=' + title;
-
-        return await gmfetch(url)
-            .then(res => domain_fetchStatusHTML(res))
-            .then(data => {
-                let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-truyen-main.archive > div.list.list-truyen.col-xs-12 > div.row");
-
-                if (block.length == 0) {
-                    return "B0";
-                }
-
-                for (let book of block) {
-                    let titleParser = book.querySelector("h3.truyen-title > a").textContent;
-
-                    let diff = tanimoto(title, titleParser);
-
-                    if (diff > 0.8) {
-                        this.site = this.site.origin + book.querySelector("h3.truyen-title > a").pathname.replace(this.endUrl, '');
-                        return book.querySelector("div.col-xs-2.text-info > div > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
-                    }
-                }
-
-                return "S0";
-            })
-            .catch(err => domain_fetchCatch(err, url));
-    }
-}
-;// CONCATENATED MODULE: ./src/js/parsers/p60/novelfullCom.js
-
-
-
-
-class novelfullCom extends p3 {
-    constructor() {
-        super(new URL('https://novelfull.com'), '.html', true);
-    }
-
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site + "/chapter-" + _chapterN + "-" + domain_ReplaceName(_chapterTitle) + this.endUrl);
-    }
-
-    async totalChapters(title) {
-        let url = this.site.origin + '/search?keyword=' + title;
-
-        return await gmfetch(url)
-            .then(res => domain_fetchStatusHTML(res))
-            .then(data => {
-                let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-truyen-main.archive > div.list.list-truyen.col-xs-12 > div.row");
-
-                if (block.length == 0) {
-                    return "B0";
-                }
-
-                for (let book of block) {
-                    let titleParser = book.querySelector("h3.truyen-title > a").textContent;
-
-                    let diff = tanimoto(title, titleParser);
-
-                    if (diff > 0.8) {
-                        this.site = this.site.origin + book.querySelector("h3.truyen-title > a").pathname.replace(this.endUrl, '');
-                        return book.querySelector("div.col-xs-2.text-info > div > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
-                    }
-                }
-
-                return "S0";
-            })
-            .catch(err => domain_fetchCatch(err, url));
-    }
-}
-;// CONCATENATED MODULE: ./src/js/parsers/p60/novelgreatNet.js
-
-
-
-
-class novelgreatNet extends p4 {
-    constructor() {
-        super(new URL('https://novelgreat.net'), '', true)
-    }
-
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site);
-    }
-
-    async totalChapters(title) {
-        let url = this.site.origin + '/search?keyword=' + title;
-
-        return await gmfetch(url)
-            .then(res => domain_fetchStatusHTML(res))
-            .then(data => {
-                let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-truyen-main.archive > div.list.list-truyen.col-xs-12 > div.row");
-
-                if (block.length == 0) {
-                    return "B0";
-                }
-
-                for (let book of block) {
-                    let titleParser = book.querySelector("h3.truyen-title > a").textContent;
-
-                    let diff = tanimoto(title, titleParser);
-
-                    if (diff > 0.8) {
-                        this.site = this.site.origin + book.querySelector("h3.truyen-title > a").pathname;
-                        return book.querySelector("div.col-xs-2.text-info > div > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
-                    }
-                }
-
-                return "S0";
-            })
-            .catch(err => domain_fetchCatch(err, url));
-    }
-}
-;// CONCATENATED MODULE: ./src/js/parsers/p90/freewebnovelCom.js
-
-
-
-
-class freewebnovelCom extends Parser {
-    constructor() {
-        super(new URL('https://freewebnovel.com'), '.html', true)
-    }
-
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site.replace(this.endUrl, '') + '/chapter-' + _chapterN + this.endUrl);
-    }
-
-    async totalChapters(title) {
-        let url = this.site.origin + '/search/?searchkey=' + title;
-
-        let isLucky = false;
-        var isError = '';
-        await gmfetch(url)
-            .then(res => domain_fetchStatusHTML(res))
-            .then(data => {
-                let block = data.querySelectorAll("div.col-content > div > div.li-row");
-
-                if (block.length == 1 && block[0].querySelectorAll("div.li > div.con").length == 0) {
-                    isError = "B0";
-                    return;
-                }
-
-                for (let book of block) {
-                    let titleParser = book.querySelector("div.txt > h3.tit > a").textContent;
-
-                    let diff = tanimoto(title, titleParser);
-
-                    if (diff > 0.8) {
-                        this.site = this.site.origin + book.querySelector("div.txt > h3.tit > a").pathname;
-                        isLucky = true;
-                        break;
-                    }
-                }
-            })
-            .catch(err => domain_fetchCatch(err, url));
-
-        if (isError != '') {
-            return isError;
-        }
-
-        if (isLucky) {
-            return await gmfetch(this.site)
-                .then(res => domain_fetchStatusHTML(res))
-                .then(data => {
-                    return data.querySelector("body > div.main > div > div > div.col-content > div.m-newest1 > ul > li:nth-child(1) > a").textContent.match(/\D*(\d+)/)[1] * -1;
-                })
-                .catch(err => domain_fetchCatch(err, url));
-        }
-
-        return "S0";
-    }
-}
-;// CONCATENATED MODULE: ./src/js/parsers/p90/mMylovenovelCom.js
-
-
-
-
-class mMylovenovelCom extends Parser {
-    constructor() {
-        super(new URL('https://m.mylovenovel.com'), '', true);
-    }
-
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site);
-    }
-
-    async totalChapters(title) {
-        let url = this.site.origin + '/index.php?s=so&module=book&keyword=' + title;
-
-        let isLucky = false;
-        var isError = '';
-        await gmfetch(url)
-            .then(res => domain_fetchStatusHTML(res))
-            .then(data => {
-                let block = data.querySelectorAll("div.main > ul.list > li");
-
-                if (block.length == 0) {
-                    isError = "B0";
-                    return;
-                }
-
-                for (let book of block) {
-                    let titleParser = book.querySelector("a > p.bookname").textContent;
-
-                    let diff = tanimoto(title, titleParser);
-
-                    if (diff > 0.8) {
-                        this.site = this.site.origin + book.querySelector("a").pathname;
-                        isLucky = true;
-                        break;
-                    }
-                }
-            })
-            .catch(err => domain_fetchCatch(err, url));
-
-        if (isError != '') {
-            return isError;
-        }
-
-        if (isLucky) {
-            return await gmfetch(this.site)
-                .then(res => domain_fetchStatusHTML(res))
-                .then(data => {
-                    return data.querySelector("#info > div.main > div.detail > p.chapter > a").textContent.match(/\D*(\d+)/)[1] * -1;
-                })
-                .catch(err => domain_fetchCatch(err, url));
-        }
-
-        return "S0";
-    }
-}
-;// CONCATENATED MODULE: ./src/js/parsers/p90/novelfullvipCom.js
-
-
-
-
-class novelfullvipCom extends Parser {
-    constructor() {
-        super(new URL('https://novelfullvip.com'), '.html', true);
-    }
-
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site + '/chapter-' + _chapterN + this.endUrl);
-    }
-
-    async totalChapters(title) {
-        let url = this.site.origin + '/search?q=' + title;
-
-        let isLucky = false;
-        var isError = '';
-        await gmfetch(url)
-            .then(res => domain_fetchStatusHTML(res))
-            .then(data => {
-                let block = data.querySelectorAll("#truyen-slide > div.list.list-thumbnail.col-xs-12.col-md-9 > div.row > div.col-xs-4.col-sm-3.col-md-3");
-
-                if (block.length == 0) {
-                    isError = "B0";
-                    return;
-                }
-
-                for (let book of block) {
-                    let titleParser = book.querySelector("a").title;
-
-                    let diff = tanimoto(title, titleParser);
-
-                    if (diff > 0.8) {
-                        this.site = book.querySelector("a").href;
-                        isLucky = true;
-                        break;
-                    }
-                }
-            })
-            .catch(err => domain_fetchCatch(err, url));
-
-        if (isError != '') {
-            return isError;
-        }
-
-        if (isLucky) {
-            return await gmfetch(this.site)
-                .then(res => domain_fetchStatusHTML(res))
-                .then(data => {
-                    return data.querySelector("#truyen > div.col-xs-12.col-sm-12.col-md-9.col-truyen-main > div.col-xs-12.col-info-desc > div.col-xs-12.col-sm-8.col-md-8.desc > div.l-chapter > ul > li:nth-child(1) > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
-                })
-                .catch(err => domain_fetchCatch(err, url));
-        }
-
-        return "S0";
-    }
-}
-;// CONCATENATED MODULE: ./src/js/parsers/p90/novelscafeCom.js
-
-
-
-
-class novelscafeCom extends Parser {
-    constructor() {
-        super(new URL('https://novelscafe.com'), '/', true);
-    }
-
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site.replace(/\/$/, "") + '-chapter-' + _chapterN + '-' + domain_ReplaceName(_chapterTitle) + this.endUrl);
-    }
-
-    async totalChapters(title) {
-        let url = this.site.origin + '/?s=' + title;
-
-        let isLucky = false;
-        var isError = '';
-        await gmfetch(url)
-            .then(res => domain_fetchStatusHTML(res))
-            .then(data => {
-                let block = data.querySelectorAll("div.posts.row > div.col-4.col-md-3.col-lg-2.post-column.mt-3");
-
-                if (block.length == 0) {
-                    isError = "B0";
-                    return;
-                }
-
-                for (let book of block) {
-                    let titleParser = book.querySelector("a > div.post-title").textContent;
-
-                    let diff = tanimoto(title, titleParser);
-
-                    if (diff > 0.8) {
-                        this.site = book.querySelector("a").href;
-                        isLucky = true;
-                        break;
-                    }
-                }
-            })
-            .catch(err => domain_fetchCatch(err, url));
-
-        if (isError != '') {
-            return isError;
-        }
-
-        if (isLucky) {
-            return await gmfetch(this.site)
-                .then(res => domain_fetchStatusHTML(res))
-                .then(data => {
-                    return data.querySelector("#primary > div:nth-child(2) > div.col-12.col-md-9 > div.last-10-chapters > div > div:nth-child(1) > h3 > a").textContent.match(/\D*(\d+)/)[1] * -1;
-                })
-                .catch(err => domain_fetchCatch(err, url));
-        }
-
-        return "B0";
-    }
-}
-;// CONCATENATED MODULE: ./src/js/parsers/p95/mWuxiaworldCo.js
-
-
-class mWuxiaworldCo extends p95 {
-    constructor() {
-        super(new URL('https://m.wuxiaworld.co'), '/1', true, true);
-    }
-}
-;// CONCATENATED MODULE: ./src/js/parsers/p95/novelupdatesCc.js
-
-
-class novelupdatesCc extends p95 {
-    constructor() {
-        super(new URL('https://www.novelupdates.cc'), '/1', true, true);
-    }
-}
-;// CONCATENATED MODULE: ./src/js/parsers/p95/readlightnovelCc.js
-
-
-class readlightnovelCc extends p95 {
-    constructor() {
-        super(new URL('https://www.readlightnovel.cc'), '/1', true, true);
-    }
-}
-;// CONCATENATED MODULE: ./src/js/parsers/p95/readlightnovelCo.js
-
-
-class readlightnovelCo extends p95 {
-    constructor() {
-        super(new URL('https://www.readlightnovel.co'), '/1', true, true);
-    }
-}
-;// CONCATENATED MODULE: ./src/js/parsers/p99/fastnovelNet.js
-
-
-class fastnovelNet extends Parser {
-    constructor() {
-        super(new URL('https://fastnovel.net/search/'), '', false)
-    }
-
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site + _book + this.endUrl);
-    }
-}
-;// CONCATENATED MODULE: ./src/js/parsers/p99/lightnovelplusCom.js
-
-
-class lightnovelplusCom extends p4 {
-    constructor() {
-        super(new URL('https://lightnovelplus.com/book/search.html?keyword='), '', false)
-    }
-
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site + _book + this.endUrl);
-    }
-}
-;// CONCATENATED MODULE: ./src/js/parsers/p99/novelgateNet.js
-
-
-class novelgateNet extends p4 {
-    constructor() {
-        super(new URL('https://novelgate.net/search/'), '', false)
-    }
-
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site + _book + this.endUrl);
-    }
-}
-;// CONCATENATED MODULE: ./src/js/parsers/p99/novelhallCom.js
-
-
-class novelhallCom extends p4 {
-    constructor() {
-        super(new URL('https://www.novelhall.com/index.php?s=so&module=book&keyword='), '', false)
-    }
-
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site + _book + this.endUrl);
-    }
-}
-;// CONCATENATED MODULE: ./src/js/parsers/p99/ranobesNet.js
-
-
-class ranobesNet extends p4 {
-    constructor() {
-        super(new URL('https://ranobes.net/index.php?do=search&subaction=search&search_start=0&full_search=0&result_from=1&story='), '', false)
-    }
-
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site + _book + this.endUrl);
-    }
-}
-;// CONCATENATED MODULE: ./src/js/parsers/pAll/lightnovelsMe.js
-
-
-
-
-class lightnovelsMe extends Parser {
-    constructor() {
-        super(new URL('https://lightnovels.me'), '.html', true)
-    }
-
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site);
-    }
-
-    async totalChapters(title) {
-        let url = this.site.origin + "/api/search?keyword=" + title + "&index=0&limit=20";
-
-        return await gmfetch(url)
-            .then(res => fetchStatusJSON(res))
-            .then(data => {
-                if (Object.keys(data.results).length == 0) {
-                    return "B0";
-                }
-
-                for (let book of data.results) {
-                    let titleParser = book.novel_name;
-
-                    let diff = tanimoto(title, titleParser);
-
-                    if (diff > 0.8) {
-                        this.site = this.site.origin + '/novel' + book.novel_slug;
-                        return book.chapter_name.match(/\D*(\d+)/)[1];
-                    }
-                }
-
-                return "S0";
-            })
-            .catch(err => domain_fetchCatch(err, url));
-    }
-}
-;// CONCATENATED MODULE: ./src/js/parsers/pAll/webnovelonlineCom.js
-
-
-
-
-class webnovelonlineCom extends Parser {
-    constructor() {
-        super(new URL('https://webnovelonline.com'), '', true);
-    }
-
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site.replace('/novel/', '/chapter/') + '/chapter-' + _chapterN + this.endUrl);
-    }
-
-    async totalChapters(title) {
-        let url = this.site.protocol + "//api." + this.site.hostname + "/api/v1/wuxia/search?name=" + title;
-
-        return await gmfetch(url)
-            .then(res => fetchStatusJSON(res))
-            .then(data => {
-                if (Object.keys(data.data).length == 0) {
-                    return "B0";
-                }
-
-                for (let book of data.data) {
-                    let titleParser = book.title;
-
-                    let diff = tanimoto(title, titleParser);
-
-                    if (diff > 0.8) {
-                        this.site = this.site.origin + new URL(book.url).pathname;
-                        return book.chap.match(/\D*(\d+)/)[1];
-                    }
-                }
-
-                return "S0";
-            })
-            .catch(err => domain_fetchCatch(err, url));
-    }
-}
-;// CONCATENATED MODULE: ./src/js/parsers/pandanovelCom.js
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearch/pandanovelCom.js
 
 
 
@@ -2898,6 +1884,1020 @@ class pandanovelCom extends Parser {
             .catch(err => domain_fetchCatch(err, url));
     }
 }
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearch/readlightnovelsNet.js
+
+
+
+
+class readlightnovelsNet extends Parser {
+    constructor() {
+        super(new URL('https://readlightnovels.net'), '.html', true)
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open(this.site);
+    }
+
+    async totalChapters(title) {
+        let url = this.site.origin + '/?s=' + title;
+
+        return await gmfetch(url)
+            .then(res => domain_fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.col-md-3.col-sm-6.col-xs-6.home-truyendecu");
+
+                if (block.length == 0) {
+                    return "B0";
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("a").title;
+
+                    let diff = tanimoto(title, titleParser);
+
+                    if (diff > 0.8) {
+                        this.site = book.querySelector("a").href;
+                        return book.querySelector("a > div > small").textContent.match(/\D*(\d+)/)[1] * -1;
+                    }
+                }
+
+                return "S0";
+            })
+            .catch(err => domain_fetchCatch(err, url));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/octopiiCo.js
+
+
+
+
+class octopiiCo extends Parser {
+    constructor() {
+        super(new URL('https://octopii.co'), '/', true)
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open(this.site + '-chapter-' + _chapterN + '-' + domain_ReplaceName(_chapterTitle) + this.endUrl);
+    }
+
+    async totalChapters(title) {
+        let url = this.site.origin + '/?s=' + title;
+
+        return await gmfetch(url)
+            .then(res => domain_fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("#primary > div > div.col-12.col-md-6.d-flex.mb-4.flex-wrap.position-relative.overflow-hidden");
+
+                if (block.length == 0) {
+                    return "B0";
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("h3.novel-name.m-0 > a").textContent;
+
+                    let diff = tanimoto(title, titleParser);
+
+                    if (diff > 0.8) {
+                        this.site = this.site.origin + book.querySelector("h3.novel-name.m-0 > a").pathname.replace('/novel/', '/').replace(/\/$/, '');
+                        return book.querySelector("h4.chapter-name.m-0 > a.chapter-name").textContent.match(/\D*(\d+)/)[1] * -1;
+                    }
+                }
+
+                return "S0";
+            })
+            .catch(err => domain_fetchCatch(err, url));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/madentertainment/madnovelCom.js
+
+
+
+
+class madnovelCom extends Parser {
+    constructor() {
+        super(new URL('https://madnovel.com'), '', true)
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open(this.site + "/chapter-" + _chapterN + "-" + domain_ReplaceName(_chapterTitle) + this.endUrl);
+    }
+
+    async totalChapters(title) {
+        let url = this.site.origin + '/search?q=' + title;
+
+        return await gmfetch(url)
+            .then(res => domain_fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.section-body > div.list > div.book-item");
+
+                if (block.length == 0) {
+                    return "B0";
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("div.title > h3 > a").title;
+
+                    let diff = tanimoto(title, titleParser);
+
+                    if (diff > 0.8) {
+                        this.site = this.site.origin + book.querySelector("div.title > h3 > a").pathname;
+                        return book.querySelector("div.thumb > span").textContent.match(/\D*(\d+)/)[1] * -1;
+                    }
+                }
+
+                return "S0";
+            })
+            .catch(err => domain_fetchCatch(err, url));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/madentertainment/novelbuddyCom.js
+
+
+
+
+class novelbuddyCom extends Parser {
+    constructor() {
+        super(new URL('https://novelbuddy.com'), '', true)
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open(this.site + "/chapter-" + _chapterN + "-" + domain_ReplaceName(_chapterTitle) + this.endUrl);
+    }
+
+    async totalChapters(title) {
+        let url = this.site.origin + '/search?q=' + title;
+
+        return await gmfetch(url)
+            .then(res => domain_fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.section-body > div.list > div.book-item");
+
+                if (block.length == 0) {
+                    return "B0";
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("div.title > h3 > a").title;
+
+                    let diff = tanimoto(title, titleParser);
+
+                    if (diff > 0.8) {
+                        this.site = this.site.origin + book.querySelector("div.title > h3 > a").pathname;
+                        return book.querySelector("div.thumb > span").textContent.match(/\D*(\d+)/)[1] * -1;
+                    }
+                }
+
+                return "S0";
+            })
+            .catch(err => domain_fetchCatch(err, url));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/madentertainment/novelforestCom.js
+
+
+
+
+class novelforestCom extends Parser {
+    constructor() {
+        super(new URL('https://novelforest.com'), '', true);
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open(this.site + "/chapter-" + _chapterN + "-" + domain_ReplaceName(_chapterTitle) + this.endUrl);
+    }
+
+    async totalChapters(title) {
+        let url = this.site.origin + '/search?q=' + title;
+
+        return await gmfetch(url)
+            .then(res => domain_fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.section-body > div.list > div.book-item");
+
+                if (block.length == 0) {
+                    return "B0";
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("div.title > h3 > a").title;
+
+                    let diff = tanimoto(title, titleParser);
+
+                    if (diff > 0.8) {
+                        this.site = this.site.origin + book.querySelector("div.title > h3 > a").pathname;
+                        return book.querySelector("div.thumb > span").textContent.match(/\D*(\d+)/)[1] * -1;
+                    }
+                }
+
+                return "S0";
+            })
+            .catch(err => domain_fetchCatch(err, url));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/madentertainment/novelfullMe.js
+
+
+
+
+class novelfullMe extends Parser {
+    constructor() {
+        super(new URL('https://novelfull.me'), '', true)
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open(this.site + "/chapter-" + _chapterN + "-" + domain_ReplaceName(_chapterTitle) + this.endUrl);
+    }
+
+    async totalChapters(title) {
+        let url = this.site.origin + '/search?q=' + title;
+
+        return await gmfetch(url)
+            .then(res => domain_fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.section-body > div.list > div.book-item");
+
+                if (block.length == 0) {
+                    return "B0";
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("div.title > h3 > a").title;
+
+                    let diff = tanimoto(title, titleParser);
+
+                    if (diff > 0.8) {
+                        this.site = this.site.origin + book.querySelector("div.title > h3 > a").pathname;
+                        return book.querySelector("div.thumb > span").textContent.match(/\D*(\d+)/)[1] * -1;
+                    }
+                }
+
+                return "S0";
+            })
+            .catch(err => domain_fetchCatch(err, url));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/truyenNovel/novel/boxnovelOrg.js
+
+
+
+
+class boxnovelOrg extends Parser {
+    constructor() {
+        super(new URL('https://boxnovel.org'), '', true);
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open(this.site.replace('/novel/', '/') + "-chapter-" + _chapterN + "-" + domain_ReplaceName(_chapterTitle) + this.endUrl);
+    }
+
+    async totalChapters(title) {
+        let url = this.site.origin + '/search?keyword=' + title;
+
+        return await gmfetch(url)
+            .then(res => domain_fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-novel-main.archive > div.list.list-novel.col-xs-12 > div.row");
+
+                if (block.length == 0) {
+                    return "B0";
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("h3.novel-title > a").textContent;
+
+                    let diff = tanimoto(title, titleParser);
+
+                    if (diff > 0.8) {
+                        this.site = book.querySelector("h3.novel-title > a").href;
+                        return book.querySelector("div.col-xs-2.text-info > div > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
+                    }
+                }
+
+                return "S0";
+            })
+            .catch(err => domain_fetchCatch(err, url));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/truyenNovel/novel/novelfullplusCom.js
+
+
+
+
+class novelfullplusCom extends Parser {
+    constructor() {
+        super(new URL('https://novelfullplus.com/'), '', true);
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open(this.site + "/chapter-" + _chapterN + "-" + domain_ReplaceName(_chapterTitle) + this.endUrl);
+    }
+
+    async totalChapters(title) {
+        let url = this.site.origin + '/search?keyword=' + title;
+
+        return await gmfetch(url)
+            .then(res => domain_fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-novel-main.archive > div.list.list-novel.col-xs-12 > div.row");
+
+                if (block.length == 0) {
+                    return "B0";
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("h3.novel-title > a").textContent;
+
+                    let diff = tanimoto(title, titleParser);
+
+                    if (diff > 0.8) {
+                        this.site = book.querySelector("h3.novel-title > a").href;
+                        return book.querySelector("div.col-xs-2.text-info > div > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
+                    }
+                }
+
+                return "S0";
+            })
+            .catch(err => domain_fetchCatch(err, url));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/truyenNovel/novel/readnovelfullCom.js
+
+
+
+
+class readnovelfullCom extends Parser {
+    constructor() {
+        super(new URL('https://readnovelfull.com/'), '.html', true);
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open(this.site.replaceAll(/-v\d+$/g, '') + "/chapter-" + _chapterN + "-" + domain_ReplaceName(_chapterTitle) + this.endUrl);
+    }
+
+    async totalChapters(title) {
+        let url = this.site.origin + '/search?keyword=' + title;
+
+        return await gmfetch(url)
+            .then(res => domain_fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-novel-main.archive > div.list.list-novel.col-xs-12 > div.row");
+
+                if (block.length == 0) {
+                    return "B0";
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("h3.novel-title > a").textContent;
+
+                    let diff = tanimoto(title, titleParser);
+
+                    if (diff > 0.8) {
+                        this.site = this.site.origin + book.querySelector("h3.novel-title > a").pathname.replace(this.endUrl, '');
+                        return book.querySelector("div.col-xs-2.text-info > div > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
+                    }
+                }
+
+                return "S0";
+            })
+            .catch(err => domain_fetchCatch(err, url));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/truyenNovel/novel/topwebnovelCom.js
+
+
+
+
+class topwebnovelCom extends Parser {
+    constructor() {
+        super(new URL('https://topwebnovel.com'), '', true);
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open(this.site);
+    }
+
+    async totalChapters(title) {
+        let url = this.site.origin + '/search/?keyword=' + title;
+
+        return await gmfetch(url)
+            .then(res => domain_fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-novel-main.archive > div.list.list-novel.col-xs-12 > div.row");
+
+                if (block.length == 0) {
+                    return "B0";
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("h3.novel-title > a").textContent;
+
+                    let diff = tanimoto(title, titleParser);
+
+                    if (diff > 0.8) {
+                        this.site = this.site.origin + book.querySelector("h3.novel-title > a").pathname.replace(this.endUrl, '');
+                        return book.querySelector("div.col-xs-2.text-info > div > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
+                    }
+                }
+
+                return "S0";
+            })
+            .catch(err => domain_fetchCatch(err, url));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/truyenNovel/truyen/allnovelfullCom.js
+
+
+
+
+class allnovelfullCom extends p3 {
+    constructor() {
+        super(new URL('https://allnovelfull.com'), '.html', true);
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open(this.site + "/chapter-" + _chapterN + "-" + domain_ReplaceName(_chapterTitle) + this.endUrl);
+    }
+
+    async totalChapters(title) {
+        let url = this.site.origin + '/search?keyword=' + title;
+
+        return await gmfetch(url)
+            .then(res => domain_fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-truyen-main.archive > div.list.list-truyen.col-xs-12 > div.row");
+
+                if (block.length == 0) {
+                    return "B0";
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("h3.truyen-title > a").textContent;
+
+                    let diff = tanimoto(title, titleParser);
+
+                    if (diff > 0.8) {
+                        this.site = this.site.origin + book.querySelector("h3.truyen-title > a").pathname.replace(this.endUrl, '');
+                        return book.querySelector("div.col-xs-2.text-info > div > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
+                    }
+                }
+
+                return "S0";
+            })
+            .catch(err => domain_fetchCatch(err, url));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/truyenNovel/truyen/allnovelOrg.js
+
+
+
+
+class allnovelOrg extends p3 {
+    constructor() {
+        super(new URL('https://allnovel.org'), '.html', true);
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open(this.site + "/chapter-" + _chapterN + "-" + domain_ReplaceName(_chapterTitle) + this.endUrl);
+    }
+
+    async totalChapters(title) {
+        let url = this.site.origin + '/search?keyword=' + title;
+
+        return await gmfetch(url)
+            .then(res => domain_fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-truyen-main.archive > div.list.list-truyen.col-xs-12 > div.row");
+
+                if (block.length == 0) {
+                    return "B0";
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("h3.truyen-title > a").textContent;
+
+                    let diff = tanimoto(title, titleParser);
+
+                    if (diff > 0.8) {
+                        this.site = this.site.origin + book.querySelector("h3.truyen-title > a").pathname.replace(this.endUrl, '');
+                        return book.querySelector("div.col-xs-2.text-info > div > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
+                    }
+                }
+
+                return "S0";
+            })
+            .catch(err => domain_fetchCatch(err, url));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/truyenNovel/truyen/novelfullCom.js
+
+
+
+
+class novelfullCom extends p3 {
+    constructor() {
+        super(new URL('https://novelfull.com'), '.html', true);
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open(this.site + "/chapter-" + _chapterN + "-" + domain_ReplaceName(_chapterTitle) + this.endUrl);
+    }
+
+    async totalChapters(title) {
+        let url = this.site.origin + '/search?keyword=' + title;
+
+        return await gmfetch(url)
+            .then(res => domain_fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-truyen-main.archive > div.list.list-truyen.col-xs-12 > div.row");
+
+                if (block.length == 0) {
+                    return "B0";
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("h3.truyen-title > a").textContent;
+
+                    let diff = tanimoto(title, titleParser);
+
+                    if (diff > 0.8) {
+                        this.site = this.site.origin + book.querySelector("h3.truyen-title > a").pathname.replace(this.endUrl, '');
+                        return book.querySelector("div.col-xs-2.text-info > div > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
+                    }
+                }
+
+                return "S0";
+            })
+            .catch(err => domain_fetchCatch(err, url));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/truyenNovel/truyen/novelgreatNet.js
+
+
+
+
+class novelgreatNet extends p4 {
+    constructor() {
+        super(new URL('https://novelgreat.net'), '', true)
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open(this.site);
+    }
+
+    async totalChapters(title) {
+        let url = this.site.origin + '/search?keyword=' + title;
+
+        return await gmfetch(url)
+            .then(res => domain_fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-truyen-main.archive > div.list.list-truyen.col-xs-12 > div.row");
+
+                if (block.length == 0) {
+                    return "B0";
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("h3.truyen-title > a").textContent;
+
+                    let diff = tanimoto(title, titleParser);
+
+                    if (diff > 0.8) {
+                        this.site = this.site.origin + book.querySelector("h3.truyen-title > a").pathname;
+                        return book.querySelector("div.col-xs-2.text-info > div > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
+                    }
+                }
+
+                return "S0";
+            })
+            .catch(err => domain_fetchCatch(err, url));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/wpManga/1stkissnovelLove.js
+
+
+
+
+class oneStkissnovelLove extends Parser {
+    constructor() {
+        super(new URL('https://1stkissnovel.love'), '/', true);
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open(this.site + "chapter-" + _chapterN + "-" + domain_ReplaceName(_chapterTitle) + this.endUrl);
+    }
+
+    async totalChapters(title) {
+        let url = this.site.origin + '/?s=' + title + '&post_type=wp-manga';
+
+        return await gmfetch(url)
+            .then(res => domain_fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.row.c-tabs-item__content");
+
+                if (block.length == 0) {
+                    return "B0";
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("div.post-title > h3 > a").textContent;
+
+                    let diff = tanimoto(title, titleParser);
+
+                    if (diff > 0.8) {
+                        this.site = book.querySelector("div.post-title > h3 > a").href;
+                        return book.querySelector("div.tab-meta > div.meta-item.latest-chap > span.font-meta.chapter > a").textContent.match(/\D*(\d+)/)[1] * -1;
+                    }
+                }
+
+                return "S0";
+            })
+            .catch(err => domain_fetchCatch(err, url));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/wpManga/latestnovelNet.js
+
+
+
+
+class latestnovelNet extends Parser {
+    constructor() {
+        super(new URL('https://latestnovel.net'), '', true);
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open(this.site + 'chapter-' + _chapterN + this.endUrl);
+    }
+
+    async totalChapters(title) {
+        let url = this.site.origin + '/?s=' + title.replace(':', '') + '&post_type=wp-manga';
+
+        return await gmfetch(url)
+            .then(res => domain_fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.row.c-tabs-item__content");
+
+                if (block.length == 0) {
+                    return "B0";
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("div.post-title > h3 > a").textContent;
+
+                    let diff = tanimoto(title, titleParser);
+
+                    if (diff > 0.8) {
+                        this.site = book.querySelector("div.post-title > h3 > a").href;
+                        return book.querySelector("div.tab-meta > div.meta-item.latest-chap > span.font-meta.chapter > a").textContent.match(/\D*(\d+)/)[1] * -1;
+                    }
+                }
+
+                return "S0";
+            })
+            .catch(err => domain_fetchCatch(err, url));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/wpManga/lightnovelMobi.js
+
+
+
+
+class lightnovelMobi extends Parser {
+    constructor() {
+        super(new URL('https://lightnovel.mobi'), '/', true);
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open(this.site + "chapter-" + _chapterN + "-" + domain_ReplaceName(_chapterTitle) + this.endUrl);
+    }
+
+    async totalChapters(title) {
+        let url = this.site.origin + '/?s=' + title + '&post_type=wp-manga';
+
+        return await gmfetch(url)
+            .then(res => domain_fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.row.c-tabs-item__content");
+
+                if (block.length == 0) {
+                    return "B0";
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("div.post-title > h3 > a").textContent;
+
+                    let diff = tanimoto(title, titleParser);
+
+                    if (diff > 0.8) {
+                        this.site = book.querySelector("div.post-title > h3 > a").href;
+                        return book.querySelector("div.tab-meta > div.meta-item.latest-chap > span.font-meta.chapter > a").textContent.match(/\D*(\d+)/)[1] * -1;
+                    }
+                }
+
+                return "S0";
+            })
+            .catch(err => domain_fetchCatch(err, url));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/wpManga/novelteamNet.js
+
+
+
+
+class novelteamNet extends Parser {
+    constructor() {
+        super(new URL('https://novelteam.net'), '/', true);
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open(this.site + 'chapter-' + _chapterN + this.endUrl);
+    }
+
+    async totalChapters(title) {
+        let url = this.site.origin + '/?s=' + title + '&post_type=wp-manga';
+
+        return await gmfetch(url)
+            .then(res => domain_fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.row.c-tabs-item__content");
+
+                if (block.length == 0) {
+                    return "B0";
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("div.post-title > h3 > a").textContent;
+
+                    let diff = tanimoto(title, titleParser);
+
+                    if (diff > 0.8) {
+                        this.site = book.querySelector("div.post-title > h3 > a").href;
+                        return book.querySelector("div.tab-meta > div.meta-item.latest-chap > span.font-meta.chapter > a").textContent.match(/\D*(\d+)/)[1] * -1;
+                    }
+                }
+
+                return "S0";
+            })
+            .catch(err => domain_fetchCatch(err, url));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/wpManga/noveltrenchCom.js
+
+
+
+
+class noveltrenchCom extends Parser {
+    constructor() {
+        super(new URL('https://noveltrench.com'), '/', true);
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open(this.site + 'chapter-' + _chapterN + this.endUrl);
+    }
+
+    async totalChapters(title) {
+        let url = this.site.origin + '/?s=' + title + '&post_type=wp-manga';
+
+        return await gmfetch(url)
+            .then(res => domain_fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.row.c-tabs-item__content");
+
+                if (block.length == 0) {
+                    return "B0";
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("div.post-title > h3 > a").textContent;
+
+                    let diff = tanimoto(title, titleParser);
+
+                    if (diff > 0.8) {
+                        this.site = book.querySelector("div.post-title > h3 > a").href;
+                        return book.querySelector("div.tab-meta > div.meta-item.latest-chap > span.font-meta.chapter > a").textContent.match(/\D*(\d+)/)[1] * -1;
+                    }
+                }
+
+                return "S0";
+            })
+            .catch(err => domain_fetchCatch(err, url));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/wpManga/readnovelsOrg.js
+
+
+
+
+class readnovelsOrg extends Parser {
+    constructor() {
+        super(new URL('https://readnovels.org'), '/', true);
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open(this.site + 'chapter-' + _chapterN + this.endUrl);
+    }
+
+    async totalChapters(title) {
+        let url = this.site.origin + '/?s=' + title + '&post_type=wp-manga';
+
+        return await gmfetch(url)
+            .then(res => domain_fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.row.c-tabs-item__content");
+
+                if (block.length == 0) {
+                    return "B0";
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("div.post-title > h3 > a").textContent;
+
+                    let diff = tanimoto(title, titleParser);
+
+                    if (diff > 0.8) {
+                        this.site = book.querySelector("div.post-title > h3 > a").href;
+                        return book.querySelector("div.tab-meta > div.meta-item.latest-chap > span.font-meta.chapter > a").textContent.match(/\D*(\d+)/)[1] * -1;
+                    }
+                }
+
+                return "S0";
+            })
+            .catch(err => domain_fetchCatch(err, url));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/wpManga/webnovelonlineNet.js
+
+
+
+
+class webnovelonlineNet extends Parser {
+    constructor() {
+        super(new URL('https://webnovelonline.net'), '/', true);
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open(this.site + "chapter-" + _chapterN + "-" + domain_ReplaceName(_chapterTitle) + this.endUrl);
+    }
+
+    async totalChapters(title) {
+        let url = this.site.origin + '/?s=' + title + '&post_type=wp-manga';
+
+        return await gmfetch(url)
+            .then(res => domain_fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.row.c-tabs-item__content");
+
+                if (block.length == 0) {
+                    return "B0";
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("div.post-title > h3 > a").textContent;
+
+                    let diff = tanimoto(title, titleParser);
+
+                    if (diff > 0.8) {
+                        this.site = book.querySelector("div.post-title > h3 > a").href;
+                        return book.querySelector("div.tab-meta > div.meta-item.latest-chap > span.font-meta.chapter > a").textContent.match(/\D*(\d+)/)[1] * -1;
+                    }
+                }
+
+                return "S0";
+            })
+            .catch(err => domain_fetchCatch(err, url));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/ReplaceTitle/readlightnovelMe.js
+
+
+
+class readlightnovelMe extends Parser {
+    constructor() {
+        super(new URL('https://www.readlightnovel.me'), '', true);
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open(this.site.origin + "/" + domain_ReplaceName(_book) + '/chapter-' + _chapterN + this.endUrl);
+    }
+
+    async totalChapters(title) {
+        let url = this.site.origin + "/" + domain_ReplaceName(title) + this.endUrl;
+
+        return await gmfetch(url)
+            .then(res => domain_fetchStatusHTML(res))
+            .then(data => {
+                return data.querySelector("div.novel-detail-item[style='display:flex;'] > div.novel-detail-body > ul > li:first-child > a").textContent.match(/\D*(\d+)/)[1];
+            })
+            .catch(err => domain_fetchCatch(err, url));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/ReplaceTitle/lightnovelEWcom/lightnovelpubCom.js
+
+
+
+class lightnovelpubCom extends Parser {
+    constructor() {
+        super(new URL('https://www.lightnovelpub.com'), '', true)
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open(this.site.origin + "/novel/" + domain_ReplaceName(_book) + '/chapter-' + _chapterN + this.endUrl);
+    }
+
+    async totalChapters(title) {
+        let url = this.site.origin + "/novel/" + domain_ReplaceName(title) + this.endUrl;
+
+        return await gmfetch(url)
+            .then(res => domain_fetchStatusHTML(res))
+            .then(data => {
+                return data.querySelector("#novel > div.novel-body.container > nav > a.grdbtn.chapter-latest-container > div > p.latest.text1row").textContent.match(/\D*(\d+)/)[1];
+            })
+            .catch(err => domain_fetchCatch(err, url));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/ReplaceTitle/lightnovelEWcom/lightnovelworldCom.js
+
+
+
+class lightnovelworldCom extends Parser {
+    constructor() {
+        super(new URL('https://www.lightnovelworld.com'), '',true);
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open(this.site.origin + "/novel/" + domain_ReplaceName(_book) + '/chapter-' + _chapterN + this.endUrl);
+    }
+
+    async totalChapters(title) {
+        let url = this.site.origin + "/novel/" + domain_ReplaceName(title) + this.endUrl;
+
+        return await gmfetch(url)
+            .then(res => domain_fetchStatusHTML(res))
+            .then(data => {
+                return data.querySelector("#novel > div.novel-body.container > nav > a.grdbtn.chapter-latest-container > div > p.latest.text1row").textContent.match(/\D*(\d+)/)[1];
+            })
+            .catch(err => domain_fetchCatch(err, url));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/search/fastnovelNet.js
+
+
+class fastnovelNet extends Parser {
+    constructor() {
+        super(new URL('https://fastnovel.net/search/'), '', false)
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open(this.site + _book + this.endUrl);
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/search/lightnovelplusCom.js
+
+
+class lightnovelplusCom extends p4 {
+    constructor() {
+        super(new URL('https://lightnovelplus.com/book/search.html?keyword='), '', false)
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open(this.site + _book + this.endUrl);
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/search/novelgateNet.js
+
+
+class novelgateNet extends p4 {
+    constructor() {
+        super(new URL('https://novelgate.net/search/'), '', false)
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open(this.site + _book + this.endUrl);
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/search/novelhallCom.js
+
+
+class novelhallCom extends p4 {
+    constructor() {
+        super(new URL('https://www.novelhall.com/index.php?s=so&module=book&keyword='), '', false)
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open(this.site + _book + this.endUrl);
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/search/ranobesNet.js
+
+
+class ranobesNet extends p4 {
+    constructor() {
+        super(new URL('https://ranobes.net/index.php?do=search&subaction=search&search_start=0&full_search=0&result_from=1&story='), '', false)
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open(this.site + _book + this.endUrl);
+    }
+}
 ;// CONCATENATED MODULE: ./src/WebnovelCom_Crawler.js
 ﻿// ==UserScript==
 // @name        WebnovelCom - Crawler
@@ -2920,39 +2920,60 @@ class pandanovelCom extends Parser {
 
 
 
-// p01
+// 2fetch/apiSearch
+//    artBook
 
 
 
 
 
-// p02
+// 2fetch/apiSearchChapter
 
-
-
-// p03
-
-
-
-
-// p50
-
-
-
-
-// p51
+//    bookWings
 
 
 
 
 
-// 59
+// 2fetch/htmlSearch
+
+
+// 2fetch/htmlSearchChapter
+
+
+
+//    POST
+
+
+// apiSearch
+
+
+// apiSearchChapter
+
+
+// htmlSearch
 
 
 
 
+// htmlSearchChapter
 
-// p61
+//    madentertainment
+
+
+
+
+//    truyenNovel/novel
+
+
+
+
+//    truyenNovel/truyen
+
+
+
+
+//    wpManga
  // 1stkissnovelLove
 
 
@@ -2961,32 +2982,14 @@ class pandanovelCom extends Parser {
 
 
 
-// p60
+// ReplaceTitle
+
+//    lightnovelEWcom
 
 
 
+// search
 
-
-// p90
-
-
-
-
-
-// p95
-
-
-
-
-
-// p99
-
-
-
-
-
-
-// pAll
 
 
 
@@ -3004,38 +3007,65 @@ const SitesAll = [
         new novelgreatNet(),
     ],
     [
-        new readlightnovelMe(),
+        // 2fetch/apiSearch
+        //    artBook
+        new mWuxiaworldCo(),
+        new novelupdatesCc(),
+        new readlightnovelCc(),
+        new readlightnovelCo(),
 
+        // 2fetch/apiSearchChapter
+        new lightnovelreaderOrg(),
+        //    bookWings
         new ltnovelCom(),
         new novelmtCom(),
         new readwnCom(),
         new wuxiahereCom(),
 
-        new lightnovelpubCom(),
-        new lightnovelworldCom(),
+        // 2fetch/htmlSearch
+        new mMylovenovelCom(),
 
-        new lightnovelreaderOrg(),
+        // 2fetch/htmlSearchChapter
+        new freewebnovelCom(),
+        new novelfullvipCom(),
+        new novelscafeCom(),
+        //    POST
         new novelsonlineNet(),
 
+
+        // apiSearch
+        new lightnovelsMe(),
+
+        // apiSearchChapter
+        new webnovelonlineCom(),
+
+        // htmlSearch
         new lightnovelWorld(),
-        new octopiiCo(),
+        new pandanovelCom(),
         new readlightnovelsNet(),
 
+        // htmlSearchChapter
+        new octopiiCo(),
+
+        //    madentertainment
         new madnovelCom(),
         new novelbuddyCom(),
         new novelforestCom(),
         new novelfullMe(),
 
+        //    truyenNovel/novel
         new boxnovelOrg(),
         new novelfullplusCom(),
         new readnovelfullCom(),
         new topwebnovelCom(),
 
+        //    truyenNovel/truyen
         new allnovelfullCom(),
         new allnovelOrg(),
         new novelfullCom(),
-        //new novelgreatNet(),
+    //new novelgreatNet(),
 
+        //    wpManga
         new oneStkissnovelLove(),
         new latestnovelNet(),
         new lightnovelMobi(),
@@ -3044,20 +3074,12 @@ const SitesAll = [
         new readnovelsOrg(),
         new webnovelonlineNet(),
 
-        new freewebnovelCom(),
-        new mMylovenovelCom(),
-        new novelfullvipCom(),
-        new novelscafeCom(),
+        // ReplaceTitle
+        new readlightnovelMe(),
 
-        new mWuxiaworldCo(),
-        new novelupdatesCc(),
-        new readlightnovelCc(),
-        new readlightnovelCo(),
-
-        new lightnovelsMe(),
-        new webnovelonlineCom(),
-
-        new pandanovelCom(),
+        //    lightnovelEWcom
+        new lightnovelpubCom(),
+        new lightnovelworldCom(),
     ]
 ];
 
