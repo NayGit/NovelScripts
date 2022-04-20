@@ -8,7 +8,7 @@
 // @grant       GM_xmlhttpRequest
 // @grant       GM.xmlHttpRequest
 // @require     https://raw.githubusercontent.com/maple3142/gmxhr-fetch/master/gmxhr-fetch.min.js
-// @version     0.2.4
+// @version     0.2.5
 // ==/UserScript==
 
 'use strict';
@@ -44,6 +44,9 @@ import novelfullvipCom from './js/parsers/2fetch/htmlSearchChapter/novelfullvipC
 import novelscafeCom from './js/parsers/2fetch/htmlSearchChapter/novelscafeCom';
 //    POST
 import novelsonlineNet from './js/parsers/2fetch/htmlSearchChapter/POST/novelsonlineNet';
+
+// 2fetch/search
+import lightnovelplusCom from './js/parsers/2fetch/search/lightnovelplusCom';
 
 // apiSearch
 import lightnovelsMe from './js/parsers/apiSearch/lightnovelsMe';
@@ -91,19 +94,14 @@ import lightnovelworldCom from './js/parsers/ReplaceTitle/lightnovelEWcom/lightn
 
 // search
 import fastnovelNet from './js/parsers/search/fastnovelNet';
-import lightnovelplusCom from './js/parsers/search/lightnovelplusCom';
 import novelgateNet from './js/parsers/search/novelgateNet';
 import ranobesNet from './js/parsers/search/ranobesNet';
 
 const SitesAll = [
     [
-        new fastnovelNet(),
         new lightnovelplusCom(),
-        new novelgateNet(),
-        new ranobesNet(),
     ],
     [
-        new novelgreatNet(),
     ],
     [
         // 2fetch/apiSearch
@@ -132,6 +130,8 @@ const SitesAll = [
         //    POST
         new novelsonlineNet(),
 
+        // 2fetch/search
+    //new lightnovelplusCom(),
 
         // apiSearch
         new lightnovelsMe(),
@@ -147,25 +147,21 @@ const SitesAll = [
 
         // htmlSearchChapter
         new octopiiCo(),
-
         //    madentertainment
         new madnovelCom(),
         new novelbuddyCom(),
         new novelforestCom(),
         new novelfullMe(),
-
         //    truyenNovel/novel
         new boxnovelOrg(),
         new novelfullplusCom(),
         new readnovelfullCom(),
         new topwebnovelCom(),
-
         //    truyenNovel/truyen
         new allnovelfullCom(),
         new allnovelOrg(),
         new novelfullCom(),
-    //new novelgreatNet(),
-
+        new novelgreatNet(),
         //    wpManga
         new oneStkissnovelLove(),
         new latestnovelNet(),
@@ -177,10 +173,14 @@ const SitesAll = [
 
         // ReplaceTitle
         new readlightnovelMe(),
-
         //    lightnovelEWcom
         new lightnovelpubCom(),
         new lightnovelworldCom(),
+
+        // search
+        new fastnovelNet(),
+        new novelgateNet(),
+        new ranobesNet(),
     ]
 ];
 

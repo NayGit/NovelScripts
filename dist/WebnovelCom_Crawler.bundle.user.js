@@ -1784,6 +1784,91 @@ class novelsonlineNet extends Parser {
 
 
 
+;// CONCATENATED MODULE: ./src/js/parsers/2fetch/search/lightnovelplusCom.js
+
+
+
+
+class lightnovelplusCom extends Parser {
+    constructor() {
+        super(new URL('https://lightnovelplus.com'), '', false);
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        this.Open(_book);
+    }
+
+    async Open(title) {
+        this.site = new URL(this.site.origin + '/book/search.html?keyword=' + title);
+
+        let isLucky = false;
+        var isError = '';
+        await gmfetch(this.site.href)
+            .then(res => domain_fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("#list-page > div.col-xs-12.col-sm-12.col-md-9.col-truyen-main_1.archive > div > div.row");
+
+                if (block.length == 0) {
+                    isError = "B0";
+                    return;
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("h3.truyen-title > a").textContent;
+
+                    let diff = tanimoto(title, titleParser);
+
+                    if (diff > 0.8) {
+                        this.site = new URL(this.site.origin + book.querySelector("h3.truyen-title > a").pathname);
+                        isLucky = true;
+                        break;
+                    }
+                }
+
+                return;
+            })
+            .catch(err => isError = domain_fetchCatch(err, this.site.href));
+
+        if (isError != '') {
+            console.error(isError);
+            window.open(this.site);
+            return;
+        }
+
+        if (isLucky) {
+            isLucky = false;
+            await gmfetch(this.site.href)
+                .then(res => domain_fetchStatusHTML(res))
+                .then(data => {
+                    this.site = new URL(this.site.origin + data.querySelector("#list-chapter > ul > li.last > a").pathname + data.querySelector("#list-chapter > ul > li.last > a").search);
+                    isLucky = true;
+                })
+                .catch(err => isError = domain_fetchCatch(err, this.site.href));
+
+
+            if (isError != '') {
+                console.error(isError);
+                window.open(this.site);
+                return;
+            }
+
+            if (isLucky) {
+                window.open(this.site);
+                return;
+
+                //return await gmfetch(this.site)
+                //    .then(res => fetchStatusHTML(res))
+                //    .then(data => {
+                //        return data.querySelector("#list-chapter > div.row > div:nth-child(1) > ul:last-child- > li > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
+                //    })
+                //    .catch(err => fetchCatch(err, this.site));
+            }
+        }
+
+        window.open(this.site);
+        return;
+    }
+}
 ;// CONCATENATED MODULE: ./src/js/parsers/apiSearch/lightnovelsMe.js
 
 
@@ -2957,18 +3042,6 @@ class fastnovelNet extends Parser {
         window.open(this.site + _book + this.endUrl);
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/search/lightnovelplusCom.js
-
-
-class lightnovelplusCom extends p4 {
-    constructor() {
-        super(new URL('https://lightnovelplus.com/book/search.html?keyword='), '', false)
-    }
-
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site + _book + this.endUrl);
-    }
-}
 ;// CONCATENATED MODULE: ./src/js/parsers/search/novelgateNet.js
 
 
@@ -3004,7 +3077,7 @@ class ranobesNet extends p4 {
 // @grant       GM_xmlhttpRequest
 // @grant       GM.xmlHttpRequest
 // @require     https://raw.githubusercontent.com/maple3142/gmxhr-fetch/master/gmxhr-fetch.min.js
-// @version     0.2.4
+// @version     0.2.5
 // ==/UserScript==
 
 
@@ -3039,6 +3112,9 @@ class ranobesNet extends p4 {
 
 
 //    POST
+
+
+// 2fetch/search
 
 
 // apiSearch
@@ -3090,16 +3166,11 @@ class ranobesNet extends p4 {
 
 
 
-
 const SitesAll = [
     [
-        new fastnovelNet(),
         new lightnovelplusCom(),
-        new novelgateNet(),
-        new ranobesNet(),
     ],
     [
-        new novelgreatNet(),
     ],
     [
         // 2fetch/apiSearch
@@ -3128,6 +3199,8 @@ const SitesAll = [
         //    POST
         new novelsonlineNet(),
 
+        // 2fetch/search
+    //new lightnovelplusCom(),
 
         // apiSearch
         new lightnovelsMe(),
@@ -3143,25 +3216,21 @@ const SitesAll = [
 
         // htmlSearchChapter
         new octopiiCo(),
-
         //    madentertainment
         new madnovelCom(),
         new novelbuddyCom(),
         new novelforestCom(),
         new novelfullMe(),
-
         //    truyenNovel/novel
         new boxnovelOrg(),
         new novelfullplusCom(),
         new readnovelfullCom(),
         new topwebnovelCom(),
-
         //    truyenNovel/truyen
         new allnovelfullCom(),
         new allnovelOrg(),
         new novelfullCom(),
-    //new novelgreatNet(),
-
+        new novelgreatNet(),
         //    wpManga
         new oneStkissnovelLove(),
         new latestnovelNet(),
@@ -3173,10 +3242,14 @@ const SitesAll = [
 
         // ReplaceTitle
         new readlightnovelMe(),
-
         //    lightnovelEWcom
         new lightnovelpubCom(),
         new lightnovelworldCom(),
+
+        // search
+        new fastnovelNet(),
+        new novelgateNet(),
+        new ranobesNet(),
     ]
 ];
 
