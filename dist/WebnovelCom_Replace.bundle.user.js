@@ -129,7 +129,7 @@ function Title() {
 // @author      Nay
 // @match       https://m.webnovel.com/book/*/*
 // @grant       GM_xmlhttpRequest
-// @version     0.0.1
+// @version     0.0.2
 // ==/UserScript==
 
 
@@ -193,19 +193,31 @@ async function GetChapter(_url, _chapter) {
 (async function () {
     'use strict';
 
-    await new Promise(r => setTimeout(r, 2500));
+    let checkLoc = location.href;
+    while (true) {
+        if (checkLoc !== location.href) {
+            checkLoc = location.href;
 
-    // @match       https://*/*
-    //let TEST = await GetChapter('https://www.webnovel.com/book/*/*', 'chapter');
-    //console.log(TEST);
-    //return;
+            await GO(location.href, glavaWebNovel(location));
+        }
+        await new Promise(r => setTimeout(r, 6000));
+    }
+})();
 
-    const chapter = glavaWebNovel(location);
-
+async function GO(_loc, _gWN) {
     // ����������
-    let content = document.querySelectorAll("#content-" + chapter + " > p._cfcmp");
+    let content = document.querySelectorAll("#content-" + _gWN + " > p._cfcmp");
     if (content.length > 0) {
-        document.querySelector("#content-" + chapter).style.fontFamily = "Merriweather,serif"; //Genuine_61365182307294757, Lora, serif, serif
+        let contentCheck = document.querySelector("#content-" + _gWN);
+        if (contentCheck.querySelector("pre")) {
+            return;
+        }
+        else {
+            let pre = document.createElement('pre');
+            contentCheck.appendChild(pre);
+        }
+
+        //document.querySelector("#content-" + _gWN).style.fontFamily = "Merriweather,serif"; //Genuine_61365182307294757, Lora, serif, serif
 
         for (let i = 0; i < content.length; i++) {
             let str = "";
@@ -226,11 +238,10 @@ async function GetChapter(_url, _chapter) {
             content[i].innerText = str;
         }
 
-        let p2 = await GetChapter(location.href, chapter);
-        //let p2 = await GetChapter("https://m-webnovel-com.translate.goog" + location.pathname + "?_x_tr_sl=en&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp", chapter);
+        let p2 = await GetChapter(_loc, _gWN);
         if (p2.length > 0) {
             var dict = {};
-            let contentCh = document.querySelectorAll("#content-" + chapter + " > p");
+            let contentCh = document.querySelectorAll("#content-" + _gWN + " > p");
 
             for (let i = 0; i < p2.length; i++) {
                 let p2Array = p2[i].split('');
@@ -241,7 +252,7 @@ async function GetChapter(_url, _chapter) {
                 }
             }
 
-            for (let i = 0; i <= contentCh.length; i++) {
+            for (let i = 0; i < contentCh.length; i++) {
                 let str = "";
                 contentCh[i].innerText.split('').forEach(element => {
                     if (dict[element] !== undefined) {
@@ -256,6 +267,6 @@ async function GetChapter(_url, _chapter) {
             }
         }
     }
-})();
+}
 /******/ })()
 ;
