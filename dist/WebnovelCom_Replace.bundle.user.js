@@ -129,7 +129,7 @@ function Title() {
 // @author      Nay
 // @match       https://m.webnovel.com/book/*/*
 // @grant       GM_xmlhttpRequest
-// @version     0.0.2
+// @version     0.0.3
 // ==/UserScript==
 
 
@@ -141,7 +141,7 @@ async function GetChapter(_url, _chapter) {
         GM_xmlhttpRequest({
             method: 'GET',
             url: _url,
-            anonymous: true,
+            //anonymous: true,
             type: 'document',
             //headers: { 'User-Agent': 'Mozilla/5.0 (Linux; Android 12) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Mobile Safari/537.36' },
             onload: function (data) {
@@ -193,35 +193,39 @@ async function GetChapter(_url, _chapter) {
 (async function () {
     'use strict';
 
-    let checkLoc = location.href;
+    let checkLoc = "";
     while (true) {
         if (checkLoc !== location.href) {
             checkLoc = location.href;
 
-            await GO(location.href, glavaWebNovel(location));
+            if (await GO(location.href, glavaWebNovel(location)) === -1) {
+                break;
+            }
         }
         await new Promise(r => setTimeout(r, 6000));
     }
 })();
 
 async function GO(_loc, _gWN) {
+    await new Promise(r => setTimeout(r, 2500));
+
     // ����������
-    let content = document.querySelectorAll("#content-" + _gWN + " > p._cfcmp");
-    if (content.length > 0) {
+    let pOrder = document.querySelectorAll("#content-" + _gWN + " > p._cfcmp");
+    if (pOrder.length > 0) {
         let contentCheck = document.querySelector("#content-" + _gWN);
         if (contentCheck.querySelector("pre")) {
             return;
         }
-        else {
-            let pre = document.createElement('pre');
-            contentCheck.appendChild(pre);
-        }
+
+        let pre = document.createElement('pre');
+        //pre.style.height = "75em";
+        contentCheck.appendChild(pre);
 
         //document.querySelector("#content-" + _gWN).style.fontFamily = "Merriweather,serif"; //Genuine_61365182307294757, Lora, serif, serif
 
-        for (let i = 0; i < content.length; i++) {
+        for (let i = 0; i < pOrder.length; i++) {
             let str = "";
-            [].slice.call(content[i].children).sort(function (a, b) {
+            [].slice.call(pOrder[i].children).sort(function (a, b) {
                 if (getComputedStyle(a).order * 1 > getComputedStyle(b).order * 1) {
                     return 1;
                 }
@@ -235,26 +239,27 @@ async function GO(_loc, _gWN) {
                     str = str + val.innerText;
                 });
 
-            content[i].innerText = str;
+            pOrder[i].innerText = str;
         }
 
-        let p2 = await GetChapter(_loc, _gWN);
+        let p2 = await GetChapter("https://m-webnovel-com.translate.goog" + new URL(_loc).pathname + "?_x_tr_sl=en&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp", _gWN);
+        //let p2 = await GetChapter(_loc, _gWN);
         if (p2.length > 0) {
             var dict = {};
-            let contentCh = document.querySelectorAll("#content-" + _gWN + " > p");
+            let pReplace = document.querySelectorAll("#content-" + _gWN + " > p");
 
             for (let i = 0; i < p2.length; i++) {
                 let p2Array = p2[i].split('');
-                let contentChArray = contentCh[i].innerText.split('');
+                let contentChArray = pReplace[i].innerText.split('');
 
                 for (let prop in contentChArray) {
                     dict[contentChArray[prop]] = p2Array[prop];
                 }
             }
 
-            for (let i = 0; i < contentCh.length; i++) {
+            for (let i = 0; i < pReplace.length; i++) {
                 let str = "";
-                contentCh[i].innerText.split('').forEach(element => {
+                pReplace[i].innerText.split('').forEach(element => {
                     if (dict[element] !== undefined) {
                         str = str + dict[element];
                     }
@@ -263,9 +268,12 @@ async function GO(_loc, _gWN) {
                     }
                 });
 
-                contentCh[i].innerText = str;
+                pReplace[i].innerText = str;
             }
         }
+    }
+    else {
+        return -1;
     }
 }
 /******/ })()

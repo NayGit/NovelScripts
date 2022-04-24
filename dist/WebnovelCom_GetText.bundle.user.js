@@ -222,7 +222,7 @@ function tanimoto(s1, s2) {
 // @author      Nay
 // @match       https://m.webnovel.com/book/*/*
 // @grant       GM_xmlhttpRequest
-// @version     0.0.2
+// @version     0.0.3
 // ==/UserScript==
 
 
@@ -370,7 +370,7 @@ function md5(d) { return rstr2hex(binl2rstr(binl_md5(rstr2binl(d), 8 * d.length)
 
 async function GO(_gWN, _cLR) {
     let content = document.querySelector("#content-" + _gWN);
-    let chapterTitle = content.parentElement.querySelector("h2").textContent.match(/^\d+ (.*?)$/)[1];
+    let chapterTitle = content.parentElement.querySelector("h1").textContent.match(/^\d+ (.*?)$/)[1];
 
     if (content.querySelector("pre")) {
         return;
