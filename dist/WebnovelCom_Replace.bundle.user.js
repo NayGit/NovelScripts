@@ -46,79 +46,24 @@ async function downloadBookIfno(_loc) {
         .catch(err => fetchCatch(err, url));
 }
 
-// https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
-function getCatalog(_json, _loc) {
-    let chId = glavaWebNovel(_loc);
-
-    var tmpChList = new Array();
-    var tmpFlag = false;
-
-    if (_loc.href.endsWith('/catalog'))
-        tmpFlag = true;
-
-    for (let volume of _json.data.volumeItems) {
+function GetChapterId(_bookInfo, _cId) {
+    for (let volume of _bookInfo.data.volumeItems) {
         for (let chapter of volume.chapterItems) {
-            if (tmpFlag)
-                tmpChList.push([chapter.chapterIndex, chapter.chapterId, chapter.chapterName, chapter.publishTimeFormat, chapter.isAuth, chapter.chapterLevel]); //isAuth=1 � ���������, chapterLevel=0 --> �� ������, chapterLevel>0 ��������
-            else if (chId == chapter.chapterId)
-                tmpFlag = true;
+            if (chapter.chapterId === _cId) {
+                return chapter;
+            }
         }
     }
-
-    return tmpChList;
 }
 
-// �������???
-async function downloadCatalog(bookId, chId) {
-    var tmpChList = new Array();
-    var tmpFlag = false;
-
-    if (location.href.endsWith('/catalog'))
-        tmpFlag = true;
-
-    let url = 'https://m.webnovel.com/book/' + bookId + '/catalog';
-    await fetch(url)
-        .then(res => fetchStatusHTML(res))
-        .then(data => {
-            var chObj = data.getElementById('__NEXT_DATA__').textContent;
-
-            var chJson = JSON.parse(chObj);
-            console.log(chJson);
-
-            var chList = chJson.props.initialState.entities.chapter;
-            console.log(chList);
-
-            for (var ch in chList) {
-                if (tmpFlag)
-                    tmpChList.push([chList[ch].chapterIndex, chList[ch].chapterId, chList[ch].chapterName, chList[ch].publishTimeFormat, chList[ch].isAuth, chList[ch].chapterLevel]); //isAuth=1 � ���������, chapterLevel=0 --> �� ������, chapterLevel>0 ��������
-                else if (chId == chList[ch].chapterId)
-                    tmpFlag = true;
+function GetChapterLevel(_bookInfo, _cLevel) {
+    for (let volume of _bookInfo.data.volumeItems.reverse()) {
+        for (let chapter of volume.chapterItems.reverse()) {
+            if (chapter.chapterLevel === _cLevel) {
+                return chapter;
             }
-            console.log(tmpChList);
-        })
-        .catch(err => fetchCatch(err, url));
-
-    return tmpChList;
-}
-
-// �������???
-function Title() {
-    let title = document.title;
-    console.log(title);
-
-    let result = title.match(/(.+)\sChapter\s(\d+)\s-\s(.+)/);
-
-    if (result.length === 4) {
-        console.log(result[1]);     // Script (������ ������)
-        console.log(result[2]);     // Script (2 ������)
-        console.log(result[3]);     // Script (3 ������)
-        console.log(result.length); // 4
+        }
     }
-    else {
-        console.log('��� �����???');
-    }
-
-    return result;
 }
 ;// CONCATENATED MODULE: ./src/WebnovelCom_Replace.js
 // ==UserScript==

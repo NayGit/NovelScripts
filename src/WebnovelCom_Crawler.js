@@ -8,16 +8,19 @@
 // @grant       GM_xmlhttpRequest
 // @grant       GM.xmlHttpRequest
 // @require     https://raw.githubusercontent.com/maple3142/gmxhr-fetch/master/gmxhr-fetch.min.js
-// @version     0.2.5
+// @version     0.3.0
 // ==/UserScript==
 
 'use strict';
 
 import './css/webnovel.css'
 
-import { downloadBookIfno, getCatalog } from './js/webNovel'
-import { DivPanel, InputDivPanelHide, InputBookInfo, H1IdGlava, InputChapterNext, DivInputCheck, InputSecond } from './js/webnovel/ce/DivPanel'
-import { FormMain, FormAddInputRadio, CheckFreeForm } from './js/webnovel/ce/FreeForm'
+import { downloadBookIfno, GetChapterId, GetChapterLevel } from './js/webNovel';
+import { DivPanel, InputDivPanelHide, InputBookInfo, H1IdGlava, InputChapterNext } from './js/webnovel/ce/DivPanel';
+import { CreateTableSites } from './js/webnovel/ce/FreeForm';
+
+import { ReplaceText } from './js/ReplaceText';
+import { GetText } from './js/GetText';
 
 // 2fetch/apiSearch
 //    artBook
@@ -104,100 +107,224 @@ const SitesAll = [
     [
     ],
     [
-        // 2fetch/apiSearch
-        //    artBook
-        new mWuxiaworldCo(),
-        new novelupdatesCc(),
-        new readlightnovelCc(),
-        new readlightnovelCo(),
+    //    // 2fetch/apiSearch
+    //    //    artBook
+    //    new mWuxiaworldCo(),
+    //    new novelupdatesCc(),
+    //    new readlightnovelCc(),
+    //    new readlightnovelCo(),
 
-        // 2fetch/apiSearchChapter
-        new lightnovelreaderOrg(),
-        //    bookWings
-        new ltnovelCom(),
-        new novelmtCom(),
-        new readwnCom(),
-        new wuxiahereCom(),
-        new wuxiapubCom(),
+    //    // 2fetch/apiSearchChapter
+    //    new lightnovelreaderOrg(),
+    //    //    bookWings
+    //    new ltnovelCom(),
+    //    new novelmtCom(),
+    //    new readwnCom(),
+    //    new wuxiahereCom(),
+    //    new wuxiapubCom(),
 
-        // 2fetch/htmlSearch
-        new mMylovenovelCom(),
+    //    // 2fetch/htmlSearch
+    //    new mMylovenovelCom(),
 
-        // 2fetch/htmlSearchChapter
-        new freewebnovelCom(),
-        new novelfullvipCom(),
-        new novelscafeCom(),
-        //    POST
-        new novelsonlineNet(),
+    //    // 2fetch/htmlSearchChapter
+    //    new freewebnovelCom(),
+    //    new novelfullvipCom(),
+    //    new novelscafeCom(),
+    //    //    POST
+    //    new novelsonlineNet(),
 
-        // 2fetch/search
-    //new lightnovelplusCom(),
+    //    // 2fetch/search
+    ////new lightnovelplusCom(),
 
-        // apiSearch
-        new lightnovelsMe(),
+    //    // apiSearch
+    //    new lightnovelsMe(),
 
-        // apiSearchChapter
-        new webnovelonlineCom(),
+    //    // apiSearchChapter
+    //    new webnovelonlineCom(),
 
-        // htmlSearch
-        new lightnovelWorld(),
-        new novelhallCom(),
-        new pandanovelCom(),
-        new readlightnovelsNet(),
+    //    // htmlSearch
+    //    new lightnovelWorld(),
+    //    new novelhallCom(),
+    //    new pandanovelCom(),
+    //    new readlightnovelsNet(),
 
-        // htmlSearchChapter
-        new octopiiCo(),
-        //    madentertainment
-        new madnovelCom(),
-        new novelbuddyCom(),
-        new novelforestCom(),
-        new novelfullMe(),
-        //    truyenNovel/novel
-        new boxnovelOrg(),
-        new novelfullplusCom(),
-        new readnovelfullCom(),
-        new topwebnovelCom(),
-        //    truyenNovel/truyen
-        new allnovelfullCom(),
-        new allnovelOrg(),
+    //    // htmlSearchChapter
+    //    new octopiiCo(),
+    //    //    madentertainment
+    //    new madnovelCom(),
+    //    new novelbuddyCom(),
+    //    new novelforestCom(),
+    //    new novelfullMe(),
+    //    //    truyenNovel/novel
+    //    new boxnovelOrg(),
+    //    new novelfullplusCom(),
+    //    new readnovelfullCom(),
+    //    new topwebnovelCom(),
+    //    //    truyenNovel/truyen
+    //    new allnovelfullCom(),
+    //    new allnovelOrg(),
         new novelfullCom(),
         new novelgreatNet(),
-        //    wpManga
-        new oneStkissnovelLove(),
-        new latestnovelNet(),
-        new lightnovelMobi(),
-        new novelteamNet(),
-        new noveltrenchCom(),
-        new readnovelsOrg(),
-        new webnovelonlineNet(),
+    //    //    wpManga
+    //    new oneStkissnovelLove(),
+    //    new latestnovelNet(),
+    //    new lightnovelMobi(),
+    //    new novelteamNet(),
+    //    new noveltrenchCom(),
+    //    new readnovelsOrg(),
+    //    new webnovelonlineNet(),
 
-        // ReplaceTitle
-        new readlightnovelMe(),
-        //    lightnovelEWcom
-        new lightnovelpubCom(),
-        new lightnovelworldCom(),
+    //    // ReplaceTitle
+    //    new readlightnovelMe(),
+    //    //    lightnovelEWcom
+    //    new lightnovelpubCom(),
+    //    new lightnovelworldCom(),
 
-        // search
+    //    // search
         new fastnovelNet(),
         new novelgateNet(),
         new ranobesNet(),
     ]
 ];
 
+async function CreateDivMain(_cId) {
+    let chapter = GetChapterId(BookInfo, _cId);
+
+    let divMain = DivPanel(DivMain + "_" + _cId, DivMain);
+
+    divMain.append(InputBookInfo(BookId));
+
+    if (_cId === BookInfo.data.lastChapterItem.chapterId) {
+        let tmpH1 = document.createElement("h1");
+        tmpH1.textContent = "The End";
+        divMain.append(tmpH1);
+        return divMain;
+    }
+
+    divMain.append(InputChapterNext(BookInfo, chapter.chapterIndex));
+    
+    divMain.append(H1IdGlava(chapter.chapterIndex, ChLastLocked, BookInfo.data.lastChapterItem.chapterIndex));
+
+    let locked = Object.assign(document.createElement("input"), {
+        className: "lockedButton",
+        type: "button",
+        value: "Parsing"
+    });
+    locked.addEventListener('click', async function () {
+        let crawlerTable = document.querySelector("#crawlerId");
+        if (crawlerTable !== null) {
+            document.querySelector("#" + DivMain + "_" + _cId).appendChild(crawlerTable);
+            crawlerTable.setAttribute("cId", _cId);
+            crawlerTable.hidden = false;
+        }
+    });
+    divMain.appendChild(locked);
+
+    let unlocked = Object.assign(document.createElement("input"), {
+        className: "unlockedButton",
+        type: "button",
+        value: "Replace"
+    });
+    unlocked.addEventListener('click', async function () {
+        this.disabled = true;
+        await ReplaceText(BookId, _cId);
+        this.hidden = true;
+    });
+    divMain.appendChild(unlocked);
+
+    let getText = Object.assign(document.createElement("input"), {
+        className: "getTextButton",
+        type: "button",
+        value: "GetText"
+    });
+    getText.addEventListener('click', async function () {
+        this.disabled = true;
+        await GetText(BookId, _cId, BookTitle, chapter.chapterName);
+        this.hidden = true;
+    });
+    divMain.appendChild(getText);
+
+    if (document.querySelector("#crawlerId") === null) {
+        let createTableSites = CreateTableSites(SitesAll, BookInfo);
+        createTableSites.setAttribute("cId", _cId);
+        divMain.appendChild(createTableSites);
+    }
+
+    return divMain;
+}
+
+var BookInfo;
+var BookTitle;
+var BookId;
+
+const DivMain = "divMain";
+const StatusChapter = { LOCKED: 'locked', UNLOCKED: 'unlocked', PRIVATE: 'private' };
+var ChLastLocked = "";
+
+
 (async function () {
     'use strict';
+    BookInfo = await downloadBookIfno(location);
+    console.info(BookInfo);
+
+    BookTitle = BookInfo.data.bookInfo.bookName;
+    console.info(BookTitle);
+
+    BookId = BookInfo.data.bookInfo.bookId;
+    console.info(BookId);
+
+    for (let sites of SitesAll) {
+        for (let site of sites) {
+            site.bTitle = BookTitle;
+            site.SetSiteSearch();
+        }
+    }
+
+    ChLastLocked = GetChapterLevel(BookInfo, 0).chapterIndex;
+
+    while (true) {
+        let contents = document.querySelectorAll("div.pr > div > div.styles_content__3tuD4");
+        for (let c of contents) {
+            let chapterId = c.id.match(/^content-(\d+)$/);
+            if (chapterId && c.parentElement.querySelector("#" + DivMain + "_" + chapterId[1]) === null) {
+                let divMain = await CreateDivMain(chapterId[1]);
+                divMain.classList.add(StatusChapter.LOCKED);
+
+                let contentTitle = c.parentElement.querySelector("div.ChapterTitle_chapter_title_container__Wq5T8");
+                contentTitle.after(divMain);
+            }
+            else {
+                console.warn("Copy");
+            }
+        }
+
+        let contentsUnlocked = document.querySelectorAll("div.pr > div > div.styles_content__3tuD4:not(.styles_locked_content__16dUX)");
+        if (contentsUnlocked.length > 0) {
+            for (let c of contentsUnlocked) {
+                let divMain = c.parentElement.querySelector("div." + DivMain + "." + StatusChapter.LOCKED);
+                if (divMain !== null) {
+                    divMain.classList.remove(StatusChapter.LOCKED);
+                    divMain.classList.add(StatusChapter.UNLOCKED);
+                }
+            }
+        }
+
+        let contentsPrivate = document.querySelector("div.pr > div > div.styles_last_chapter_footer__SPOMm");
+        if (contentsPrivate !== null && contentsPrivate.querySelector("div." + DivMain + "." + StatusChapter.PRIVATE) === null) {
+            let divMain = await CreateDivMain(chapterId[1]);
+            //let divMain = await CreateDivMain(BookInfo, "61829347492807077");
+            divMain.classList.add(StatusChapter.PRIVATE);
+
+            contentsPrivate.prepend(divMain);
+        }
+
+        await new Promise(r => setTimeout(r, 10000));
+    }
+
+    return;
 
     const Loc = location;
-
-    const BookInfo = await downloadBookIfno(Loc);
-    console.log(BookInfo);
-
-    const BookTitle = BookInfo.data.bookInfo.bookName;
-    console.log(BookTitle);
-
-    const BookChapters = getCatalog(BookInfo, Loc);
-    console.log(BookChapters);
-
+    
     if (Loc.href.indexOf('webnovel.com/') != -1) {
         console.log('webnovel.com');
 
@@ -209,81 +336,8 @@ const SitesAll = [
             }
 
             else {
-                console.log('*/book/*/*?from=detail');
-
-                d.append(InputDivPanelHide());
-                d.append(InputBookInfo(Loc));
-
-                if (BookChapters.length === 0) {
-                    document.getElementsByTagName("body")[0].append(d);
-                    return;
-                }
-
-                d.append(InputChapterNext(Loc, BookChapters));
-
-                let isPriv = false;
-                let chNum = 0;
-                if (BookChapters[0][5] == 0) {
-                    isPriv = false;
-
-                    for (let cN in BookChapters) {
-                        if (BookChapters[cN][5] > 0) {
-                            chNum = cN * 1 - 1;
-                            break;
-                        }
-                    }
-                    if (chNum == 0) {
-                        chNum = BookChapters.length - 1;
-                    }
-                }
-                else {
-                    isPriv = true;
-                    chNum = BookChapters.length - 1;
-                }
-
-                // Fix Del
-                isPriv = false;
-
-                d.append(H1IdGlava(BookChapters[0][0], BookChapters[chNum][0]));
-                d.append(FormMain(SitesAll, chNum, BookTitle, BookChapters[0][0], BookChapters[0][2]));
-                d.append(DivInputCheck());
-                d.append(InputSecond(1));
-                document.getElementsByTagName("body")[0].append(d);
-
-                FormAddInputRadio(SitesAll, 0, isPriv);
-                await CheckFreeForm(SitesAll, 0, BookTitle, BookChapters[0][0], BookChapters[0][2]);
-
-                document.querySelector("#InputSecond").addEventListener('click', async function () {
-                    let parsing = this.value.match(/\D*(\d+)/)[1] * 1;
-
-                    FormAddInputRadio(SitesAll, parsing, isPriv);
-                    await CheckFreeForm(SitesAll, parsing, BookTitle, BookChapters[0][0], BookChapters[0][2]);
-
-                    parsing++;
-
-                    this.value = this.value.replace(/\d+/gi, parsing);
-
-                    if (parsing >= SitesAll.length) {
-                        this.hidden = true;
-                    }
-                });
+               
             }
         }
-    }
-
-    else if (Loc.href.indexOf('translate.goog/') != -1) {
-        document.getElementById("gt-nvframe").hidden = true;
-
-        var s = Object.assign(document.createElement("input"), {
-            type: "button",
-            id: "showHide",
-            value: 'ShowHide'
-        });
-        s.addEventListener('click', function () {
-            document.getElementById("gt-nvframe").hidden = document.getElementById("gt-nvframe").hidden ? false : true;
-        });
-
-        var referenceNode = document.getElementById("gt-nvframe");
-        referenceNode.parentNode.insertBefore(s, referenceNode.nextSibling); //jQuery insertAfter
     }
 })();

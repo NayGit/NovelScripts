@@ -1,11 +1,11 @@
-import { p4 } from '../../parser'
+import { ParserSearch } from '../../parser'
 
-export default class ranobesNet extends p4 {
+export default class ranobesNet extends ParserSearch {
     constructor() {
-        super(new URL('https://ranobes.net/index.php?do=search&subaction=search&search_start=0&full_search=0&result_from=1&story='), '', false)
+        super('https://ranobes.net/')
     }
 
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site + _book + this.endUrl);
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + "/index.php?do=search&subaction=search&search_start=0&full_search=0&result_from=1&story=" + this.bTitle;
     }
 }

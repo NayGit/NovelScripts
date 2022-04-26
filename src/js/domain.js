@@ -31,7 +31,7 @@ export function fetchCatch(_error, _site) {
 }
 
 export function ReplaceName(name) {
-    return name.toLowerCase().replaceAll(' ', '-').replaceAll(/[.?!)(,:'\[\]]/g, '');
+    return name.toLowerCase().replaceAll(' ', '-').replaceAll(/"/g, 'quot').replaceAll(/[.?!)(,:'\[\]]/g, '');
 }
 
 export function copytext(el) {

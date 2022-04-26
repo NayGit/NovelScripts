@@ -1,11 +1,11 @@
-import { p4 } from '../../parser'
+import { ParserSearch } from '../../parser'
 
-export default class novelgateNet extends p4 {
+export default class novelgateNet extends ParserSearch {
     constructor() {
-        super(new URL('https://novelgate.net/search/'), '', false)
+        super('https://novelgate.net/')
     }
 
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site + _book + this.endUrl);
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + "/search/" + this.bTitle;
     }
 }

@@ -1,8 +1,8 @@
-import { bookWebNovel } from "../../webNovel";
-
-export function DivPanel() {
+export function DivPanel(_id, _class) {
     return Object.assign(document.createElement("div"), {
-        id: "divPanel"
+        id: _id,
+        className: _class,
+        translate: false
     });
 }
 
@@ -20,7 +20,7 @@ export function InputDivPanelHide() {
     return inputDivPanelHide;
 }
 
-export function InputBookInfo(_loc) {
+export function InputBookInfo(_bId) {
     let inputBookInfo = Object.assign(document.createElement("input"), {
         className: "iMain",
         type: "button",
@@ -28,51 +28,50 @@ export function InputBookInfo(_loc) {
     });
 
     inputBookInfo.addEventListener('click', function () {
-        location.replace(_loc.origin + '/book/' + bookWebNovel(_loc));
+        location.replace(location.origin + '/book/' + _bId);
     });
 
     return inputBookInfo;
 }
 
-export function H1IdGlava(_chStart, _chStop) {
+export function H1IdGlava(_chStart, _chLastLocked, _chStop) {
+    let tmpText = "";
+    if (_chStart == _chLastLocked && _chStart == _chStop) {
+        tmpText = "last";
+    }
+    else if (_chStart == _chLastLocked || _chLastLocked == _chStop) {
+        tmpText = _chStart + " / " + _chStop;
+    }
+    else {
+        tmpText = _chStart + " / " + _chLastLocked + " / " + _chStop;
+    }
+
     return Object.assign(document.createElement("h1"), {
         id: "idGlava",
-        textContent: _chStart + " / " + _chStop
+        textContent: tmpText    
     });
 }
 
-export function InputChapterNext(_loc, _bookChapters) {
+export function InputChapterNext(_bookInfo, _chN) {
     let InputChapterNext = Object.assign(document.createElement("input"), {
         id: "InputChapterNext",
         className: "iMain",
         type: "button",
-        value: _bookChapters[0][0] * 1 - 1
+        value: _chN
     });
 
     InputChapterNext.addEventListener('click', function () {
-        for (let i = 0; i < _bookChapters.length; i++) {
-            if (_bookChapters[i][0] === Math.abs(this.value)) {
-                location.replace(_loc.origin + '/book/' + bookWebNovel(_loc) + '/' + _bookChapters[i][1]);
-                break;
+        let tmpV = Math.abs(this.value);
+
+        for (let volume of _bookInfo.data.volumeItems) {
+            for (let chapter of volume.chapterItems) {
+                if (chapter.chapterIndex === tmpV) {
+                    location.replace(location.origin + '/book/' + _bookInfo.data.bookInfo.bookId + '/' + chapter.chapterId);
+                    return;
+                }
             }
         }
     });
 
     return InputChapterNext;
-}
-
-export function DivInputCheck() {
-    return Object.assign(document.createElement("div"), {
-        id: "DivInputCheck",
-        className: "iMain"
-    });
-}
-
-export function InputSecond(_id) {
-    return Object.assign(document.createElement("input"), {
-        id: "InputSecond",
-        className: "iMain",
-        type: "button",
-        value: "Add Parser: " + _id
-    });
 }

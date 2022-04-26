@@ -1,18 +1,22 @@
-import { Parser } from '../../../parser'
+import { ParserSearch } from '../../../parser'
 import { fetchStatusHTML, fetchCatch, ReplaceName } from '../../../domain';
 import tanimoto from '../../../StringProcent/tanimoto'
 
-export default class lightnovelplusCom extends Parser {
+export default class lightnovelplusCom extends ParserSearch {
     constructor() {
-        super(new URL('https://lightnovelplus.com'), '', false);
+        super('https://lightnovelplus.com/');
     }
 
-    linkRead(_book, _chapterN, _chapterTitle) {
-        this.Open(_book);
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/book/search.html?keyword=' + this.bTitle;
     }
 
-    async Open(title) {
-        this.site = new URL(this.site.origin + '/book/search.html?keyword=' + title);
+    linkSearch() {
+        this.Open();
+    }
+
+    async Open() {
+        this.site = this.siteSearch;
 
         let isLucky = false;
         var isError = '';
@@ -29,7 +33,7 @@ export default class lightnovelplusCom extends Parser {
                 for (let book of block) {
                     let titleParser = book.querySelector("h3.truyen-title > a").textContent;
 
-                    let diff = tanimoto(title, titleParser);
+                    let diff = tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
                         this.site = new URL(this.site.origin + book.querySelector("h3.truyen-title > a").pathname);

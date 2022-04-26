@@ -1,11 +1,11 @@
-import { Parser } from '../../parser'
+import { ParserSearch } from '../../parser'
 
-export default class fastnovelNet extends Parser {
+export default class fastnovelNet extends ParserSearch {
     constructor() {
-        super(new URL('https://fastnovel.net/search/'), '', false)
+        super('https://fastnovel.net/')
     }
 
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site + _book + this.endUrl);
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + "/search/" + this.bTitle;
     }
 }

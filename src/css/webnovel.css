@@ -1,7 +1,7 @@
 #idGlava {
     background: lightgray;
 }
-#divPanel { position: fixed; top: 0; right: 0; z-index: 999999; max-width: 450px; }
+/*#divPanel { position: fixed; top: 0; right: 0; z-index: 999999; max-width: 450px; }*/
 input.iMain {
     height: 100px;
     width: 100%;
