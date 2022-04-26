@@ -553,7 +553,7 @@ async function ResponseToHTML(response) {
         return bodyHtml;
 }
 
-function domain_fetchStatusHTML(response) {
+function fetchStatusHTML(response) {
     return response.ok ? ResponseToHTML(response) : Promise.reject(response)
 }
 
@@ -561,7 +561,7 @@ function fetchStatusJSON(response) {
     return response.ok ? response.json() : Promise.reject(response)
 }
 
-function domain_fetchCatch(_error, _site) {
+function fetchCatch(_error, _site) {
     if (!_error.ok) {
         console.warn(new URL(_site) + ' Fetch error: ' + _error.status);
         console.warn(_error);
@@ -574,7 +574,7 @@ function domain_fetchCatch(_error, _site) {
     }
 }
 
-function domain_ReplaceName(name) {
+function ReplaceName(name) {
     return name.toLowerCase().replaceAll(' ', '-').replaceAll(/"/g, 'quot').replaceAll(/[.?!)(,:'\[\]]/g, '');
 }
 
@@ -655,7 +655,7 @@ async function downloadBookIfno(_loc) {
         .then(data => {
             return data;
         })
-        .catch(err => domain_fetchCatch(err, url));
+        .catch(err => fetchCatch(err, url));
 }
 
 function GetChapterId(_bookInfo, _cId) {
@@ -755,6 +755,26 @@ function InputChapterNext(_bookInfo, _chN) {
 
     return InputChapterNext;
 }
+;// CONCATENATED MODULE: ./src/js/StringProcent/tanimoto.js
+function tanimoto(s1, s2) {
+    s1 = Array.from(s1.toLowerCase());
+    s2 = Array.from(s2.toLowerCase());
+
+    var a = s1.length;
+    var b = s2.length;
+    var c = 0;
+
+    for (var sym of s1) {
+        var index = s2.indexOf(sym);
+        if (index > -1) {
+            s2.splice(index, 1);
+            c += 1;
+        }
+    }
+    return c / (a + b - c)
+}
+
+//let diff = tanimoto(title, titleParser);
 ;// CONCATENATED MODULE: ./src/js/parser.js
 
 
@@ -832,41 +852,15 @@ class ParserChapter extends ParserBook {
     }
 }
 
-class p1 extends (/* unused pure expression or super */ null && (Parser)) {
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site + ReplaceName(_book) + '_' + _chapterN + this.endUrl);
-    }
-}
-
-class p2 extends (/* unused pure expression or super */ null && (Parser)) {
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site + ReplaceName(_book) + '/chapter-' + _chapterN + this.endUrl);
-    }
-}
-
-class p3 extends (/* unused pure expression or super */ null && (Parser)) {
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site + ReplaceName(_book) + "/chapter-" + _chapterN + "-" + ReplaceName(_chapterTitle) + this.endUrl);
-    }
-}
-
-class p4 extends (/* unused pure expression or super */ null && (Parser)) {
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site + _book.toLowerCase().replaceAll(' ', '+') + this.endUrl);
-    }
-}
-
-class artBook extends (/* unused pure expression or super */ null && (Parser)) {
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site);
+class artBook extends ParserBook {
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/search/' + this.bTitle + this.endUrl;
     }
 
-    async totalChapters(title) {
-        let url = this.site.origin + '/search/' + title + this.endUrl;
-
+    async totalChapters() {
         let isLucky = false;
         var isError = '';
-        await gmfetch(url)
+        await gmfetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("div.result-container_2.result-container > ul.result-list > li.list-item");
@@ -879,23 +873,24 @@ class artBook extends (/* unused pure expression or super */ null && (Parser)) {
                 for (let book of block) {
                     let titleParser = book.querySelector("a.list-img > img.item-img").alt;
 
-                    let diff = tanimoto(title, titleParser);
+                    let diff = tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
-                        this.site = this.site.origin + book.querySelector("a.list-img").pathname;
+                        this.siteBook = this.site.origin + book.querySelector("a.list-img").pathname;
                         isLucky = true;
                         break;
                     }
                 }
             })
-            .catch(err => isError = fetchCatch(err, url));
+            .catch(err => isError = fetchCatch(err, this.siteSearch.href));
 
         if (isError != '') {
-            return isError;
+            this.total = isError;
+            return;
         }
 
         if (isLucky) {
-            return await gmfetch(this.site)
+            return await gmfetch(this.siteBook.href)
                 .then(res => fetchStatusHTML(res))
                 .then(data => {
                     let allCH = data.querySelector("#detail > div.chapter-wrapper > ul").getElementsByTagName("a");
@@ -903,16 +898,18 @@ class artBook extends (/* unused pure expression or super */ null && (Parser)) {
                         if (allCH[i].style.color === 'gray')
                             continue;
                         else {
-                            return allCH[i].textContent.match(/\D*(\d+)/)[1] * -1;
+                            this.total = allCH[i].textContent.match(/\D*(\d+)/)[1] * -1;
+                            return;
                         }
                     }
 
-                    return data.querySelector("#detail > div.chapter-wrapper > div > a").textContent.match(/\D*(\d+)/)[1] * -1;
+                    this.total = data.querySelector("#detail > div.chapter-wrapper > div > a").textContent.match(/\D*(\d+)/)[1] * -1;
+                    return;
                 })
-                .catch(err => fetchCatch(err, url));
+                .catch(err => this.total = fetchCatch(err, this.siteBook.href));
         }
 
-        return "S0";
+        this.total = "S0";
     }
 }
 ;// CONCATENATED MODULE: ./src/js/webnovel/ce/FreeForm.js
@@ -923,23 +920,39 @@ function CreateTableSites(_sites, _bookInfo) {
     let tbl = document.createElement('table');
     tbl.id = "crawlerId";
     tbl.hidden = true;
+    tbl.style.fontSize = "16px";
     tbl.style.width = '200px';
     tbl.style.border = '1px solid black';
 
+    let tH = tbl.createTHead();
+    let trH = tH.insertRow();
+    var tdH = trH.insertCell();
+    tdH.textContent = "Parsing All";
+    tdH.colSpan = "5";
+    tdH.style.textAlign = "right";
+    trH.addEventListener('click', function () {
+        let tmpParsing = document.querySelectorAll("#crawlerId > tbody > tr > td.parsing");
+        for (let p of tmpParsing) {
+            p.click();
+        }
+    });
+
+    let tB = tbl.createTBody();
+
     for (let i in _sites) {
         for (let j in _sites[i]) {
-            let tr = tbl.insertRow();
-            tr.className = i + "_" + j;
+            let trB = tB.insertRow();
+            trB.className = i + "_" + j;
 
 
             // Site
-            let tdSite = tr.insertCell();
-            tdSite.textContent = _sites[i][j].site.origin;
+            let tdSite = trB.insertCell();
+            tdSite.textContent = _sites[i][j].site.hostname;
             tdSite.style.border = '1px solid black';
 
 
             // Search
-            let tdSearch = tr.insertCell();
+            let tdSearch = trB.insertCell();
             tdSearch.textContent = "Search";
             tdSearch.style.border = '1px solid black';
             tdSearch.addEventListener('click', function () {
@@ -947,13 +960,12 @@ function CreateTableSites(_sites, _bookInfo) {
             });
             if (_sites[i][j] instanceof ParserSearch) {
                 tdSearch.colSpan = "4";
-                
                 continue;
             }
 
 
             // Total
-            let tdTotal = tr.insertCell();
+            let tdTotal = trB.insertCell();
             tdTotal.className = "total"
             tdTotal.style.border = '1px solid black';
             let inputButton = Object.assign(document.createElement("input"), {
@@ -969,7 +981,7 @@ function CreateTableSites(_sites, _bookInfo) {
 
             // Read
             if (_sites[i][j] instanceof ParserChapter) {
-                let tdRead = tr.insertCell();
+                let tdRead = trB.insertCell();
                 tdRead.className = "read"
                 tdRead.style.border = '1px solid black';
                 let ibRead = Object.assign(document.createElement("input"), {
@@ -990,7 +1002,7 @@ function CreateTableSites(_sites, _bookInfo) {
 
 
             // Parsing
-            let tdParsing = tr.insertCell();
+            let tdParsing = trB.insertCell();
             tdParsing.className = "parsing";
             tdParsing.textContent = "parsing";
             tdParsing.style.border = '1px solid black';
@@ -1151,26 +1163,6 @@ async function ReplaceText(_bId, _cId) {
         return -1;
     }
 }
-;// CONCATENATED MODULE: ./src/js/StringProcent/tanimoto.js
-function tanimoto_tanimoto(s1, s2) {
-    s1 = Array.from(s1.toLowerCase());
-    s2 = Array.from(s2.toLowerCase());
-
-    var a = s1.length;
-    var b = s2.length;
-    var c = 0;
-
-    for (var sym of s1) {
-        var index = s2.indexOf(sym);
-        if (index > -1) {
-            s2.splice(index, 1);
-            c += 1;
-        }
-    }
-    return c / (a + b - c)
-}
-
-//let diff = tanimoto(title, titleParser);
 ;// CONCATENATED MODULE: ./src/js/GetText.js
 
 
@@ -1269,7 +1261,7 @@ async function GetText(_bId, _cId, _bTitle, _cTitle) {
 
             let titleParser = book.name;
 
-            let diff = tanimoto_tanimoto(_bTitle, titleParser);
+            let diff = tanimoto(_bTitle, titleParser);
 
             if (diff > 0.9) {
                 BookId = book.book_id;
@@ -1327,6 +1319,811 @@ async function GetText(_bId, _cId, _bTitle, _cTitle) {
         return -1;
     }
 }
+;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearch/artBook/mWuxiaworldCo.js
+
+
+class mWuxiaworldCo extends artBook {
+    constructor() {
+        super('https://m.wuxiaworld.co/');
+        this.endUrl = '/1';
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearch/artBook/novelupdatesCc.js
+
+
+class novelupdatesCc extends artBook {
+    constructor() {
+        super('https://www.novelupdates.cc/');
+        this.endUrl = '/1';
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearch/artBook/readlightnovelCc.js
+
+
+class readlightnovelCc extends artBook {
+    constructor() {
+        super('https://www.readlightnovel.cc/');
+        this.endUrl = '/1';
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearch/artBook/readlightnovelCo.js
+
+
+class readlightnovelCo extends artBook {
+    constructor() {
+        super('https://www.readlightnovel.co');
+        this.endUrl = '/1';
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearchChapter/lightnovelreaderOrg.js
+
+
+
+
+class lightnovelreaderOrg extends ParserChapter {
+    constructor() {
+        super('https://lightnovelreader.org/');
+        this.apiSearch = '';
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin;
+
+        // API
+    }
+
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href + '/chapter-' + _cIndex);
+    }
+
+    async totalChapters() {
+        this.apiSearch = new URL(this.site.origin + "/search/autocomplete?query=" + this.bTitle);
+
+        let isLucky = false;
+        var isError = '';
+        await gmfetch(this.apiSearch.href)
+            .then(res => fetchStatusJSON(res))
+            .then(data => {
+                if (Object.keys(data).length == 0) {
+                    isError = "B0";
+                    return;
+                }
+
+                for (let book of data.results) {
+                    let titleParser = book.original_title;
+
+                    let diff = tanimoto(this.bTitle, titleParser);
+
+                    if (diff > 0.8) {
+                        this.siteBook = book.link;
+                        isLucky = true;
+                        break;
+                    }
+                }
+            })
+            .catch(err => isError = fetchCatch(err, this.apiSearch.href));
+
+        if (isError != '') {
+            this.total = isError;
+            return;
+        }
+
+        if (isLucky) {
+            return await gmfetch(this.siteBook.href)
+                .then(res => fetchStatusHTML(res))
+                .then(data => {
+                    this.total = data.querySelector("body > section:nth-child(4) > div > div > div.col-12.col-xl-9 > div > div:nth-child(2) > div > div.novels-detail-right > ul > li:nth-child(9) > div.novels-detail-right-in-right > a:nth-child(1)").textContent.match(/\D*(\d+)/)[1];
+                    return;
+                })
+                .catch(err => this.total = fetchCatch(err, url));
+        }
+
+        this.total = "S0";
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearchChapter/bookWings/ltnovelCom.js
+
+
+
+
+class ltnovelCom extends ParserChapter {
+    constructor() {
+        super('https://www.ltnovel.com/');
+        this.endUrl = '.html';
+        this.apiSearch = '';
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin;
+
+        // API
+    }
+
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href.replace(this.endUrl, '') + '_' + _cIndex + this.endUrl);
+    }
+
+    async totalChapters() {
+        this.apiSearch = new URL(this.site.origin + "/e/search/index.php");
+
+        let isLucky = false;
+        var isError = '';
+        await gmfetch(this.apiSearch.href, {
+            "headers": {
+                "content-type": "application/x-www-form-urlencoded",
+            },
+            "referrer": this.site.origin + "/search.html",
+            "body": "show=title&tempid=1&tbname=news&keyboard=" + this.bTitle,
+            "method": "POST",
+        })
+            .then(res => fetchStatusHTML(res))
+            .then(data => {
+                if (data.title === "Message hint" || data.title == "") {
+                    isError = "B0";
+                    return;
+                }
+
+                let block = data.querySelectorAll("section > ul.novel-list.grid.col.col2 > li.novel-item");
+                for (let book of block) {
+                    let titleParser = book.querySelector("a > h4.novel-title.text2row").textContent;
+
+                    let diff = tanimoto(this.bTitle, titleParser);
+
+                    if (diff > 0.8) {
+                        this.siteBook = this.site.origin + book.querySelector("a").pathname;
+                        isLucky = true;
+                        break;
+                    }
+                }
+            })
+            .catch(err => isError = fetchCatch(err, this.apiSearch.href));
+
+        if (isError != '') {
+            this.total = isError;
+            return;
+        }
+
+        if (isLucky) {
+            return await gmfetch(this.siteBook.href)
+                .then(res => fetchStatusHTML(res))
+                .then(data => {
+                    this.total = data.querySelector("div.novel-info > div.header-stats > span:nth-child(1) > strong").textContent.trim();
+                    return;
+                })
+                .catch(err => this.total = fetchCatch(err, this.siteBook.href));
+        }
+
+        this.total = "S0";
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearchChapter/bookWings/novelmtCom.js
+
+
+
+
+class novelmtCom extends ParserChapter {
+    constructor() {
+        super('https://www.novelmt.com/');
+        this.endUrl = '.html';
+        this.apiSearch = '';
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin;
+
+        // API
+    }
+
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href.replace(this.endUrl, '') + '_' + _cIndex + this.endUrl);
+    }
+
+    async totalChapters() {
+        this.apiSearch = new URL(this.site.origin + "/e/search/index.php");
+
+        let isLucky = false;
+        var isError = '';
+        await gmfetch(this.apiSearch.href, {
+            "headers": {
+                "content-type": "application/x-www-form-urlencoded",
+            },
+            "referrer": this.site.origin + "/search.html",
+            "body": "show=title&tempid=1&tbname=news&keyboard=" + this.bTitle,
+            "method": "POST",
+        })
+            .then(res => fetchStatusHTML(res))
+            .then(data => {
+                if (data.title === "Message hint" || data.title == "") {
+                    isError = "B0";
+                    return;
+                }
+
+                let block = data.querySelectorAll("section > ul.novel-list.grid.col.col2 > li.novel-item");
+                for (let book of block) {
+                    let titleParser = book.querySelector("a > h4.novel-title.text2row").textContent;
+
+                    let diff = tanimoto(this.bTitle, titleParser);
+
+                    if (diff > 0.8) {
+                        this.siteBook = this.site.origin + book.querySelector("a").pathname;
+                        isLucky = true;
+                        break;
+                    }
+                }
+            })
+            .catch(err => isError = fetchCatch(err, this.apiSearch.href));
+
+        if (isError != '') {
+            this.total = isError;
+            return;
+        }
+
+        if (isLucky) {
+            return await gmfetch(this.siteBook.href)
+                .then(res => fetchStatusHTML(res))
+                .then(data => {
+                    this.total = data.querySelector("div.novel-info > div.header-stats > span:nth-child(1) > strong").textContent.trim();
+                    return;
+                })
+                .catch(err => this.total = fetchCatch(err, this.siteBook.href));
+        }
+
+        this.total = "S0";
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearchChapter/bookWings/readwnCom.js
+
+
+
+
+class readwnCom extends ParserChapter {
+    constructor() {
+        super('https://www.readwn.com/');
+        this.endUrl = '.html';
+        this.apiSearch = '';
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin;
+
+        // API
+    }
+
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href.replace(this.endUrl, '') + '_' + _cIndex + this.endUrl);
+    }
+
+    async totalChapters() {
+        this.apiSearch = new URL(this.site.origin + "/e/search/index.php");
+
+        let isLucky = false;
+        var isError = '';
+        await gmfetch(this.apiSearch.href, {
+            "headers": {
+                "content-type": "application/x-www-form-urlencoded",
+            },
+            "referrer": this.site.origin + "/search.html",
+            "body": "show=title&tempid=1&tbname=news&keyboard=" + this.bTitle,
+            "method": "POST",
+        })
+            .then(res => fetchStatusHTML(res))
+            .then(data => {
+                if (data.title === "Message hint" || data.title == "") {
+                    isError = "B0";
+                    return;
+                }
+
+                let block = data.querySelectorAll("section > ul.novel-list.grid.col.col2 > li.novel-item");
+                for (let book of block) {
+                    let titleParser = book.querySelector("a > h4.novel-title.text2row").textContent;
+
+                    let diff = tanimoto(this.bTitle, titleParser);
+
+                    if (diff > 0.8) {
+                        this.siteBook = this.site.origin + book.querySelector("a").pathname;
+                        isLucky = true;
+                        break;
+                    }
+                }
+            })
+            .catch(err => isError = fetchCatch(err, this.apiSearch.href));
+
+        if (isError != '') {
+            this.total = isError;
+            return;
+        }
+
+        if (isLucky) {
+            return await gmfetch(this.siteBook.href)
+                .then(res => fetchStatusHTML(res))
+                .then(data => {
+                    this.total = data.querySelector("div.novel-info > div.header-stats > span:nth-child(1) > strong").textContent.trim();
+                    return;
+                })
+                .catch(err => this.total = fetchCatch(err, this.siteBook.href));
+        }
+
+        this.total = "S0";
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearchChapter/bookWings/wuxiahereCom.js
+
+
+
+
+class wuxiahereCom extends ParserChapter {
+    constructor() {
+        super('https://www.wuxiahere.com/');
+        this.endUrl = '.html';
+        this.apiSearch = '';
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin;
+
+        // API
+    }
+
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href.replace(this.endUrl, '') + '_' + _cIndex + this.endUrl);
+    }
+
+    async totalChapters() {
+        this.apiSearch = new URL(this.site.origin + "/e/search/index.php");
+
+        let isLucky = false;
+        var isError = '';
+        await gmfetch(this.apiSearch.href, {
+            "headers": {
+                "content-type": "application/x-www-form-urlencoded",
+            },
+            "referrer": this.site.origin + "/search.html",
+            "body": "show=title&tempid=1&tbname=news&keyboard=" + this.bTitle,
+            "method": "POST",
+        })
+            .then(res => fetchStatusHTML(res))
+            .then(data => {
+                if (data.title === "Message hint" || data.title == "") {
+                    isError = "B0";
+                    return;
+                }
+
+                let block = data.querySelectorAll("section > ul.novel-list.grid.col.col2 > li.novel-item");
+                for (let book of block) {
+                    let titleParser = book.querySelector("a > h4.novel-title.text2row").textContent;
+
+                    let diff = tanimoto(this.bTitle, titleParser);
+
+                    if (diff > 0.8) {
+                        this.siteBook = this.site.origin + book.querySelector("a").pathname;
+                        isLucky = true;
+                        break;
+                    }
+                }
+            })
+            .catch(err => isError = fetchCatch(err, this.apiSearch.href));
+
+        if (isError != '') {
+            this.total = isError;
+            return;
+        }
+
+        if (isLucky) {
+            return await gmfetch(this.siteBook.href)
+                .then(res => fetchStatusHTML(res))
+                .then(data => {
+                    this.total = data.querySelector("div.novel-info > div.header-stats > span:nth-child(1) > strong").textContent.trim();
+                    return;
+                })
+                .catch(err => this.total = fetchCatch(err, this.siteBook.href));
+        }
+
+        this.total = "S0";
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearchChapter/bookWings/wuxiapubCom.js
+
+
+
+
+class wuxiapubCom extends ParserChapter {
+    constructor() {
+        super('https://www.wuxiapub.com/');
+        this.endUrl = '.html';
+        this.apiSearch = '';
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin;
+
+        // API
+    }
+
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href.replace(this.endUrl, '') + '_' + _cIndex + this.endUrl);
+    }
+
+    async totalChapters() {
+        this.apiSearch = new URL(this.site.origin + "/e/search/index.php");
+
+        let isLucky = false;
+        var isError = '';
+        await gmfetch(this.apiSearch.href, {
+            "headers": {
+                "content-type": "application/x-www-form-urlencoded",
+            },
+            "referrer": this.site.origin + "/search.html",
+            "body": "show=title&tempid=1&tbname=news&keyboard=" + this.bTitle,
+            "method": "POST",
+        })
+            .then(res => fetchStatusHTML(res))
+            .then(data => {
+                if (data.title === "Message hint" || data.title == "") {
+                    isError = "B0";
+                    return;
+                }
+
+                let block = data.querySelectorAll("section > ul.novel-list.grid.col.col2 > li.novel-item");
+                for (let book of block) {
+                    let titleParser = book.querySelector("a > h4.novel-title.text2row").textContent;
+
+                    let diff = tanimoto(this.bTitle, titleParser);
+
+                    if (diff > 0.8) {
+                        this.siteBook = this.site.origin + book.querySelector("a").pathname;
+                        isLucky = true;
+                        break;
+                    }
+                }
+            })
+            .catch(err => isError = fetchCatch(err, this.apiSearch.href));
+
+        if (isError != '') {
+            this.total = isError;
+            return;
+        }
+
+        if (isLucky) {
+            return await gmfetch(this.siteBook.href)
+                .then(res => fetchStatusHTML(res))
+                .then(data => {
+                    this.total = data.querySelector("div.novel-info > div.header-stats > span:nth-child(1) > strong").textContent.trim();
+                    return;
+                })
+                .catch(err => this.total = fetchCatch(err, this.siteBook.href));
+        }
+
+        this.total = "S0";
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/2fetch/htmlSearch/mMylovenovelCom.js
+
+
+
+
+class mMylovenovelCom extends ParserBook {
+    constructor() {
+        super('https://m.mylovenovel.com/');
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/index.php?s=so&module=book&keyword=' + this.bTitle;
+    }
+
+    async totalChapters() {
+        let isLucky = false;
+        var isError = '';
+        await gmfetch(this.siteSearch.href)
+            .then(res => fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.main > ul.list > li");
+
+                if (block.length == 0) {
+                    isError = this.total = "B0";
+                    return;
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("a > p.bookname").textContent;
+
+                    let diff = tanimoto(this.bTitle, titleParser);
+
+                    if (diff > 0.8) {
+                        this.siteBook = this.site.origin + book.querySelector("a").pathname;
+                        isLucky = true;
+                        return;
+                    }
+                }
+            })
+            .catch(err => isError = fetchCatch(err, this.siteSearch.href));
+
+        if (isError != '') {
+            this.total = isError;
+            return;
+        }
+
+        if (isLucky) {
+            return await gmfetch(this.siteBook.href)
+                .then(res => fetchStatusHTML(res))
+                .then(data => {
+                    this.total = data.querySelector("#info > div.main > div.detail > p.chapter > a").textContent.match(/\D*(\d+)/)[1] * -1;
+                    return;
+                })
+                .catch(err => this.total = fetchCatch(err, this.siteBook.href));
+        }
+
+        this.total = "S0";
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/2fetch/htmlSearchChapter/freewebnovelCom.js
+
+
+
+
+class freewebnovelCom extends ParserChapter {
+    constructor() {
+        super('https://freewebnovel.com/');
+        this.endUrl = '.html';
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/search/?searchkey=' + this.bTitle;
+    }
+
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href.replace(this.endUrl, '') + '/chapter-' + _cIndex + this.endUrl);
+    }
+
+    async totalChapters() {
+        let isLucky = false;
+        var isError = '';
+        await gmfetch(this.siteSearch.href)
+            .then(res => fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.col-content > div > div.li-row");
+
+                if (block.length == 1 && block[0].querySelectorAll("div.li > div.con").length == 0) {
+                    isError = "B0";
+                    return;
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("div.txt > h3.tit > a").textContent;
+
+                    let diff = tanimoto(this.bTitle, titleParser);
+
+                    if (diff > 0.8) {
+                        this.siteBook = this.site.origin + book.querySelector("div.txt > h3.tit > a").pathname;
+                        isLucky = true;
+                        break;
+                    }
+                }
+            })
+            .catch(err => isError = fetchCatch(err, this.siteSearch.href));
+
+        if (isError != '') {
+            this.total = isError;
+            return;
+        }
+
+        if (isLucky) {
+            return await gmfetch(this.siteBook.href)
+                .then(res => fetchStatusHTML(res))
+                .then(data => {
+                    this.total = data.querySelector("body > div.main > div > div > div.col-content > div.m-newest1 > ul > li:nth-child(1) > a").textContent.match(/\D*(\d+)/)[1] * -1;
+                    return;
+                })
+                .catch(err => this.total = fetchCatch(err, this.siteBook.href));
+        }
+
+        this.total = "S0";
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/2fetch/htmlSearchChapter/novelfullvipCom.js
+
+
+
+
+class novelfullvipCom extends ParserChapter {
+    constructor() {
+        super('https://novelfullvip.com/');
+        this.endUrl = '.html';
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/search?q=' + this.bTitle;
+    }
+
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href + '/chapter-' + _cIndex + this.endUrl);
+    }
+
+    async totalChapters() {
+        let isLucky = false;
+        var isError = '';
+        await gmfetch(this.siteSearch.href)
+            .then(res => fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("#truyen-slide > div.list.list-thumbnail.col-xs-12.col-md-9 > div.row > div.col-xs-4.col-sm-3.col-md-3");
+
+                if (block.length == 0) {
+                    isError = "B0";
+                    return;
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("a").title;
+
+                    let diff = tanimoto(this.bTitle, titleParser);
+
+                    if (diff > 0.8) {
+                        this.siteBook = book.querySelector("a").href;
+                        isLucky = true;
+                        break;
+                    }
+                }
+            })
+            .catch(err => isError = fetchCatch(err, this.siteSearch.href));
+
+        if (isError != '') {
+            this.total = isError;
+            return;
+        }
+
+        if (isLucky) {
+            return await gmfetch(this.siteBook.href)
+                .then(res => fetchStatusHTML(res))
+                .then(data => {
+                    this.total = data.querySelector("#truyen > div.col-xs-12.col-sm-12.col-md-9.col-truyen-main > div.col-xs-12.col-info-desc > div.col-xs-12.col-sm-8.col-md-8.desc > div.l-chapter > ul > li:nth-child(1) > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
+                    return;
+                })
+                .catch(err => this.total = fetchCatch(err, this.siteBook.href));
+        }
+
+        this.total = "S0";
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/2fetch/htmlSearchChapter/novelscafeCom.js
+
+
+
+
+class novelscafeCom extends ParserChapter {
+    constructor() {
+        super('https://novelscafe.com/');
+        this.endUrl = '/';
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/?s=' + this.bTitle;
+    }
+
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href.replace(/\/$/, "") + '-chapter-' + _cIndex + '-' + ReplaceName(_cTitle) + this.endUrl);
+    }
+
+    async totalChapters() {
+        let isLucky = false;
+        var isError = '';
+        await gmfetch(this.siteSearch.href)
+            .then(res => fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.posts.row > div.col-4.col-md-3.col-lg-2.post-column.mt-3");
+
+                if (block.length == 0) {
+                    isError = "B0";
+                    return;
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("a > div.post-title").textContent;
+
+                    let diff = tanimoto(this.bTitle, titleParser);
+
+                    if (diff > 0.8) {
+                        this.siteBook = book.querySelector("a").href;
+                        isLucky = true;
+                        break;
+                    }
+                }
+            })
+            .catch(err => isError = fetchCatch(err, this.siteSearch.href));
+
+        if (isError != '') {
+            this.total = isError;
+            return;
+        }
+
+        if (isLucky) {
+            return await gmfetch(this.siteBook.href)
+                .then(res => fetchStatusHTML(res))
+                .then(data => {
+                    this.total = data.querySelector("#primary > div:nth-child(2) > div.col-12.col-md-9 > div.last-10-chapters > div > div:nth-child(1) > h3 > a").textContent.match(/\D*(\d+)/)[1] * -1;
+                    return;
+                })
+                .catch(err => this.total = fetchCatch(err, this.siteBook.href));
+        }
+
+        this.total = "S0";
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/2fetch/htmlSearchChapter/POST/novelsonlineNet.js
+
+
+
+
+class novelsonlineNet extends ParserChapter {
+    constructor() {
+        super('https://novelsonline.net/');
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin;
+
+        // POST url
+    }
+
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href + '/chapter-' + _cIndex);
+    }
+
+    async totalChapters() {
+        let url = new URL(this.site.origin + "/sResults.php");
+
+        let isLucky = false;
+        var isError = '';
+        await gmfetch(url.href, {
+            "headers": {
+                "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+            },
+            "referrer": "https://novelsonline.net/",
+            "body": "q=" + this.bTitle,
+            "method": "POST",
+        })
+            .then(res => fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("ul > li");
+
+                if (block.length == 0) {
+                    isError = "B0";
+                    return;
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("a > span.title").textContent;
+
+                    let diff = tanimoto(this.bTitle, titleParser);
+
+                    if (diff > 0.8) {
+                        this.siteBook = book.querySelector("a").href;
+                        isLucky = true;
+                        break;
+                    }
+                }
+            })
+            .catch(err => isError = fetchCatch(err, url.href));
+
+        if (isError != '') {
+            this.total = isError;
+            return;
+        }
+
+        if (isLucky) {
+            return await gmfetch(this.siteBook.href)
+                .then(res => fetchStatusHTML(res))
+                .then(data => {
+                    this.total = data.querySelector("#collapse-1 > div > div > div.tab-pane.active > ul > li:last-child").textContent.match(/\D*(\d+)/)[1];
+                    return;
+                })
+                .catch(err => this.total = fetchCatch(err, this.siteBook.href));
+        }
+
+        this.total = "S0";
+    }
+}
+
+
+
 ;// CONCATENATED MODULE: ./src/js/parsers/2fetch/search/lightnovelplusCom.js
 
 
@@ -1351,7 +2148,7 @@ class lightnovelplusCom extends ParserSearch {
         let isLucky = false;
         var isError = '';
         await gmfetch(this.site.href)
-            .then(res => domain_fetchStatusHTML(res))
+            .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("#list-page > div.col-xs-12.col-sm-12.col-md-9.col-truyen-main_1.archive > div > div.row");
 
@@ -1363,7 +2160,7 @@ class lightnovelplusCom extends ParserSearch {
                 for (let book of block) {
                     let titleParser = book.querySelector("h3.truyen-title > a").textContent;
 
-                    let diff = tanimoto_tanimoto(this.bTitle, titleParser);
+                    let diff = tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
                         this.site = new URL(this.site.origin + book.querySelector("h3.truyen-title > a").pathname);
@@ -1374,7 +2171,7 @@ class lightnovelplusCom extends ParserSearch {
 
                 return;
             })
-            .catch(err => isError = domain_fetchCatch(err, this.site.href));
+            .catch(err => isError = fetchCatch(err, this.site.href));
 
         if (isError != '') {
             console.error(isError);
@@ -1385,12 +2182,12 @@ class lightnovelplusCom extends ParserSearch {
         if (isLucky) {
             isLucky = false;
             await gmfetch(this.site.href)
-                .then(res => domain_fetchStatusHTML(res))
+                .then(res => fetchStatusHTML(res))
                 .then(data => {
                     this.site = new URL(this.site.origin + data.querySelector("#list-chapter > ul > li.last > a").pathname + data.querySelector("#list-chapter > ul > li.last > a").search);
                     isLucky = true;
                 })
-                .catch(err => isError = domain_fetchCatch(err, this.site.href));
+                .catch(err => isError = fetchCatch(err, this.site.href));
 
 
             if (isError != '') {
@@ -1416,14 +2213,614 @@ class lightnovelplusCom extends ParserSearch {
         return;
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/truyenNovel/truyen/novelfullCom.js
+;// CONCATENATED MODULE: ./src/js/parsers/apiSearch/lightnovelsMe.js
 
 
 
 
-class novelfullCom extends ParserChapter {
+class lightnovelsMe extends ParserBook {
     constructor() {
-        super('https://novelfull.com');
+        super('https://lightnovels.me/');
+        this.apiSearch = '';
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/search?keyword=' + this.bTitle;
+
+        // API
+    }
+
+    async totalChapters() {
+        this.apiSearch = new URL(this.site.origin + "/api/search?keyword=" + this.bTitle + "&index=0&limit=20");
+
+        await gmfetch(this.apiSearch.href)
+            .then(res => fetchStatusJSON(res))
+            .then(data => {
+                if (Object.keys(data.results).length == 0) {
+                    this.total = "B0";
+                    return;
+                }
+
+                for (let book of data.results) {
+                    let titleParser = book.novel_name;
+
+                    let diff = tanimoto(this.bTitle, titleParser);
+
+                    if (diff > 0.8) {
+                        this.siteBook = this.site.origin + '/novel' + book.novel_slug;
+                        this.total = book.chapter_name.match(/\D*(\d+)/)[1];
+                        return;
+                    }
+                }
+
+                this.total = "S0";
+                return;
+            })
+            .catch(err => this.total = fetchCatch(err, this.apiSearch.href));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/apiSearchChapter/webnovelonlineCom.js
+
+
+
+
+class webnovelonlineCom extends ParserChapter {
+    constructor() {
+        super('https://webnovelonline.com/');
+        this.apiSearch = '';
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/searching/' + this.bTitle;
+
+        // API
+    }
+
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href.replace('/novel/', '/chapter/') + '/chapter-' + _cIndex);
+    }
+
+    async totalChapters() {
+        this.apiSearch = new URL(this.site.protocol + "//api." + this.site.hostname + "/api/v1/wuxia/search?name=" + this.bTitle);
+
+        await gmfetch(this.apiSearch.href)
+            .then(res => fetchStatusJSON(res))
+            .then(data => {
+                if (Object.keys(data.data).length == 0) {
+                    this.total = "B0";
+                    return;
+                }
+
+                for (let book of data.data) {
+                    let titleParser = book.title;
+
+                    let diff = tanimoto(this.bTitle, titleParser);
+
+                    if (diff > 0.8) {
+                        this.siteBook = this.site.origin + new URL(book.url).pathname;
+                        this.total = book.chap.match(/\D*(\d+)/)[1];
+                        return;
+                    }
+                }
+
+                this.total = "S0";
+                return;
+            })
+            .catch(err => this.total = fetchCatch(err, this.apiSearch.href));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearch/lightnovelWorld.js
+
+
+
+
+class lightnovelWorld extends ParserBook {
+    constructor() {
+        super('https://m.lightnovel.world/');
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/search?keyword=' + this.bTitle;
+    }
+
+    async totalChapters() {
+        await gmfetch(this.siteSearch.href)
+            .then(res => fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.book_info");
+
+                if (block.length == 0) {
+                    this.total = "B0";
+                    return;
+                }
+
+                for (let book of block) {
+                    book.querySelector("li.text1.textC000 span").remove();
+                    let titleParser = book.querySelector("li.text1.textC000").textContent.trim();
+
+                    let diff = tanimoto(this.bTitle, titleParser);
+
+                    if (diff > 0.8) {
+                        this.siteBook = this.site.origin + book.querySelector("div.book_info_r > ul > li.book_info_add_afv > a:nth-child(2)").pathname;
+                        this.total = book.querySelector("a.text2.textC333").textContent.match(/\D*(\d+)/)[1] * -1;
+                        return;
+                    }
+                }
+
+                this.total = "S0";
+                return;
+            })
+            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearch/novelhallCom.js
+
+
+
+
+class novelhallCom extends ParserBook {
+    constructor() {
+        super('https://www.novelhall.com/');
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/index.php?s=so&module=book&keyword=' + this.bTitle;
+    }
+
+    async totalChapters() {
+        await gmfetch(this.siteSearch.href)
+            .then(res => fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("#main > div.container > div > table > tbody > tr");
+
+                if (block.length == 0) {
+                    this.total = "B0";
+                    return;
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("td:nth-child(2) > a").textContent;
+
+                    let diff = tanimoto(this.bTitle, titleParser);
+
+                    if (diff > 0.8) {
+                        this.siteBook = this.site.origin + book.querySelector("td:nth-child(2) > a").pathname;
+                        this.total = book.querySelector("a.chapter").textContent.match(/\D*(\d+)/)[1] * -1;
+                        return;
+                    }
+                }
+
+                this.total = "S0";
+                return;
+            })
+            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearch/pandanovelCom.js
+
+
+
+
+class pandanovelCom extends ParserBook {
+    constructor() {
+        super('https://www.panda-novel.com/');
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/search/' + this.bTitle;
+    }
+
+    async totalChapters() {
+        await gmfetch(this.siteSearch.href)
+            .then(res => fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("#panda-app > div.sr-body > div > div.novel-list.gray-mask > ul > li");
+
+                if (block.length == 0) {
+                    this.total = "B0";
+                    return;
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("div.novel-desc > h4").textContent;
+
+                    let diff = tanimoto(this.bTitle, titleParser);
+
+                    if (diff > 0.8) {
+                        this.siteBook = this.site.origin + book.querySelector("a").pathname;
+                        this.total = book.querySelector("div.novel-desc > div > label > em").textContent.match(/\D*(\d+)/)[1] * -1;
+                        return;
+                    }
+                }
+
+                this.total = "S0";
+                return;
+            })
+            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearch/readlightnovelsNet.js
+
+
+
+
+class readlightnovelsNet extends ParserBook {
+    constructor() {
+        super('https://readlightnovels.net/');
+        this.endUrl = '.html';
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/?s=' + this.bTitle;
+    }
+
+    async totalChapters() {
+        await gmfetch(this.siteSearch.href)
+            .then(res => fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.col-md-3.col-sm-6.col-xs-6.home-truyendecu");
+
+                if (block.length == 0) {
+                    this.total = "B0";
+                    return;
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("a").title;
+
+                    let diff = tanimoto(this.bTitle, titleParser);
+
+                    if (diff > 0.8) {
+                        this.siteBook = book.querySelector("a").href;
+                        this.total = book.querySelector("a > div > small").textContent.match(/\D*(\d+)/)[1] * -1;
+                        return;
+                    }
+                }
+
+                this.total = "S0";
+                return;
+            })
+            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/octopiiCo.js
+
+
+
+
+class octopiiCo extends ParserChapter {
+    constructor() {
+        super('https://octopii.co/');
+        this.endUrl = "/";
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/?s=' + this.bTitle;
+    }
+
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href.replace('/novel/', '/').replace(/\/$/, '') + '-chapter-' + _cIndex + '-' + ReplaceName(_cTitle) + this.endUrl);
+    }
+
+    async totalChapters() {
+        await gmfetch(this.siteSearch.href)
+            .then(res => fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("#primary > div > div.col-12.col-md-6.d-flex.mb-4.flex-wrap.position-relative.overflow-hidden");
+
+                if (block.length == 0) {
+                    this.total = "B0";
+                    return;
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("h3.novel-name.m-0 > a").textContent;
+
+                    let diff = tanimoto(this.bTitle, titleParser);
+
+                    if (diff > 0.8) {
+                        this.siteBook = this.site.origin + book.querySelector("h3.novel-name.m-0 > a").pathname;
+                        this.total = book.querySelector("h4.chapter-name.m-0 > a.chapter-name").textContent.match(/\D*(\d+)/)[1] * -1;
+                        return;
+                    }
+                }
+
+                this.total = "S0";
+                return;
+            })
+            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/madentertainment/madnovelCom.js
+
+
+
+
+class madnovelCom extends ParserChapter {
+    constructor() {
+        super('https://madnovel.com/');
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/search?q=' + this.bTitle;
+    }
+
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href + "/chapter-" + _cIndex + "-" + ReplaceName(_cTitle));
+    }
+
+    async totalChapters() {
+        await gmfetch(this.siteSearch.href)
+            .then(res => fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.section-body > div.list > div.book-item");
+
+                if (block.length == 0) {
+                    this.total = "B0";
+                    return;
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("div.title > h3 > a").title;
+
+                    let diff = tanimoto(this.bTitle, titleParser);
+
+                    if (diff > 0.8) {
+                        this.siteBook = this.site.origin + book.querySelector("div.title > h3 > a").pathname;
+                        this.total = book.querySelector("div.thumb > span").textContent.match(/\D*(\d+)/)[1] * -1;
+                        return;
+                    }
+                }
+
+                this.total = "S0";
+                return;
+            })
+            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/madentertainment/novelbuddyCom.js
+
+
+
+
+class novelbuddyCom extends ParserChapter {
+    constructor() {
+        super('https://novelbuddy.com/');
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/search?q=' + this.bTitle;
+    }
+
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href + "/chapter-" + _cIndex + "-" + ReplaceName(_cTitle));
+    }
+
+    async totalChapters() {
+        await gmfetch(this.siteSearch.href)
+            .then(res => fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.section-body > div.list > div.book-item");
+
+                if (block.length == 0) {
+                    this.total = "B0";
+                    return;
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("div.title > h3 > a").title;
+
+                    let diff = tanimoto(this.bTitle, titleParser);
+
+                    if (diff > 0.8) {
+                        this.siteBook = this.site.origin + book.querySelector("div.title > h3 > a").pathname;
+                        this.total = book.querySelector("div.thumb > span").textContent.match(/\D*(\d+)/)[1] * -1;
+                        return;
+                    }
+                }
+
+                this.total = "S0";
+                return;
+            })
+            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/madentertainment/novelforestCom.js
+
+
+
+
+class novelforestCom extends ParserChapter {
+    constructor() {
+        super('https://novelforest.com/');
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/search?q=' + this.bTitle;
+    }
+
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href + "/chapter-" + _cIndex + "-" + ReplaceName(_cTitle));
+    }
+
+    async totalChapters() {
+        await gmfetch(this.siteSearch.href)
+            .then(res => fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.section-body > div.list > div.book-item");
+
+                if (block.length == 0) {
+                    this.total = "B0";
+                    return;
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("div.title > h3 > a").title;
+
+                    let diff = tanimoto(this.bTitle, titleParser);
+
+                    if (diff > 0.8) {
+                        this.siteBook = this.site.origin + book.querySelector("div.title > h3 > a").pathname;
+                        this.total = book.querySelector("div.thumb > span").textContent.match(/\D*(\d+)/)[1] * -1;
+                        return;
+                    }
+                }
+
+                this.total = "S0";
+                return;
+            })
+            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/madentertainment/novelfullMe.js
+
+
+
+
+class novelfullMe extends ParserChapter {
+    constructor() {
+        super('https://novelfull.me/');
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/search?q=' + this.bTitle;
+    }
+
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href + "/chapter-" + _cIndex + "-" + ReplaceName(_cTitle));
+    }
+
+    async totalChapters() {
+        await gmfetch(this.siteSearch.href)
+            .then(res => fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.section-body > div.list > div.book-item");
+
+                if (block.length == 0) {
+                    this.total = "B0";
+                    return;
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("div.title > h3 > a").title;
+
+                    let diff = tanimoto(this.bTitle, titleParser);
+
+                    if (diff > 0.8) {
+                        this.siteBook = this.site.origin + book.querySelector("div.title > h3 > a").pathname;
+                        this.total = book.querySelector("div.thumb > span").textContent.match(/\D*(\d+)/)[1] * -1;
+                        return;
+                    }
+                }
+
+                this.total = "S0";
+                return;
+            })
+            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/truyenNovel/novel/boxnovelOrg.js
+
+
+
+
+class boxnovelOrg extends ParserChapter {
+    constructor() {
+        super(new URL('https://boxnovel.org'));
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/search?keyword=' + this.bTitle;
+    }
+
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href.replace('/novel/', '/') + "-chapter-" + _cIndex + "-" + ReplaceName(_cTitle));
+    }
+
+    async totalChapters() {
+        await gmfetch(this.siteSearch.href)
+            .then(res => fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-novel-main.archive > div.list.list-novel.col-xs-12 > div.row");
+
+                if (block.length == 0) {
+                    this.total = "B0";
+                    return;
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("h3.novel-title > a").textContent;
+
+                    let diff = tanimoto(this.bTitle, titleParser);
+
+                    if (diff > 0.8) {
+                        this.siteBook = book.querySelector("h3.novel-title > a").href;
+                        this.total = book.querySelector("div.col-xs-2.text-info > div > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
+                        return;
+                    }
+                }
+
+                this.total = "S0";
+                return;
+            })
+            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/truyenNovel/novel/novelfullplusCom.js
+
+
+
+
+class novelfullplusCom extends ParserChapter {
+    constructor() {
+        super(new URL('https://novelfullplus.com/'));
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/search?keyword=' + this.bTitle;
+    }
+
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href + "/chapter-" + _cIndex + "-" + ReplaceName(_cTitle));
+    }
+
+    async totalChapters() {
+        await gmfetch(this.siteSearch.href)
+            .then(res => fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-novel-main.archive > div.list.list-novel.col-xs-12 > div.row");
+
+                if (block.length == 0) {
+                    this.total = "B0";
+                    return;
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("h3.novel-title > a").textContent;
+
+                    let diff = tanimoto(this.bTitle, titleParser);
+
+                    if (diff > 0.8) {
+                        this.siteBook = book.querySelector("h3.novel-title > a").href;
+                        this.total = book.querySelector("div.col-xs-2.text-info > div > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
+                        return;
+                    }
+                }
+
+                this.total = "S0";
+                return;
+            })
+            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/truyenNovel/novel/readnovelfullCom.js
+
+
+
+
+class readnovelfullCom extends ParserChapter {
+    constructor() {
+        super('https://readnovelfull.com/');
         this.endUrl = ".html";
     }
 
@@ -1431,13 +2828,104 @@ class novelfullCom extends ParserChapter {
         this.siteSearch = this.site.origin + '/search?keyword=' + this.bTitle;
     }
 
-    linkChapter(_cN, _cTitle) {
-        window.open(this.siteBook.href.replace(this.endUrl, '') + "/chapter-" + _cN + "-" + domain_ReplaceName(_cTitle) + this.endUrl);
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href.replace(this.endUrl, '').replaceAll(/-v\d+$/g, '') + "/chapter-" + _cIndex + "-" + ReplaceName(_cTitle) + this.endUrl);
     }
 
     async totalChapters() {
         await gmfetch(this.siteSearch.href)
-            .then(res => domain_fetchStatusHTML(res))
+            .then(res => fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-novel-main.archive > div.list.list-novel.col-xs-12 > div.row");
+
+                if (block.length == 0) {
+                    this.total = "B0";
+                    return;
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("h3.novel-title > a").textContent;
+
+                    let diff = tanimoto(this.bTitle, titleParser);
+
+                    if (diff > 0.8) {
+                        this.siteBook = this.site.origin + book.querySelector("h3.novel-title > a").pathname;
+                        this.total = book.querySelector("div.col-xs-2.text-info > div > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
+                        return;
+                    }
+                }
+
+                this.total = "S0";
+                return;
+            })
+            .catch(err => this.total = ffetchCatch(err, this.siteSearch.href));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/truyenNovel/novel/topwebnovelCom.js
+
+
+
+
+class topwebnovelCom extends ParserBook {
+    constructor() {
+        super('https://topwebnovel.com');
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/search/?keyword=' + this.bTitle;
+    }
+
+    async totalChapters() {
+        await gmfetch(this.siteSearch.href)
+            .then(res => fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-novel-main.archive > div.list.list-novel.col-xs-12 > div.row");
+
+                if (block.length == 0) {
+                    this.total = "B0";
+                    return;
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("h3.novel-title > a").textContent;
+
+                    let diff = tanimoto(this.bTitle, titleParser);
+
+                    if (diff > 0.8) {
+                        this.siteBook = this.site.origin + book.querySelector("h3.novel-title > a").pathname;
+                        this.total = book.querySelector("div.col-xs-2.text-info > div > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
+                        return;
+                    }
+                }
+
+                this.total = "S0";
+                return;
+            })
+            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/truyenNovel/truyen/allnovelfullCom.js
+
+
+
+
+class allnovelfullCom extends ParserChapter {
+    constructor() {
+        super('https://allnovelfull.com/');
+        this.endUrl = ".html";
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/search?keyword=' + this.bTitle;
+    }
+
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href.replace(this.endUrl, '') + "/chapter-" + _cIndex + "-" + ReplaceName(_cTitle) + this.endUrl);
+    }
+
+    async totalChapters() {
+        await gmfetch(this.siteSearch.href)
+            .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-truyen-main.archive > div.list.list-truyen.col-xs-12 > div.row");
 
@@ -1449,11 +2937,11 @@ class novelfullCom extends ParserChapter {
                 for (let book of block) {
                     let titleParser = book.querySelector("h3.truyen-title > a").textContent;
 
-                    let diff = tanimoto_tanimoto(this.bTitle, titleParser);
+                    let diff = tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
                         this.siteBook = this.site.origin + book.querySelector("h3.truyen-title > a").pathname;
-                        this.total =  book.querySelector("div.col-xs-2.text-info > div > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
+                        this.total = book.querySelector("div.col-xs-2.text-info > div > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
                         return;
                     }
                 }
@@ -1461,7 +2949,103 @@ class novelfullCom extends ParserChapter {
                 this.total = "S0";
                 return;
             })
-            .catch(err => this.total = domain_fetchCatch(err, this.siteSearch.href));
+            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/truyenNovel/truyen/allnovelOrg.js
+
+
+
+
+class allnovelOrg extends ParserChapter {
+    constructor() {
+        super('https://allnovel.org/');
+        this.endUrl = ".html";
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/search?keyword=' + this.bTitle;
+    }
+
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href.replace(this.endUrl, '') + "/chapter-" + _cIndex + "-" + ReplaceName(_cTitle) + this.endUrl);
+    }
+
+    async totalChapters() {
+        await gmfetch(this.siteSearch.href)
+            .then(res => fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-truyen-main.archive > div.list.list-truyen.col-xs-12 > div.row");
+
+                if (block.length == 0) {
+                    this.total = "B0";
+                    return;
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("h3.truyen-title > a").textContent;
+
+                    let diff = tanimoto(this.bTitle, titleParser);
+
+                    if (diff > 0.8) {
+                        this.siteBook = this.site.origin + book.querySelector("h3.truyen-title > a").pathname;
+                        this.total = book.querySelector("div.col-xs-2.text-info > div > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
+                        return;
+                    }
+                }
+
+                this.total = "S0";
+                return;
+            })
+            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/truyenNovel/truyen/novelfullCom.js
+
+
+
+
+class novelfullCom extends ParserChapter {
+    constructor() {
+        super('https://novelfull.com/');
+        this.endUrl = ".html";
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/search?keyword=' + this.bTitle;
+    }
+
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href.replace(this.endUrl, '') + "/chapter-" + _cIndex + "-" + ReplaceName(_cTitle) + this.endUrl);
+    }
+
+    async totalChapters() {
+        await gmfetch(this.siteSearch.href)
+            .then(res => fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-truyen-main.archive > div.list.list-truyen.col-xs-12 > div.row");
+
+                if (block.length == 0) {
+                    this.total = "B0";
+                    return;
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("h3.truyen-title > a").textContent;
+
+                    let diff = tanimoto(this.bTitle, titleParser);
+
+                    if (diff > 0.8) {
+                        this.siteBook = this.site.origin + book.querySelector("h3.truyen-title > a").pathname;
+                        this.total = book.querySelector("div.col-xs-2.text-info > div > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
+                        return;
+                    }
+                }
+
+                this.total = "S0";
+                return;
+            })
+            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
     }
 }
 ;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/truyenNovel/truyen/novelgreatNet.js
@@ -1471,7 +3055,7 @@ class novelfullCom extends ParserChapter {
 
 class novelgreatNet extends ParserBook {
     constructor() {
-        super('https://novelgreat.net');
+        super('https://novelgreat.net/');
     }
 
     SetSiteSearch() {
@@ -1480,7 +3064,7 @@ class novelgreatNet extends ParserBook {
 
     async totalChapters() {
         await gmfetch(this.siteSearch.href)
-            .then(res => domain_fetchStatusHTML(res))
+            .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-truyen-main.archive > div.list.list-truyen.col-xs-12 > div.row");
 
@@ -1492,11 +3076,10 @@ class novelgreatNet extends ParserBook {
                 for (let book of block) {
                     let titleParser = book.querySelector("h3.truyen-title > a").textContent;
 
-                    let diff = tanimoto_tanimoto(this.bTitle, titleParser);
+                    let diff = tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
                         this.siteBook = this.site.origin + book.querySelector("h3.truyen-title > a").pathname;
-
                         this.total = book.querySelector("div.col-xs-2.text-info > div > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
                         return;
                     }
@@ -1505,7 +3088,433 @@ class novelgreatNet extends ParserBook {
                 this.total = "S0";
                 return;
             })
-            .catch(err => this.total = domain_fetchCatch(err, this.siteSearch.href));
+            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/wpManga/1stkissnovelLove.js
+
+
+
+
+class oneStkissnovelLove extends ParserChapter {
+    constructor() {
+        super('https://1stkissnovel.love/');
+        this.endUrl = "/";
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/?s=' + this.bTitle + '&post_type=wp-manga';
+    }
+
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href + "chapter-" + _cIndex + "-" + ReplaceName(_cTitle) + this.endUrl);
+    }
+
+    async totalChapters() {
+        await gmfetch(this.siteSearch.href)
+            .then(res => fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.row.c-tabs-item__content");
+
+                if (block.length == 0) {
+                    this.total = "B0";
+                    return;
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("div.post-title > h3 > a").textContent;
+
+                    let diff = tanimoto(this.bTitle, titleParser);
+
+                    if (diff > 0.8) {
+                        this.siteBook = book.querySelector("div.post-title > h3 > a").href;
+                        this.total = book.querySelector("div.tab-meta > div.meta-item.latest-chap > span.font-meta.chapter > a").textContent.match(/\D*(\d+)/)[1] * -1;
+                        return;
+                    }
+                }
+
+                this.total = "S0";
+                return;
+            })
+            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/wpManga/latestnovelNet.js
+
+
+
+
+class latestnovelNet extends ParserChapter {
+    constructor() {
+        super('https://latestnovel.net/');
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/?s=' + this.bTitle.replace(':', '') + '&post_type=wp-manga';
+    }
+
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href + 'chapter-' + _cIndex);
+    }
+
+    async totalChapters() {
+        await gmfetch(this.siteSearch.href)
+            .then(res => fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.row.c-tabs-item__content");
+
+                if (block.length == 0) {
+                    this.total = "B0";
+                    return;
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("div.post-title > h3 > a").textContent;
+
+                    let diff = tanimoto(this.bTitle, titleParser);
+
+                    if (diff > 0.8) {
+                        this.siteBook = book.querySelector("div.post-title > h3 > a").href;
+                        this.total = book.querySelector("div.tab-meta > div.meta-item.latest-chap > span.font-meta.chapter > a").textContent.match(/\D*(\d+)/)[1] * -1;
+                        return;
+                    }
+                }
+
+                this.total = "S0";
+                return;
+            })
+            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/wpManga/lightnovelMobi.js
+
+
+
+
+class lightnovelMobi extends ParserChapter {
+    constructor() {
+        super('https://lightnovel.mobi/');
+        this.endUrl = "/";
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/?s=' + this.bTitle + '&post_type=wp-manga';
+    }
+
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href + "chapter-" + _cIndex + "-" + ReplaceName(_cTitle) + this.endUrl);
+    }
+
+    async totalChapters() {
+        await gmfetch(this.siteSearch.href)
+            .then(res => fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.row.c-tabs-item__content");
+
+                if (block.length == 0) {
+                    this.total = "B0";
+                    return;
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("div.post-title > h3 > a").textContent;
+
+                    let diff = tanimoto(this.bTitle, titleParser);
+
+                    if (diff > 0.8) {
+                        this.siteBook = book.querySelector("div.post-title > h3 > a").href;
+                        this.total = book.querySelector("div.tab-meta > div.meta-item.latest-chap > span.font-meta.chapter > a").textContent.match(/\D*(\d+)/)[1] * -1;
+                        return;
+                    }
+                }
+
+                this.total = "S0";
+                return;
+            })
+            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/wpManga/novelteamNet.js
+
+
+
+
+class novelteamNet extends ParserChapter {
+    constructor() {
+        super('https://novelteam.net/');
+        this.endUrl = "/";
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/?s=' + this.bTitle + '&post_type=wp-manga';
+    }
+
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href + 'chapter-' + _cIndex + this.endUrl);
+    }
+
+    async totalChapters() {
+        await gmfetch(this.siteSearch.href)
+            .then(res => fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.row.c-tabs-item__content");
+
+                if (block.length == 0) {
+                    this.total = "B0";
+                    return;
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("div.post-title > h3 > a").textContent;
+
+                    let diff = tanimoto(this.bTitle, titleParser);
+
+                    if (diff > 0.8) {
+                        this.siteBook = book.querySelector("div.post-title > h3 > a").href;
+                        this.total = book.querySelector("div.tab-meta > div.meta-item.latest-chap > span.font-meta.chapter > a").textContent.match(/\D*(\d+)/)[1] * -1;
+                        return;
+                    }
+                }
+
+                this.total = "S0";
+                return;
+            })
+            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/wpManga/noveltrenchCom.js
+
+
+
+
+class noveltrenchCom extends ParserChapter {
+    constructor() {
+        super('https://noveltrench.com/');
+        this.endUrl = "/";
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/?s=' + this.bTitle + '&post_type=wp-manga';
+    }
+
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href + 'chapter-' + _cIndex + this.endUrl);
+    }
+
+    async totalChapters() {
+        await gmfetch(this.siteSearch.href)
+            .then(res => fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.row.c-tabs-item__content");
+
+                if (block.length == 0) {
+                    this.total = "B0";
+                    return;
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("div.post-title > h3 > a").textContent;
+
+                    let diff = tanimoto(this.bTitle, titleParser);
+
+                    if (diff > 0.8) {
+                        this.siteBook = book.querySelector("div.post-title > h3 > a").href;
+                        this.total = book.querySelector("div.tab-meta > div.meta-item.latest-chap > span.font-meta.chapter > a").textContent.match(/\D*(\d+)/)[1] * -1;
+                        return;
+                    }
+                }
+
+                this.total = "S0";
+                return;
+            })
+            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/wpManga/readnovelsOrg.js
+
+
+
+
+class readnovelsOrg extends ParserChapter {
+    constructor() {
+        super('https://readnovels.org/');
+        this.endUrl = "/";
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/?s=' + this.bTitle + '&post_type=wp-manga';
+    }
+
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href + 'chapter-' + _cIndex + this.endUrl);
+    }
+
+    async totalChapters() {
+        await gmfetch(this.siteSearch.href)
+            .then(res => fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.row.c-tabs-item__content");
+
+                if (block.length == 0) {
+                    this.total = "B0";
+                    return;
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("div.post-title > h3 > a").textContent;
+
+                    let diff = tanimoto(this.bTitle, titleParser);
+
+                    if (diff > 0.8) {
+                        this.siteBook = book.querySelector("div.post-title > h3 > a").href;
+                        this.total = book.querySelector("div.tab-meta > div.meta-item.latest-chap > span.font-meta.chapter > a").textContent.match(/\D*(\d+)/)[1] * -1;
+                        return;
+                    }
+                }
+
+                this.total = "S0";
+                return;
+            })
+            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/wpManga/webnovelonlineNet.js
+
+
+
+
+class webnovelonlineNet extends ParserChapter {
+    constructor() {
+        super('https://webnovelonline.net/');
+        this.endUrl = "/";
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/?s=' + this.bTitle + '&post_type=wp-manga';
+    }
+
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href + "chapter-" + _cIndex + "-" + ReplaceName(_cTitle) + this.endUrl);
+    }
+
+    async totalChapters() {
+        await gmfetch(this.siteSearch.href)
+            .then(res => fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.row.c-tabs-item__content");
+
+                if (block.length == 0) {
+                    this.total = "B0";
+                    return;
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("div.post-title > h3 > a").textContent;
+
+                    let diff = tanimoto(this.bTitle, titleParser);
+
+                    if (diff > 0.8) {
+                        this.siteBook = book.querySelector("div.post-title > h3 > a").href;
+                        this.total = book.querySelector("div.tab-meta > div.meta-item.latest-chap > span.font-meta.chapter > a").textContent.match(/\D*(\d+)/)[1] * -1;
+                        return;
+                    }
+                }
+
+                this.total = "S0";
+                return;
+            })
+            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/ReplaceTitle/readlightnovelMe.js
+
+
+
+class readlightnovelMe extends ParserChapter {
+    constructor() {
+        super('https://www.readlightnovel.me/');
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + "/" + ReplaceName(this.bTitle);
+
+        this.siteBook = this.siteSearch;
+    }
+
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href + '/chapter-' + _cIndex);
+    }
+
+    linkRead(_book, _chapterN, _chapterTitle) {
+        window.open();
+    }
+
+    async totalChapters() {
+        await gmfetch(this.siteSearch.href)
+            .then(res => fetchStatusHTML(res))
+            .then(data => {
+                this.total = data.querySelector("div.novel-detail-item[style='display:flex;'] > div.novel-detail-body > ul > li:first-child > a").textContent.match(/\D*(\d+)/)[1];
+                return;
+            })
+            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/ReplaceTitle/lightnovelEWcom/lightnovelpubCom.js
+
+
+
+class lightnovelpubCom extends ParserChapter {
+    constructor() {
+        super('https://www.lightnovelpub.com/');
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + "/novel/" + ReplaceName(this.bTitle);
+
+        this.siteBook = this.siteSearch;
+    }
+
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href + '/chapter-' + _cIndex);
+    }
+
+    async totalChapters() {
+        await gmfetch(this.siteSearch.href)
+            .then(res => fetchStatusHTML(res))
+            .then(data => {
+                this.total = data.querySelector("#novel > div.novel-body.container > nav > a.grdbtn.chapter-latest-container > div > p.latest.text1row").textContent.match(/\D*(\d+)/)[1];
+                return;
+            })
+            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/ReplaceTitle/lightnovelEWcom/lightnovelworldCom.js
+
+
+
+class lightnovelworldCom extends ParserChapter {
+    constructor() {
+        super('https://www.lightnovelworld.com/');
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + "/novel/" + ReplaceName(this.bTitle);
+
+        this.siteBook = this.siteSearch;
+    }
+
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href + '/chapter-' + _cIndex);
+    }
+
+    async totalChapters() {
+        await gmfetch(this.siteSearch.href)
+            .then(res => fetchStatusHTML(res))
+            .then(data => {
+                this.total = data.querySelector("#novel > div.novel-body.container > nav > a.grdbtn.chapter-latest-container > div > p.latest.text1row").textContent.match(/\D*(\d+)/)[1];
+                return;
+            })
+            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
     }
 }
 ;// CONCATENATED MODULE: ./src/js/parsers/search/fastnovelNet.js
@@ -1555,7 +3564,7 @@ class ranobesNet extends ParserSearch {
 // @grant       GM_xmlhttpRequest
 // @grant       GM.xmlHttpRequest
 // @require     https://raw.githubusercontent.com/maple3142/gmxhr-fetch/master/gmxhr-fetch.min.js
-// @version     0.3.0
+// @version     0.3.1
 // ==/UserScript==
 
 
@@ -1654,80 +3663,80 @@ const SitesAll = [
     [
     ],
     [
-    //    // 2fetch/apiSearch
-    //    //    artBook
-    //    new mWuxiaworldCo(),
-    //    new novelupdatesCc(),
-    //    new readlightnovelCc(),
-    //    new readlightnovelCo(),
+        // 2fetch/apiSearch
+        //    artBook
+        new mWuxiaworldCo(),
+        new novelupdatesCc(),
+        new readlightnovelCc(),
+        new readlightnovelCo(),
 
-    //    // 2fetch/apiSearchChapter
-    //    new lightnovelreaderOrg(),
-    //    //    bookWings
-    //    new ltnovelCom(),
-    //    new novelmtCom(),
-    //    new readwnCom(),
-    //    new wuxiahereCom(),
-    //    new wuxiapubCom(),
+        // 2fetch/apiSearchChapter
+        new lightnovelreaderOrg(),
+        //    bookWings
+        new ltnovelCom(),
+        new novelmtCom(),
+        new readwnCom(),
+        new wuxiahereCom(),
+        new wuxiapubCom(),
 
-    //    // 2fetch/htmlSearch
-    //    new mMylovenovelCom(),
+        // 2fetch/htmlSearch
+        new mMylovenovelCom(),
 
-    //    // 2fetch/htmlSearchChapter
-    //    new freewebnovelCom(),
-    //    new novelfullvipCom(),
-    //    new novelscafeCom(),
-    //    //    POST
-    //    new novelsonlineNet(),
+        // 2fetch/htmlSearchChapter
+        new freewebnovelCom(),
+        new novelfullvipCom(),
+        new novelscafeCom(),
+        //    POST
+        new novelsonlineNet(),
 
-    //    // 2fetch/search
-    ////new lightnovelplusCom(),
+        // 2fetch/search
+    //new lightnovelplusCom(),
 
-    //    // apiSearch
-    //    new lightnovelsMe(),
+        // apiSearch
+        new lightnovelsMe(),
 
-    //    // apiSearchChapter
-    //    new webnovelonlineCom(),
+        // apiSearchChapter
+        new webnovelonlineCom(),
 
-    //    // htmlSearch
-    //    new lightnovelWorld(),
-    //    new novelhallCom(),
-    //    new pandanovelCom(),
-    //    new readlightnovelsNet(),
+        // htmlSearch
+        new lightnovelWorld(),
+        new novelhallCom(),
+        new pandanovelCom(),
+        new readlightnovelsNet(),
 
-    //    // htmlSearchChapter
-    //    new octopiiCo(),
-    //    //    madentertainment
-    //    new madnovelCom(),
-    //    new novelbuddyCom(),
-    //    new novelforestCom(),
-    //    new novelfullMe(),
-    //    //    truyenNovel/novel
-    //    new boxnovelOrg(),
-    //    new novelfullplusCom(),
-    //    new readnovelfullCom(),
-    //    new topwebnovelCom(),
-    //    //    truyenNovel/truyen
-    //    new allnovelfullCom(),
-    //    new allnovelOrg(),
+        // htmlSearchChapter
+new octopiiCo(),
+        //    madentertainment
+        new madnovelCom(),
+        new novelbuddyCom(),
+        new novelforestCom(),
+        new novelfullMe(),
+        //    truyenNovel/novel
+        new boxnovelOrg(),
+new novelfullplusCom(),
+        new readnovelfullCom(),
+        new topwebnovelCom(),
+        //    truyenNovel/truyen
+        new allnovelfullCom(),
+        new allnovelOrg(),
         new novelfullCom(),
         new novelgreatNet(),
-    //    //    wpManga
-    //    new oneStkissnovelLove(),
-    //    new latestnovelNet(),
-    //    new lightnovelMobi(),
-    //    new novelteamNet(),
-    //    new noveltrenchCom(),
-    //    new readnovelsOrg(),
-    //    new webnovelonlineNet(),
+        //    wpManga
+        new oneStkissnovelLove(),
+new latestnovelNet(),
+        new lightnovelMobi(),
+        new novelteamNet(),
+        new noveltrenchCom(),
+        new readnovelsOrg(),
+        new webnovelonlineNet(),
 
-    //    // ReplaceTitle
-    //    new readlightnovelMe(),
-    //    //    lightnovelEWcom
-    //    new lightnovelpubCom(),
-    //    new lightnovelworldCom(),
+        // ReplaceTitle
+        new readlightnovelMe(),
+        //    lightnovelEWcom
+        new lightnovelpubCom(),
+        new lightnovelworldCom(),
 
-    //    // search
+        // search
         new fastnovelNet(),
         new novelgateNet(),
         new ranobesNet(),
