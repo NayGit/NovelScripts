@@ -1,7 +1,8 @@
-import { artBook } from '../../../../parser'
+import { artBook } from '../../../../parser';
 
 export default class novelupdatesCc extends artBook {
     constructor() {
-        super(new URL('https://www.novelupdates.cc'), '/1', true, true);
+        super('https://www.novelupdates.cc/');
+        this.endUrl = '/1';
     }
 }

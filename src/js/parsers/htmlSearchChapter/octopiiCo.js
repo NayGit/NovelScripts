@@ -1,41 +1,47 @@
-import { Parser } from '../../parser'
+import { ParserChapter } from '../../parser';
 import { fetchStatusHTML, fetchCatch, ReplaceName } from '../../domain';
-import tanimoto from '../../StringProcent/tanimoto'
+import tanimoto from '../../StringProcent/tanimoto';
 
-export default class octopiiCo extends Parser {
+export default class octopiiCo extends ParserChapter {
     constructor() {
-        super(new URL('https://octopii.co'), '/', true)
+        super('https://octopii.co/');
+        this.endUrl = "/";
     }
 
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site + '-chapter-' + _chapterN + '-' + ReplaceName(_chapterTitle) + this.endUrl);
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/?s=' + this.bTitle;
     }
 
-    async totalChapters(title) {
-        let url = this.site.origin + '/?s=' + title;
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href.replace('/novel/', '/').replace(/\/$/, '') + '-chapter-' + _cIndex + '-' + ReplaceName(_cTitle) + this.endUrl);
+    }
 
-        return await gmfetch(url)
+    async totalChapters() {
+        await gmfetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("#primary > div > div.col-12.col-md-6.d-flex.mb-4.flex-wrap.position-relative.overflow-hidden");
 
                 if (block.length == 0) {
-                    return "B0";
+                    this.total = "B0";
+                    return;
                 }
 
                 for (let book of block) {
                     let titleParser = book.querySelector("h3.novel-name.m-0 > a").textContent;
 
-                    let diff = tanimoto(title, titleParser);
+                    let diff = tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
-                        this.site = this.site.origin + book.querySelector("h3.novel-name.m-0 > a").pathname.replace('/novel/', '/').replace(/\/$/, '');
-                        return book.querySelector("h4.chapter-name.m-0 > a.chapter-name").textContent.match(/\D*(\d+)/)[1] * -1;
+                        this.siteBook = this.site.origin + book.querySelector("h3.novel-name.m-0 > a").pathname;
+                        this.total = book.querySelector("h4.chapter-name.m-0 > a.chapter-name").textContent.match(/\D*(\d+)/)[1] * -1;
+                        return;
                     }
                 }
 
-                return "S0";
+                this.total = "S0";
+                return;
             })
-            .catch(err => fetchCatch(err, url));
+            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
     }
 }

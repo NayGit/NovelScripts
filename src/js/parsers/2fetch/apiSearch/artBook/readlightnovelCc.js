@@ -1,7 +1,8 @@
-import { artBook } from '../../../../parser'
+import { artBook } from '../../../../parser';
 
 export default class readlightnovelCc extends artBook {
     constructor() {
-        super(new URL('https://www.readlightnovel.cc'), '/1', true, true);
+        super('https://www.readlightnovel.cc/');
+        this.endUrl = '/1';
     }
 }

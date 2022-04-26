@@ -1,58 +1,58 @@
-import { Parser } from '../../../parser'
+import { ParserBook } from '../../../parser';
 import { fetchStatusHTML, fetchCatch, ReplaceName } from '../../../domain';
-import tanimoto from '../../../StringProcent/tanimoto'
+import tanimoto from '../../../StringProcent/tanimoto';
 
-export default class mMylovenovelCom extends Parser {
+export default class mMylovenovelCom extends ParserBook {
     constructor() {
-        super(new URL('https://m.mylovenovel.com'), '', true);
+        super('https://m.mylovenovel.com/');
     }
 
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site);
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/index.php?s=so&module=book&keyword=' + this.bTitle;
     }
 
-    async totalChapters(title) {
-        let url = this.site.origin + '/index.php?s=so&module=book&keyword=' + title;
-
+    async totalChapters() {
         let isLucky = false;
         var isError = '';
-        await gmfetch(url)
+        await gmfetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("div.main > ul.list > li");
 
                 if (block.length == 0) {
-                    isError = "B0";
+                    isError = this.total = "B0";
                     return;
                 }
 
                 for (let book of block) {
                     let titleParser = book.querySelector("a > p.bookname").textContent;
 
-                    let diff = tanimoto(title, titleParser);
+                    let diff = tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
-                        this.site = this.site.origin + book.querySelector("a").pathname;
+                        this.siteBook = this.site.origin + book.querySelector("a").pathname;
                         isLucky = true;
-                        break;
+                        return;
                     }
                 }
             })
-            .catch(err => isError = fetchCatch(err, url));
+            .catch(err => isError = fetchCatch(err, this.siteSearch.href));
 
         if (isError != '') {
-            return isError;
+            this.total = isError;
+            return;
         }
 
         if (isLucky) {
-            return await gmfetch(this.site)
+            return await gmfetch(this.siteBook.href)
                 .then(res => fetchStatusHTML(res))
                 .then(data => {
-                    return data.querySelector("#info > div.main > div.detail > p.chapter > a").textContent.match(/\D*(\d+)/)[1] * -1;
+                    this.total = data.querySelector("#info > div.main > div.detail > p.chapter > a").textContent.match(/\D*(\d+)/)[1] * -1;
+                    return;
                 })
-                .catch(err => fetchCatch(err, url));
+                .catch(err => this.total = fetchCatch(err, this.siteBook.href));
         }
 
-        return "S0";
+        this.total = "S0";
     }
 }

@@ -1,39 +1,49 @@
-import { Parser } from '../../parser'
+import { ParserChapter } from '../../parser';
 import { fetchStatusHTML, fetchStatusJSON, fetchCatch, ReplaceName } from '../../domain';
-import tanimoto from '../../StringProcent/tanimoto'
+import tanimoto from '../../StringProcent/tanimoto';
 
-export default class webnovelonlineCom extends Parser {
+export default class webnovelonlineCom extends ParserChapter {
     constructor() {
-        super(new URL('https://webnovelonline.com'), '', true);
+        super('https://webnovelonline.com/');
+        this.apiSearch = '';
     }
 
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site.replace('/novel/', '/chapter/') + '/chapter-' + _chapterN + this.endUrl);
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/searching/' + this.bTitle;
+
+        // API
     }
 
-    async totalChapters(title) {
-        let url = this.site.protocol + "//api." + this.site.hostname + "/api/v1/wuxia/search?name=" + title;
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href.replace('/novel/', '/chapter/') + '/chapter-' + _cIndex);
+    }
 
-        return await gmfetch(url)
+    async totalChapters() {
+        this.apiSearch = new URL(this.site.protocol + "//api." + this.site.hostname + "/api/v1/wuxia/search?name=" + this.bTitle);
+
+        await gmfetch(this.apiSearch.href)
             .then(res => fetchStatusJSON(res))
             .then(data => {
                 if (Object.keys(data.data).length == 0) {
-                    return "B0";
+                    this.total = "B0";
+                    return;
                 }
 
                 for (let book of data.data) {
                     let titleParser = book.title;
 
-                    let diff = tanimoto(title, titleParser);
+                    let diff = tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
-                        this.site = this.site.origin + new URL(book.url).pathname;
-                        return book.chap.match(/\D*(\d+)/)[1];
+                        this.siteBook = this.site.origin + new URL(book.url).pathname;
+                        this.total = book.chap.match(/\D*(\d+)/)[1];
+                        return;
                     }
                 }
 
-                return "S0";
+                this.total = "S0";
+                return;
             })
-            .catch(err => fetchCatch(err, url));
+            .catch(err => this.total = fetchCatch(err, this.apiSearch.href));
     }
 }

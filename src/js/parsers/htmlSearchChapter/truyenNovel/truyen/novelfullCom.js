@@ -4,7 +4,7 @@ import tanimoto from '../../../../StringProcent/tanimoto';
 
 export default class novelfullCom extends ParserChapter {
     constructor() {
-        super('https://novelfull.com');
+        super('https://novelfull.com/');
         this.endUrl = ".html";
     }
 
@@ -12,8 +12,8 @@ export default class novelfullCom extends ParserChapter {
         this.siteSearch = this.site.origin + '/search?keyword=' + this.bTitle;
     }
 
-    linkChapter(_cN, _cTitle) {
-        window.open(this.siteBook.href.replace(this.endUrl, '') + "/chapter-" + _cN + "-" + ReplaceName(_cTitle) + this.endUrl);
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href.replace(this.endUrl, '') + "/chapter-" + _cIndex + "-" + ReplaceName(_cTitle) + this.endUrl);
     }
 
     async totalChapters() {
@@ -34,7 +34,7 @@ export default class novelfullCom extends ParserChapter {
 
                     if (diff > 0.8) {
                         this.siteBook = this.site.origin + book.querySelector("h3.truyen-title > a").pathname;
-                        this.total =  book.querySelector("div.col-xs-2.text-info > div > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
+                        this.total = book.querySelector("div.col-xs-2.text-info > div > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
                         return;
                     }
                 }

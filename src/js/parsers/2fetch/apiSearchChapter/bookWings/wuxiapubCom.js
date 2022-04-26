@@ -1,27 +1,35 @@
-import { Parser } from '../../../../parser'
+import { ParserChapter } from '../../../../parser';
 import { fetchStatusHTML, fetchCatch, ReplaceName } from '../../../../domain';
-import tanimoto from '../../../../StringProcent/tanimoto'
+import tanimoto from '../../../../StringProcent/tanimoto';
 
-export default class wuxiapubCom extends Parser {
+export default class wuxiapubCom extends ParserChapter {
     constructor() {
-        super(new URL('https://www.wuxiapub.com'), '.html', true);
+        super('https://www.wuxiapub.com/');
+        this.endUrl = '.html';
+        this.apiSearch = '';
     }
 
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site.replace(this.endUrl, '') + '_' + _chapterN + this.endUrl);
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin;
+
+        // API
     }
 
-    async totalChapters(title) {
-        let url = this.site.origin + "/e/search/index.php";
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href.replace(this.endUrl, '') + '_' + _cIndex + this.endUrl);
+    }
+
+    async totalChapters() {
+        this.apiSearch = new URL(this.site.origin + "/e/search/index.php");
 
         let isLucky = false;
         var isError = '';
-        await gmfetch(url, {
+        await gmfetch(this.apiSearch.href, {
             "headers": {
                 "content-type": "application/x-www-form-urlencoded",
             },
             "referrer": this.site.origin + "/search.html",
-            "body": "show=title&tempid=1&tbname=news&keyboard=" + title,
+            "body": "show=title&tempid=1&tbname=news&keyboard=" + this.bTitle,
             "method": "POST",
         })
             .then(res => fetchStatusHTML(res))
@@ -35,30 +43,32 @@ export default class wuxiapubCom extends Parser {
                 for (let book of block) {
                     let titleParser = book.querySelector("a > h4.novel-title.text2row").textContent;
 
-                    let diff = tanimoto(title, titleParser);
+                    let diff = tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
-                        this.site = this.site.origin + book.querySelector("a").pathname;
+                        this.siteBook = this.site.origin + book.querySelector("a").pathname;
                         isLucky = true;
                         break;
                     }
                 }
             })
-            .catch(err => isError = fetchCatch(err, url));
+            .catch(err => isError = fetchCatch(err, this.apiSearch.href));
 
         if (isError != '') {
-            return isError;
+            this.total = isError;
+            return;
         }
 
         if (isLucky) {
-            return await gmfetch(this.site)
+            return await gmfetch(this.siteBook.href)
                 .then(res => fetchStatusHTML(res))
                 .then(data => {
-                    return data.querySelector("div.novel-info > div.header-stats > span:nth-child(1) > strong").textContent.trim();
+                    this.total = data.querySelector("div.novel-info > div.header-stats > span:nth-child(1) > strong").textContent.trim();
+                    return;
                 })
-                .catch(err => fetchCatch(err, url));
+                .catch(err => this.total = fetchCatch(err, this.siteBook.href));
         }
 
-        return "S0";
+        this.total = "S0";
     }
 }

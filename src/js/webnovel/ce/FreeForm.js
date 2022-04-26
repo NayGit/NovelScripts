@@ -5,23 +5,39 @@ export function CreateTableSites(_sites, _bookInfo) {
     let tbl = document.createElement('table');
     tbl.id = "crawlerId";
     tbl.hidden = true;
+    tbl.style.fontSize = "16px";
     tbl.style.width = '200px';
     tbl.style.border = '1px solid black';
 
+    let tH = tbl.createTHead();
+    let trH = tH.insertRow();
+    var tdH = trH.insertCell();
+    tdH.textContent = "Parsing All";
+    tdH.colSpan = "5";
+    tdH.style.textAlign = "right";
+    trH.addEventListener('click', function () {
+        let tmpParsing = document.querySelectorAll("#crawlerId > tbody > tr > td.parsing");
+        for (let p of tmpParsing) {
+            p.click();
+        }
+    });
+
+    let tB = tbl.createTBody();
+
     for (let i in _sites) {
         for (let j in _sites[i]) {
-            let tr = tbl.insertRow();
-            tr.className = i + "_" + j;
+            let trB = tB.insertRow();
+            trB.className = i + "_" + j;
 
 
             // Site
-            let tdSite = tr.insertCell();
-            tdSite.textContent = _sites[i][j].site.origin;
+            let tdSite = trB.insertCell();
+            tdSite.textContent = _sites[i][j].site.hostname;
             tdSite.style.border = '1px solid black';
 
 
             // Search
-            let tdSearch = tr.insertCell();
+            let tdSearch = trB.insertCell();
             tdSearch.textContent = "Search";
             tdSearch.style.border = '1px solid black';
             tdSearch.addEventListener('click', function () {
@@ -29,13 +45,12 @@ export function CreateTableSites(_sites, _bookInfo) {
             });
             if (_sites[i][j] instanceof ParserSearch) {
                 tdSearch.colSpan = "4";
-                
                 continue;
             }
 
 
             // Total
-            let tdTotal = tr.insertCell();
+            let tdTotal = trB.insertCell();
             tdTotal.className = "total"
             tdTotal.style.border = '1px solid black';
             let inputButton = Object.assign(document.createElement("input"), {
@@ -51,7 +66,7 @@ export function CreateTableSites(_sites, _bookInfo) {
 
             // Read
             if (_sites[i][j] instanceof ParserChapter) {
-                let tdRead = tr.insertCell();
+                let tdRead = trB.insertCell();
                 tdRead.className = "read"
                 tdRead.style.border = '1px solid black';
                 let ibRead = Object.assign(document.createElement("input"), {
@@ -72,7 +87,7 @@ export function CreateTableSites(_sites, _bookInfo) {
 
 
             // Parsing
-            let tdParsing = tr.insertCell();
+            let tdParsing = trB.insertCell();
             tdParsing.className = "parsing";
             tdParsing.textContent = "parsing";
             tdParsing.style.border = '1px solid black';

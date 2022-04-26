@@ -1,41 +1,46 @@
-import { Parser } from '../../../../parser'
+import { ParserChapter } from '../../../../parser';
 import { fetchStatusHTML, fetchCatch, ReplaceName } from '../../../../domain';
-import tanimoto from '../../../../StringProcent/tanimoto'
+import tanimoto from '../../../../StringProcent/tanimoto';
 
-export default class boxnovelOrg extends Parser {
+export default class boxnovelOrg extends ParserChapter {
     constructor() {
-        super(new URL('https://boxnovel.org'), '', true);
+        super(new URL('https://boxnovel.org'));
     }
 
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site.replace('/novel/', '/') + "-chapter-" + _chapterN + "-" + ReplaceName(_chapterTitle) + this.endUrl);
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/search?keyword=' + this.bTitle;
     }
 
-    async totalChapters(title) {
-        let url = this.site.origin + '/search?keyword=' + title;
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href.replace('/novel/', '/') + "-chapter-" + _cIndex + "-" + ReplaceName(_cTitle));
+    }
 
-        return await gmfetch(url)
+    async totalChapters() {
+        await gmfetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-novel-main.archive > div.list.list-novel.col-xs-12 > div.row");
 
                 if (block.length == 0) {
-                    return "B0";
+                    this.total = "B0";
+                    return;
                 }
 
                 for (let book of block) {
                     let titleParser = book.querySelector("h3.novel-title > a").textContent;
 
-                    let diff = tanimoto(title, titleParser);
+                    let diff = tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
-                        this.site = book.querySelector("h3.novel-title > a").href;
-                        return book.querySelector("div.col-xs-2.text-info > div > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
+                        this.siteBook = book.querySelector("h3.novel-title > a").href;
+                        this.total = book.querySelector("div.col-xs-2.text-info > div > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
+                        return;
                     }
                 }
 
-                return "S0";
+                this.total = "S0";
+                return;
             })
-            .catch(err => fetchCatch(err, url));
+            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
     }
 }

@@ -1,22 +1,25 @@
-import { Parser } from '../../../parser'
+import { ParserChapter } from '../../../parser';
 import { fetchStatusHTML, fetchCatch, ReplaceName } from '../../../domain';
-import tanimoto from '../../../StringProcent/tanimoto'
+import tanimoto from '../../../StringProcent/tanimoto';
 
-export default class novelscafeCom extends Parser {
+export default class novelscafeCom extends ParserChapter {
     constructor() {
-        super(new URL('https://novelscafe.com'), '/', true);
+        super('https://novelscafe.com/');
+        this.endUrl = '/';
     }
 
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site.replace(/\/$/, "") + '-chapter-' + _chapterN + '-' + ReplaceName(_chapterTitle) + this.endUrl);
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/?s=' + this.bTitle;
     }
 
-    async totalChapters(title) {
-        let url = this.site.origin + '/?s=' + title;
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href.replace(/\/$/, "") + '-chapter-' + _cIndex + '-' + ReplaceName(_cTitle) + this.endUrl);
+    }
 
+    async totalChapters() {
         let isLucky = false;
         var isError = '';
-        await gmfetch(url)
+        await gmfetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("div.posts.row > div.col-4.col-md-3.col-lg-2.post-column.mt-3");
@@ -29,30 +32,32 @@ export default class novelscafeCom extends Parser {
                 for (let book of block) {
                     let titleParser = book.querySelector("a > div.post-title").textContent;
 
-                    let diff = tanimoto(title, titleParser);
+                    let diff = tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
-                        this.site = book.querySelector("a").href;
+                        this.siteBook = book.querySelector("a").href;
                         isLucky = true;
                         break;
                     }
                 }
             })
-            .catch(err => isError = fetchCatch(err, url));
+            .catch(err => isError = fetchCatch(err, this.siteSearch.href));
 
         if (isError != '') {
-            return isError;
+            this.total = isError;
+            return;
         }
 
         if (isLucky) {
-            return await gmfetch(this.site)
+            return await gmfetch(this.siteBook.href)
                 .then(res => fetchStatusHTML(res))
                 .then(data => {
-                    return data.querySelector("#primary > div:nth-child(2) > div.col-12.col-md-9 > div.last-10-chapters > div > div:nth-child(1) > h3 > a").textContent.match(/\D*(\d+)/)[1] * -1;
+                    this.total = data.querySelector("#primary > div:nth-child(2) > div.col-12.col-md-9 > div.last-10-chapters > div > div:nth-child(1) > h3 > a").textContent.match(/\D*(\d+)/)[1] * -1;
+                    return;
                 })
-                .catch(err => fetchCatch(err, url));
+                .catch(err => this.total = fetchCatch(err, this.siteBook.href));
         }
 
-        return "B0";
+        this.total = "S0";
     }
 }

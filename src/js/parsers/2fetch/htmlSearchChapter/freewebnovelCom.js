@@ -1,22 +1,25 @@
-import { Parser } from '../../../parser'
+import { ParserChapter } from '../../../parser';
 import { fetchStatusHTML, fetchCatch, ReplaceName } from '../../../domain';
-import tanimoto from '../../../StringProcent/tanimoto'
+import tanimoto from '../../../StringProcent/tanimoto';
 
-export default class freewebnovelCom extends Parser {
+export default class freewebnovelCom extends ParserChapter {
     constructor() {
-        super(new URL('https://freewebnovel.com'), '.html', true)
+        super('https://freewebnovel.com/');
+        this.endUrl = '.html';
     }
 
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site.replace(this.endUrl, '') + '/chapter-' + _chapterN + this.endUrl);
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/search/?searchkey=' + this.bTitle;
     }
 
-    async totalChapters(title) {
-        let url = this.site.origin + '/search/?searchkey=' + title;
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href.replace(this.endUrl, '') + '/chapter-' + _cIndex + this.endUrl);
+    }
 
+    async totalChapters() {
         let isLucky = false;
         var isError = '';
-        await gmfetch(url)
+        await gmfetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("div.col-content > div > div.li-row");
@@ -29,30 +32,32 @@ export default class freewebnovelCom extends Parser {
                 for (let book of block) {
                     let titleParser = book.querySelector("div.txt > h3.tit > a").textContent;
 
-                    let diff = tanimoto(title, titleParser);
+                    let diff = tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
-                        this.site = this.site.origin + book.querySelector("div.txt > h3.tit > a").pathname;
+                        this.siteBook = this.site.origin + book.querySelector("div.txt > h3.tit > a").pathname;
                         isLucky = true;
                         break;
                     }
                 }
             })
-            .catch(err => isError = fetchCatch(err, url));
+            .catch(err => isError = fetchCatch(err, this.siteSearch.href));
 
         if (isError != '') {
-            return isError;
+            this.total = isError;
+            return;
         }
 
         if (isLucky) {
-            return await gmfetch(this.site)
+            return await gmfetch(this.siteBook.href)
                 .then(res => fetchStatusHTML(res))
                 .then(data => {
-                    return data.querySelector("body > div.main > div > div > div.col-content > div.m-newest1 > ul > li:nth-child(1) > a").textContent.match(/\D*(\d+)/)[1] * -1;
+                    this.total = data.querySelector("body > div.main > div > div > div.col-content > div.m-newest1 > ul > li:nth-child(1) > a").textContent.match(/\D*(\d+)/)[1] * -1;
+                    return;
                 })
-                .catch(err => fetchCatch(err, url));
+                .catch(err => this.total = fetchCatch(err, this.siteBook.href));
         }
 
-        return "S0";
+        this.total = "S0";
     }
 }

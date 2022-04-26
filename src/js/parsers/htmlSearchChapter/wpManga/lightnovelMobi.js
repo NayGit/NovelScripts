@@ -1,41 +1,47 @@
-import { Parser } from '../../../parser'
+import { ParserChapter } from '../../../parser';
 import { fetchStatusHTML, fetchCatch, ReplaceName } from '../../../domain';
-import tanimoto from '../../../StringProcent/tanimoto'
+import tanimoto from '../../../StringProcent/tanimoto';
 
-export default class lightnovelMobi extends Parser {
+export default class lightnovelMobi extends ParserChapter {
     constructor() {
-        super(new URL('https://lightnovel.mobi'), '/', true);
+        super('https://lightnovel.mobi/');
+        this.endUrl = "/";
     }
 
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site + "chapter-" + _chapterN + "-" + ReplaceName(_chapterTitle) + this.endUrl);
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/?s=' + this.bTitle + '&post_type=wp-manga';
     }
 
-    async totalChapters(title) {
-        let url = this.site.origin + '/?s=' + title + '&post_type=wp-manga';
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href + "chapter-" + _cIndex + "-" + ReplaceName(_cTitle) + this.endUrl);
+    }
 
-        return await gmfetch(url)
+    async totalChapters() {
+        await gmfetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("div.row.c-tabs-item__content");
 
                 if (block.length == 0) {
-                    return "B0";
+                    this.total = "B0";
+                    return;
                 }
 
                 for (let book of block) {
                     let titleParser = book.querySelector("div.post-title > h3 > a").textContent;
 
-                    let diff = tanimoto(title, titleParser);
+                    let diff = tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
-                        this.site = book.querySelector("div.post-title > h3 > a").href;
-                        return book.querySelector("div.tab-meta > div.meta-item.latest-chap > span.font-meta.chapter > a").textContent.match(/\D*(\d+)/)[1] * -1;
+                        this.siteBook = book.querySelector("div.post-title > h3 > a").href;
+                        this.total = book.querySelector("div.tab-meta > div.meta-item.latest-chap > span.font-meta.chapter > a").textContent.match(/\D*(\d+)/)[1] * -1;
+                        return;
                     }
                 }
 
-                return "S0";
+                this.total = "S0";
+                return;
             })
-            .catch(err => fetchCatch(err, url));
+            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
     }
 }

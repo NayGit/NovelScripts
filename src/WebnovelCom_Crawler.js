@@ -8,7 +8,7 @@
 // @grant       GM_xmlhttpRequest
 // @grant       GM.xmlHttpRequest
 // @require     https://raw.githubusercontent.com/maple3142/gmxhr-fetch/master/gmxhr-fetch.min.js
-// @version     0.3.0
+// @version     0.3.1
 // ==/UserScript==
 
 'use strict';
@@ -107,80 +107,80 @@ const SitesAll = [
     [
     ],
     [
-    //    // 2fetch/apiSearch
-    //    //    artBook
-    //    new mWuxiaworldCo(),
-    //    new novelupdatesCc(),
-    //    new readlightnovelCc(),
-    //    new readlightnovelCo(),
+        // 2fetch/apiSearch
+        //    artBook
+        new mWuxiaworldCo(),
+        new novelupdatesCc(),
+        new readlightnovelCc(),
+        new readlightnovelCo(),
 
-    //    // 2fetch/apiSearchChapter
-    //    new lightnovelreaderOrg(),
-    //    //    bookWings
-    //    new ltnovelCom(),
-    //    new novelmtCom(),
-    //    new readwnCom(),
-    //    new wuxiahereCom(),
-    //    new wuxiapubCom(),
+        // 2fetch/apiSearchChapter
+        new lightnovelreaderOrg(),
+        //    bookWings
+        new ltnovelCom(),
+        new novelmtCom(),
+        new readwnCom(),
+        new wuxiahereCom(),
+        new wuxiapubCom(),
 
-    //    // 2fetch/htmlSearch
-    //    new mMylovenovelCom(),
+        // 2fetch/htmlSearch
+        new mMylovenovelCom(),
 
-    //    // 2fetch/htmlSearchChapter
-    //    new freewebnovelCom(),
-    //    new novelfullvipCom(),
-    //    new novelscafeCom(),
-    //    //    POST
-    //    new novelsonlineNet(),
+        // 2fetch/htmlSearchChapter
+        new freewebnovelCom(),
+        new novelfullvipCom(),
+        new novelscafeCom(),
+        //    POST
+        new novelsonlineNet(),
 
-    //    // 2fetch/search
-    ////new lightnovelplusCom(),
+        // 2fetch/search
+    //new lightnovelplusCom(),
 
-    //    // apiSearch
-    //    new lightnovelsMe(),
+        // apiSearch
+        new lightnovelsMe(),
 
-    //    // apiSearchChapter
-    //    new webnovelonlineCom(),
+        // apiSearchChapter
+        new webnovelonlineCom(),
 
-    //    // htmlSearch
-    //    new lightnovelWorld(),
-    //    new novelhallCom(),
-    //    new pandanovelCom(),
-    //    new readlightnovelsNet(),
+        // htmlSearch
+        new lightnovelWorld(),
+        new novelhallCom(),
+        new pandanovelCom(),
+        new readlightnovelsNet(),
 
-    //    // htmlSearchChapter
-    //    new octopiiCo(),
-    //    //    madentertainment
-    //    new madnovelCom(),
-    //    new novelbuddyCom(),
-    //    new novelforestCom(),
-    //    new novelfullMe(),
-    //    //    truyenNovel/novel
-    //    new boxnovelOrg(),
-    //    new novelfullplusCom(),
-    //    new readnovelfullCom(),
-    //    new topwebnovelCom(),
-    //    //    truyenNovel/truyen
-    //    new allnovelfullCom(),
-    //    new allnovelOrg(),
+        // htmlSearchChapter
+new octopiiCo(),
+        //    madentertainment
+        new madnovelCom(),
+        new novelbuddyCom(),
+        new novelforestCom(),
+        new novelfullMe(),
+        //    truyenNovel/novel
+        new boxnovelOrg(),
+new novelfullplusCom(),
+        new readnovelfullCom(),
+        new topwebnovelCom(),
+        //    truyenNovel/truyen
+        new allnovelfullCom(),
+        new allnovelOrg(),
         new novelfullCom(),
         new novelgreatNet(),
-    //    //    wpManga
-    //    new oneStkissnovelLove(),
-    //    new latestnovelNet(),
-    //    new lightnovelMobi(),
-    //    new novelteamNet(),
-    //    new noveltrenchCom(),
-    //    new readnovelsOrg(),
-    //    new webnovelonlineNet(),
+        //    wpManga
+        new oneStkissnovelLove(),
+new latestnovelNet(),
+        new lightnovelMobi(),
+        new novelteamNet(),
+        new noveltrenchCom(),
+        new readnovelsOrg(),
+        new webnovelonlineNet(),
 
-    //    // ReplaceTitle
-    //    new readlightnovelMe(),
-    //    //    lightnovelEWcom
-    //    new lightnovelpubCom(),
-    //    new lightnovelworldCom(),
+        // ReplaceTitle
+        new readlightnovelMe(),
+        //    lightnovelEWcom
+        new lightnovelpubCom(),
+        new lightnovelworldCom(),
 
-    //    // search
+        // search
         new fastnovelNet(),
         new novelgateNet(),
         new ranobesNet(),

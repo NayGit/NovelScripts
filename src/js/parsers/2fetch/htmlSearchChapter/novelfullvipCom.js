@@ -1,22 +1,25 @@
-import { Parser } from '../../../parser'
+import { ParserChapter } from '../../../parser';
 import { fetchStatusHTML, fetchCatch, ReplaceName } from '../../../domain';
-import tanimoto from '../../../StringProcent/tanimoto'
+import tanimoto from '../../../StringProcent/tanimoto';
 
-export default class novelfullvipCom extends Parser {
+export default class novelfullvipCom extends ParserChapter {
     constructor() {
-        super(new URL('https://novelfullvip.com'), '.html', true);
+        super('https://novelfullvip.com/');
+        this.endUrl = '.html';
     }
 
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site + '/chapter-' + _chapterN + this.endUrl);
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/search?q=' + this.bTitle;
     }
 
-    async totalChapters(title) {
-        let url = this.site.origin + '/search?q=' + title;
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href + '/chapter-' + _cIndex + this.endUrl);
+    }
 
+    async totalChapters() {
         let isLucky = false;
         var isError = '';
-        await gmfetch(url)
+        await gmfetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("#truyen-slide > div.list.list-thumbnail.col-xs-12.col-md-9 > div.row > div.col-xs-4.col-sm-3.col-md-3");
@@ -29,30 +32,32 @@ export default class novelfullvipCom extends Parser {
                 for (let book of block) {
                     let titleParser = book.querySelector("a").title;
 
-                    let diff = tanimoto(title, titleParser);
+                    let diff = tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
-                        this.site = book.querySelector("a").href;
+                        this.siteBook = book.querySelector("a").href;
                         isLucky = true;
                         break;
                     }
                 }
             })
-            .catch(err => isError = fetchCatch(err, url));
+            .catch(err => isError = fetchCatch(err, this.siteSearch.href));
 
         if (isError != '') {
-            return isError;
+            this.total = isError;
+            return;
         }
 
         if (isLucky) {
-            return await gmfetch(this.site)
+            return await gmfetch(this.siteBook.href)
                 .then(res => fetchStatusHTML(res))
                 .then(data => {
-                    return data.querySelector("#truyen > div.col-xs-12.col-sm-12.col-md-9.col-truyen-main > div.col-xs-12.col-info-desc > div.col-xs-12.col-sm-8.col-md-8.desc > div.l-chapter > ul > li:nth-child(1) > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
+                    this.total = data.querySelector("#truyen > div.col-xs-12.col-sm-12.col-md-9.col-truyen-main > div.col-xs-12.col-info-desc > div.col-xs-12.col-sm-8.col-md-8.desc > div.l-chapter > ul > li:nth-child(1) > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
+                    return;
                 })
-                .catch(err => fetchCatch(err, url));
+                .catch(err => this.total = fetchCatch(err, this.siteBook.href));
         }
 
-        return "S0";
+        this.total = "S0";
     }
 }

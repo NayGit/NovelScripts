@@ -1,39 +1,45 @@
-import { Parser } from '../../parser'
+import { ParserBook } from '../../parser';
 import { fetchStatusHTML, fetchStatusJSON, fetchCatch, ReplaceName } from '../../domain';
-import tanimoto from '../../StringProcent/tanimoto'
+import tanimoto from '../../StringProcent/tanimoto';
 
-export default class lightnovelsMe extends Parser {
+export default class lightnovelsMe extends ParserBook {
     constructor() {
-        super(new URL('https://lightnovels.me'), '.html', true)
+        super('https://lightnovels.me/');
+        this.apiSearch = '';
     }
 
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site);
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/search?keyword=' + this.bTitle;
+
+        // API
     }
 
-    async totalChapters(title) {
-        let url = this.site.origin + "/api/search?keyword=" + title + "&index=0&limit=20";
+    async totalChapters() {
+        this.apiSearch = new URL(this.site.origin + "/api/search?keyword=" + this.bTitle + "&index=0&limit=20");
 
-        return await gmfetch(url)
+        await gmfetch(this.apiSearch.href)
             .then(res => fetchStatusJSON(res))
             .then(data => {
                 if (Object.keys(data.results).length == 0) {
-                    return "B0";
+                    this.total = "B0";
+                    return;
                 }
 
                 for (let book of data.results) {
                     let titleParser = book.novel_name;
 
-                    let diff = tanimoto(title, titleParser);
+                    let diff = tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
-                        this.site = this.site.origin + '/novel' + book.novel_slug;
-                        return book.chapter_name.match(/\D*(\d+)/)[1];
+                        this.siteBook = this.site.origin + '/novel' + book.novel_slug;
+                        this.total = book.chapter_name.match(/\D*(\d+)/)[1];
+                        return;
                     }
                 }
 
-                return "S0";
+                this.total = "S0";
+                return;
             })
-            .catch(err => fetchCatch(err, url));
+            .catch(err => this.total = fetchCatch(err, this.apiSearch.href));
     }
 }

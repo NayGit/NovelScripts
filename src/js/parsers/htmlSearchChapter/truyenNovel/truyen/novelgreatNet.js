@@ -4,7 +4,7 @@ import tanimoto from '../../../../StringProcent/tanimoto'
 
 export default class novelgreatNet extends ParserBook {
     constructor() {
-        super('https://novelgreat.net');
+        super('https://novelgreat.net/');
     }
 
     SetSiteSearch() {
@@ -29,7 +29,6 @@ export default class novelgreatNet extends ParserBook {
 
                     if (diff > 0.8) {
                         this.siteBook = this.site.origin + book.querySelector("h3.truyen-title > a").pathname;
-
                         this.total = book.querySelector("div.col-xs-2.text-info > div > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
                         return;
                     }

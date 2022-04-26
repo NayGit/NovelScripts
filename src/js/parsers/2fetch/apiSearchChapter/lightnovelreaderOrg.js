@@ -1,22 +1,29 @@
-import { Parser } from '../../../parser'
+import { ParserChapter } from '../../../parser';
 import { fetchStatusHTML, fetchStatusJSON, fetchCatch, ReplaceName } from '../../../domain';
-import tanimoto from '../../../StringProcent/tanimoto'
+import tanimoto from '../../../StringProcent/tanimoto';
 
-export default class lightnovelreaderOrg extends Parser {
+export default class lightnovelreaderOrg extends ParserChapter {
     constructor() {
-        super(new URL('https://lightnovelreader.org'), '', true);
+        super('https://lightnovelreader.org/');
+        this.apiSearch = '';
     }
 
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site + '/chapter-' + _chapterN + this.endUrl);
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin;
+
+        // API
     }
 
-    async totalChapters(title) {
-        let url = this.site.origin + "/search/autocomplete?query=" + title;
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href + '/chapter-' + _cIndex);
+    }
+
+    async totalChapters() {
+        this.apiSearch = new URL(this.site.origin + "/search/autocomplete?query=" + this.bTitle);
 
         let isLucky = false;
         var isError = '';
-        await gmfetch(url)
+        await gmfetch(this.apiSearch.href)
             .then(res => fetchStatusJSON(res))
             .then(data => {
                 if (Object.keys(data).length == 0) {
@@ -27,30 +34,32 @@ export default class lightnovelreaderOrg extends Parser {
                 for (let book of data.results) {
                     let titleParser = book.original_title;
 
-                    let diff = tanimoto(title, titleParser);
+                    let diff = tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
-                        this.site = book.link;
+                        this.siteBook = book.link;
                         isLucky = true;
                         break;
                     }
                 }
             })
-            .catch(err => isError = fetchCatch(err, url));
+            .catch(err => isError = fetchCatch(err, this.apiSearch.href));
 
         if (isError != '') {
-            return isError;
+            this.total = isError;
+            return;
         }
 
         if (isLucky) {
-            return await gmfetch(this.site)
+            return await gmfetch(this.siteBook.href)
                 .then(res => fetchStatusHTML(res))
                 .then(data => {
-                    return data.querySelector("body > section:nth-child(4) > div > div > div.col-12.col-xl-9 > div > div:nth-child(2) > div > div.novels-detail-right > ul > li:nth-child(9) > div.novels-detail-right-in-right > a:nth-child(1)").textContent.match(/\D*(\d+)/)[1];
+                    this.total = data.querySelector("body > section:nth-child(4) > div > div > div.col-12.col-xl-9 > div > div:nth-child(2) > div > div.novels-detail-right > ul > li:nth-child(9) > div.novels-detail-right-in-right > a:nth-child(1)").textContent.match(/\D*(\d+)/)[1];
+                    return;
                 })
-                .catch(err => fetchCatch(err, url));
+                .catch(err => this.total = fetchCatch(err, url));
         }
 
-        return "S0";
+        this.total = "S0";
     }
 }

@@ -1,42 +1,43 @@
-import { Parser } from '../../parser'
+import { ParserBook } from '../../parser';
 import { fetchStatusHTML, fetchCatch, ReplaceName } from '../../domain';
-import tanimoto from '../../StringProcent/tanimoto'
+import tanimoto from '../../StringProcent/tanimoto';
 
-export default class lightnovelWorld extends Parser {
+export default class lightnovelWorld extends ParserBook {
     constructor() {
-        super(new URL('https://m.lightnovel.world'), '', true)
-    }
-    
-    linkRead(_book, _chapterN, _chapterTitle) {
-        window.open(this.site);
+        super('https://m.lightnovel.world/');
     }
 
-    async totalChapters(title) {
-        let url = this.site.origin + '/search?keyword=' + title;
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/search?keyword=' + this.bTitle;
+    }
 
-        return await gmfetch(url)
+    async totalChapters() {
+        await gmfetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("div.book_info");
 
                 if (block.length == 0) {
-                    return "B0";
+                    this.total = "B0";
+                    return;
                 }
 
                 for (let book of block) {
                     book.querySelector("li.text1.textC000 span").remove();
                     let titleParser = book.querySelector("li.text1.textC000").textContent.trim();
 
-                    let diff = tanimoto(title, titleParser);
+                    let diff = tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
-                        this.site = this.site.origin + book.querySelector("div.book_info_r > ul > li.book_info_add_afv > a:nth-child(2)").pathname;
-                        return book.querySelector("a.text2.textC333").textContent.match(/\D*(\d+)/)[1] * -1;
+                        this.siteBook = this.site.origin + book.querySelector("div.book_info_r > ul > li.book_info_add_afv > a:nth-child(2)").pathname;
+                        this.total = book.querySelector("a.text2.textC333").textContent.match(/\D*(\d+)/)[1] * -1;
+                        return;
                     }
                 }
 
-                return "S0";
+                this.total = "S0";
+                return;
             })
-            .catch(err => fetchCatch(err, url));
+            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
     }
 }
