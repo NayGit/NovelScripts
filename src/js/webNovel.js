@@ -52,7 +52,9 @@ export function GetChapterId(_bookInfo, _cId) {
 }
 
 export function GetChapterLevel(_bookInfo, _cLevel) {
-    for (let volume of _bookInfo.data.volumeItems.reverse()) {
+    let cloneBI = JSON.parse(JSON.stringify(_bookInfo));
+
+    for (let volume of cloneBI.data.volumeItems.reverse()) {
         for (let chapter of volume.chapterItems.reverse()) {
             if (chapter.chapterLevel === _cLevel) {
                 return chapter;

@@ -15,7 +15,7 @@ export default class pandanovelCom extends ParserBook {
         await fetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
-                let block = data.querySelectorAll("#panda-app > div.sr-body > div > div.novel-list.gray-mask > ul > li");
+                let block = data.querySelectorAll("#panda-app > div.sr-body > div.novel-list > ul > li"); 
 
                 if (block.length == 0) {
                     this.total = "B0";
@@ -29,7 +29,12 @@ export default class pandanovelCom extends ParserBook {
 
                     if (diff > 0.8) {
                         this.siteBook = this.site.origin + book.querySelector("a").pathname;
-                        this.total = book.querySelector("div.novel-desc > div > label > em").textContent.match(/\D*(\d+)/)[1] * -1;
+
+                        let tmpTotal = book.querySelector("div.novel-desc > div > label > em");
+                        if (tmpTotal === null) {
+                            tmpTotal = book.querySelector("div.novel-desc > h6 > label > em")
+                        }
+                        this.total = tmpTotal.textContent.match(/\D*(\d+)/)[1] * -1;
                         return;
                     }
                 }

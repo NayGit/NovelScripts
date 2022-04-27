@@ -42,6 +42,9 @@ export function H1IdGlava(_chStart, _chLastLocked, _chStop) {
     else if (_chStart == _chLastLocked || _chLastLocked == _chStop) {
         tmpText = _chStart + " / " + _chStop;
     }
+    else if (_chStart > _chLastLocked) {
+        tmpText = _chStart + " / " + _chStop;
+    }
     else {
         tmpText = _chStart + " / " + _chLastLocked + " / " + _chStop;
     }

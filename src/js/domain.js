@@ -18,16 +18,25 @@ export function fetchStatusJSON(response) {
 }
 
 export function fetchCatch(_error, _site) {
-    if (!_error.ok) {
-        console.warn(new URL(_site) + ' Fetch error: ' + _error.status);
-        console.warn(_error);
-        return "F" + _error.status;
+    if (_error instanceof TypeError) {
+        if (_error.message == "Failed to fetch") {
+            console.warn('TypeError: ' + new URL(_site));
+            console.warn(_error);
+            return "Fetch";
+        }
     }
-    else {
-        console.error(new URL(_site) + ' Parsing error: ' + _error);
-        console.error(_error);
-        return "errP";
+
+    if (_error instanceof Response) {
+        if (!_error.ok) {
+            console.warn('Response: ' + new URL(_site));
+            console.warn(_error);
+            return "F" + _error.status;
+        }
     }
+
+    console.warn('Error: ' + new URL(_site));
+    console.warn(_error);
+    return "Err";
 }
 
 export function ReplaceName(name) {

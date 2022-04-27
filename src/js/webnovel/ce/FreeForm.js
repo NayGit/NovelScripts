@@ -32,8 +32,13 @@ export function CreateTableSites(_sites, _bookInfo) {
 
             // Site
             let tdSite = trB.insertCell();
-            tdSite.textContent = _sites[i][j].site.hostname;
+            //tdSite.textContent = _sites[i][j].site.hostname;
             tdSite.style.border = '1px solid black';
+            tdSite.title = _sites[i][j].site.hostname;
+            tdSite.textContent = [i] + "_" + [j];
+            tdSite.addEventListener('click', function () {
+                alert([i] + "_" + [j] + ": " + _sites[i][j].site);
+            });
 
 
             // Search

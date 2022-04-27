@@ -2,9 +2,9 @@ import { ParserChapter } from '../../../../parser';
 import { fetchStatusHTML, fetchCatch, ReplaceName } from '../../../../domain';
 import tanimoto from '../../../../StringProcent/tanimoto';
 
-export default class boxnovelOrg extends ParserChapter {
+export default class novelpokiCom extends ParserChapter {
     constructor() {
-        super(new URL('https://boxnovel.org'));
+        super(new URL('https://novelpoki.com/'));
     }
 
     SetSiteSearch() {

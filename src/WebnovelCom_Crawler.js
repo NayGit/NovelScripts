@@ -5,14 +5,15 @@
 // @supportURL  https://github.com/NayGit/NovelScripts/issues
 // @author      Nay
 // @match       https://*.webnovel.com/book/*/*
-// @version     0.3.2
+// @grant       GM_xmlhttpRequest
+// @version     0.3.3
 // ==/UserScript==
 
 'use strict';
 
 import './css/webnovel.css'
 
-import { downloadBookIfno, GetChapterId, GetChapterLevel } from './js/webNovel';
+import { downloadBookIfno, glavaWebNovel, GetChapterId, GetChapterLevel } from './js/webNovel';
 import { DivPanel, InputDivPanelHide, InputBookInfo, H1IdGlava, InputChapterNext } from './js/webnovel/ce/DivPanel';
 import { CreateTableSites } from './js/webnovel/ce/FreeForm';
 
@@ -52,6 +53,7 @@ import lightnovelplusCom from './js/parsers/2fetch/search/lightnovelplusCom';
 import lightnovelsMe from './js/parsers/apiSearch/lightnovelsMe';
 
 // apiSearchChapter
+import octopiiCo from './js/parsers/apiSearchChapter/octopiiCo';
 import webnovelonlineCom from './js/parsers/apiSearchChapter/webnovelonlineCom';
 
 // htmlSearch
@@ -61,15 +63,14 @@ import pandanovelCom from './js/parsers/htmlSearch/pandanovelCom';
 import readlightnovelsNet from './js/parsers/htmlSearch/readlightnovelsNet';
 
 // htmlSearchChapter
-import octopiiCo from './js/parsers/htmlSearchChapter/octopiiCo';
 //    madentertainment
 import madnovelCom from './js/parsers/htmlSearchChapter/madentertainment/madnovelCom';
 import novelbuddyCom from './js/parsers/htmlSearchChapter/madentertainment/novelbuddyCom';
 import novelforestCom from './js/parsers/htmlSearchChapter/madentertainment/novelforestCom';
 import novelfullMe from './js/parsers/htmlSearchChapter/madentertainment/novelfullMe';
 //    truyenNovel/novel
-import boxnovelOrg from './js/parsers/htmlSearchChapter/truyenNovel/novel/boxnovelOrg';
 import novelfullplusCom from './js/parsers/htmlSearchChapter/truyenNovel/novel/novelfullplusCom';
+import novelpokiCom from './js/parsers/htmlSearchChapter/truyenNovel/novel/novelpokiCom';
 import readnovelfullCom from './js/parsers/htmlSearchChapter/truyenNovel/novel/readnovelfullCom';
 import topwebnovelCom from './js/parsers/htmlSearchChapter/truyenNovel/novel/topwebnovelCom';
 //    truyenNovel/truyen
@@ -153,7 +154,7 @@ new octopiiCo(),
         new novelforestCom(),
         new novelfullMe(),
         //    truyenNovel/novel
-        new boxnovelOrg(),
+        new novelpokiCom(),
 new novelfullplusCom(),
         new readnovelfullCom(),
         new topwebnovelCom(),
@@ -184,10 +185,42 @@ new latestnovelNet(),
     ]
 ];
 
-async function CreateDivMain(_cId) {
-    let chapter = GetChapterId(BookInfo, _cId);
+async function CreateDivMain(_statusChapter, _cId = "") {
+    let divMain;
+    if (_statusChapter === StatusChapter.PRIVATE) {
+        divMain = DivPanel(DivMain + "_" + _statusChapter, _statusChapter);
 
-    let divMain = DivPanel(DivMain + "_" + _cId, DivMain);
+        _cId = glavaWebNovel(location);
+
+        if (GetChapterId(BookInfo, _cId).chapterLevel === 0) {
+            let tmpChId = "";
+            for (let volume of BookInfo.data.volumeItems) {
+                for (let chapter of volume.chapterItems) {
+                    if (chapter.chapterLevel > 0) {
+                        tmpChId = chapter.chapterId;
+                        break;
+                    }
+                }
+
+                if (tmpChId !== "") {
+                    break
+                }
+            }
+
+            if (tmpChId !== "") {
+                _cId = tmpChId;
+            }
+            else {
+                return divMain;
+            }
+
+        }
+    }
+    else {
+        divMain = DivPanel(DivMain + "_" + _cId, _statusChapter);
+    }
+
+    let chapter = GetChapterId(BookInfo, _cId);
 
     divMain.append(InputBookInfo(BookId));
 
@@ -210,7 +243,12 @@ async function CreateDivMain(_cId) {
     locked.addEventListener('click', async function () {
         let crawlerTable = document.querySelector("#crawlerId");
         if (crawlerTable !== null) {
-            document.querySelector("#" + DivMain + "_" + _cId).appendChild(crawlerTable);
+            if (_statusChapter === StatusChapter.PRIVATE) {
+                document.querySelector("#" + DivMain + "_" + _statusChapter).appendChild(crawlerTable);
+            }
+            else {
+                document.querySelector("#" + DivMain + "_" + _cId).appendChild(crawlerTable);
+            }
             crawlerTable.setAttribute("cId", _cId);
             crawlerTable.hidden = false;
         }
@@ -284,8 +322,7 @@ var ChLastLocked = "";
         for (let c of contents) {
             let chapterId = c.id.match(/^content-(\d+)$/);
             if (chapterId && c.parentElement.querySelector("#" + DivMain + "_" + chapterId[1]) === null) {
-                let divMain = await CreateDivMain(chapterId[1]);
-                divMain.classList.add(StatusChapter.LOCKED);
+                let divMain = await CreateDivMain(StatusChapter.LOCKED, chapterId[1]);
 
                 let contentTitle = c.parentElement.querySelector("div.ChapterTitle_chapter_title_container__Wq5T8");
                 contentTitle.after(divMain);
@@ -295,11 +332,15 @@ var ChLastLocked = "";
             }
         }
 
+        console.info(1);
         let contentsUnlocked = document.querySelectorAll("div.pr > div > div.styles_content__3tuD4:not(.styles_locked_content__16dUX)");
         if (contentsUnlocked.length > 0) {
+            console.info(2);
             for (let c of contentsUnlocked) {
-                let divMain = c.parentElement.querySelector("div." + DivMain + "." + StatusChapter.LOCKED);
+                console.info(3);
+                let divMain = c.parentElement.querySelector("div." + StatusChapter.LOCKED);
                 if (divMain !== null) {
+                    console.info(4);
                     divMain.classList.remove(StatusChapter.LOCKED);
                     divMain.classList.add(StatusChapter.UNLOCKED);
                 }
@@ -307,11 +348,8 @@ var ChLastLocked = "";
         }
 
         let contentsPrivate = document.querySelector("div.pr > div > div.styles_last_chapter_footer__SPOMm");
-        if (contentsPrivate !== null && contentsPrivate.querySelector("div." + DivMain + "." + StatusChapter.PRIVATE) === null) {
-            let divMain = await CreateDivMain(chapterId[1]);
-            //let divMain = await CreateDivMain(BookInfo, "61829347492807077");
-            divMain.classList.add(StatusChapter.PRIVATE);
-
+        if (contentsPrivate !== null && contentsPrivate.querySelector("#" + DivMain + "_" + StatusChapter.PRIVATE) === null) {
+            let divMain = await CreateDivMain(StatusChapter.PRIVATE);
             contentsPrivate.prepend(divMain);
         }
 
