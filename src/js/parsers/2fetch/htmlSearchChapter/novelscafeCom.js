@@ -19,7 +19,7 @@ export default class novelscafeCom extends ParserChapter {
     async totalChapters() {
         let isLucky = false;
         var isError = '';
-        await gmfetch(this.siteSearch.href)
+        await fetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("div.posts.row > div.col-4.col-md-3.col-lg-2.post-column.mt-3");
@@ -49,7 +49,7 @@ export default class novelscafeCom extends ParserChapter {
         }
 
         if (isLucky) {
-            return await gmfetch(this.siteBook.href)
+            return await fetch(this.siteBook.href)
                 .then(res => fetchStatusHTML(res))
                 .then(data => {
                     this.total = data.querySelector("#primary > div:nth-child(2) > div.col-12.col-md-9 > div.last-10-chapters > div > div:nth-child(1) > h3 > a").textContent.match(/\D*(\d+)/)[1] * -1;

@@ -12,7 +12,7 @@ export default class pandanovelCom extends ParserBook {
     }
 
     async totalChapters() {
-        await gmfetch(this.siteSearch.href)
+        await fetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("#panda-app > div.sr-body > div > div.novel-list.gray-mask > ul > li");

@@ -22,7 +22,7 @@ export default class novelsonlineNet extends ParserChapter {
 
         let isLucky = false;
         var isError = '';
-        await gmfetch(url.href, {
+        await fetch(url.href, {
             "headers": {
                 "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
             },
@@ -59,7 +59,7 @@ export default class novelsonlineNet extends ParserChapter {
         }
 
         if (isLucky) {
-            return await gmfetch(this.siteBook.href)
+            return await fetch(this.siteBook.href)
                 .then(res => fetchStatusHTML(res))
                 .then(data => {
                     this.total = data.querySelector("#collapse-1 > div > div > div.tab-pane.active > ul > li:last-child").textContent.match(/\D*(\d+)/)[1];

@@ -13,7 +13,7 @@ export default class readlightnovelsNet extends ParserBook {
     }
 
     async totalChapters() {
-        await gmfetch(this.siteSearch.href)
+        await fetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("div.col-md-3.col-sm-6.col-xs-6.home-truyendecu");

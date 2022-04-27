@@ -12,7 +12,7 @@ export default class lightnovelWorld extends ParserBook {
     }
 
     async totalChapters() {
-        await gmfetch(this.siteSearch.href)
+        await fetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("div.book_info");

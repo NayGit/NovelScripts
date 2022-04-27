@@ -14,7 +14,7 @@ export default class mMylovenovelCom extends ParserBook {
     async totalChapters() {
         let isLucky = false;
         var isError = '';
-        await gmfetch(this.siteSearch.href)
+        await fetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("div.main > ul.list > li");
@@ -44,7 +44,7 @@ export default class mMylovenovelCom extends ParserBook {
         }
 
         if (isLucky) {
-            return await gmfetch(this.siteBook.href)
+            return await fetch(this.siteBook.href)
                 .then(res => fetchStatusHTML(res))
                 .then(data => {
                     this.total = data.querySelector("#info > div.main > div.detail > p.chapter > a").textContent.match(/\D*(\d+)/)[1] * -1;

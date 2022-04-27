@@ -23,7 +23,7 @@ export default class lightnovelreaderOrg extends ParserChapter {
 
         let isLucky = false;
         var isError = '';
-        await gmfetch(this.apiSearch.href)
+        await fetch(this.apiSearch.href)
             .then(res => fetchStatusJSON(res))
             .then(data => {
                 if (Object.keys(data).length == 0) {
@@ -51,7 +51,7 @@ export default class lightnovelreaderOrg extends ParserChapter {
         }
 
         if (isLucky) {
-            return await gmfetch(this.siteBook.href)
+            return await fetch(this.siteBook.href)
                 .then(res => fetchStatusHTML(res))
                 .then(data => {
                     this.total = data.querySelector("body > section:nth-child(4) > div > div > div.col-12.col-xl-9 > div > div:nth-child(2) > div > div.novels-detail-right > ul > li:nth-child(9) > div.novels-detail-right-in-right > a:nth-child(1)").textContent.match(/\D*(\d+)/)[1];

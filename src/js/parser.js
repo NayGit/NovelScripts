@@ -82,7 +82,7 @@ export class artBook extends ParserBook {
     async totalChapters() {
         let isLucky = false;
         var isError = '';
-        await gmfetch(this.siteSearch.href)
+        await fetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("div.result-container_2.result-container > ul.result-list > li.list-item");
@@ -112,7 +112,7 @@ export class artBook extends ParserBook {
         }
 
         if (isLucky) {
-            return await gmfetch(this.siteBook.href)
+            return await fetch(this.siteBook.href)
                 .then(res => fetchStatusHTML(res))
                 .then(data => {
                     let allCH = data.querySelector("#detail > div.chapter-wrapper > ul").getElementsByTagName("a");

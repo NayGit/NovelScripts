@@ -5,10 +5,7 @@
 // @supportURL  https://github.com/NayGit/NovelScripts/issues
 // @author      Nay
 // @match       https://*.webnovel.com/book/*/*
-// @grant       GM_xmlhttpRequest
-// @grant       GM.xmlHttpRequest
-// @require     https://raw.githubusercontent.com/maple3142/gmxhr-fetch/master/gmxhr-fetch.min.js
-// @version     0.3.1
+// @version     0.3.2
 // ==/UserScript==
 
 'use strict';

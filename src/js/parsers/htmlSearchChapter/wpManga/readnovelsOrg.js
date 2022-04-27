@@ -17,7 +17,7 @@ export default class readnovelsOrg extends ParserChapter {
     }
 
     async totalChapters() {
-        await gmfetch(this.siteSearch.href)
+        await fetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("div.row.c-tabs-item__content");

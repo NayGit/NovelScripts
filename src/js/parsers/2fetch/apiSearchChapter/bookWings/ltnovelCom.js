@@ -24,7 +24,7 @@ export default class ltnovelCom extends ParserChapter {
 
         let isLucky = false;
         var isError = '';
-        await gmfetch(this.apiSearch.href, {
+        await fetch(this.apiSearch.href, {
             "headers": {
                 "content-type": "application/x-www-form-urlencoded",
             },
@@ -60,7 +60,7 @@ export default class ltnovelCom extends ParserChapter {
         }
 
         if (isLucky) {
-            return await gmfetch(this.siteBook.href)
+            return await fetch(this.siteBook.href)
                 .then(res => fetchStatusHTML(res))
                 .then(data => {
                     this.total = data.querySelector("div.novel-info > div.header-stats > span:nth-child(1) > strong").textContent.trim();
