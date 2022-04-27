@@ -596,7 +596,9 @@ function GetChapterId(_bookInfo, _cId) {
 }
 
 function GetChapterLevel(_bookInfo, _cLevel) {
-    for (let volume of _bookInfo.data.volumeItems.reverse()) {
+    let cloneBI = JSON.parse(JSON.stringify(_bookInfo));
+
+    for (let volume of cloneBI.data.volumeItems.reverse()) {
         for (let chapter of volume.chapterItems.reverse()) {
             if (chapter.chapterLevel === _cLevel) {
                 return chapter;
@@ -625,16 +627,25 @@ function domain_fetchStatusJSON(response) {
 }
 
 function domain_fetchCatch(_error, _site) {
-    if (!_error.ok) {
-        console.warn(new URL(_site) + ' Fetch error: ' + _error.status);
-        console.warn(_error);
-        return "F" + _error.status;
+    if (_error instanceof TypeError) {
+        if (_error.message == "Failed to fetch") {
+            console.warn('TypeError: ' + new URL(_site));
+            console.warn(_error);
+            return "Fetch";
+        }
     }
-    else {
-        console.error(new URL(_site) + ' Parsing error: ' + _error);
-        console.error(_error);
-        return "errP";
+
+    if (_error instanceof Response) {
+        if (!_error.ok) {
+            console.warn('Response: ' + new URL(_site));
+            console.warn(_error);
+            return "F" + _error.status;
+        }
     }
+
+    console.warn('Error: ' + new URL(_site));
+    console.warn(_error);
+    return "Err";
 }
 
 function ReplaceName(name) {

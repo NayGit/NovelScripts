@@ -562,16 +562,25 @@ function fetchStatusJSON(response) {
 }
 
 function fetchCatch(_error, _site) {
-    if (!_error.ok) {
-        console.warn(new URL(_site) + ' Fetch error: ' + _error.status);
-        console.warn(_error);
-        return "F" + _error.status;
+    if (_error instanceof TypeError) {
+        if (_error.message == "Failed to fetch") {
+            console.warn('TypeError: ' + new URL(_site));
+            console.warn(_error);
+            return "Fetch";
+        }
     }
-    else {
-        console.error(new URL(_site) + ' Parsing error: ' + _error);
-        console.error(_error);
-        return "errP";
+
+    if (_error instanceof Response) {
+        if (!_error.ok) {
+            console.warn('Response: ' + new URL(_site));
+            console.warn(_error);
+            return "F" + _error.status;
+        }
     }
+
+    console.warn('Error: ' + new URL(_site));
+    console.warn(_error);
+    return "Err";
 }
 
 function ReplaceName(name) {
@@ -669,7 +678,9 @@ function GetChapterId(_bookInfo, _cId) {
 }
 
 function GetChapterLevel(_bookInfo, _cLevel) {
-    for (let volume of _bookInfo.data.volumeItems.reverse()) {
+    let cloneBI = JSON.parse(JSON.stringify(_bookInfo));
+
+    for (let volume of cloneBI.data.volumeItems.reverse()) {
         for (let chapter of volume.chapterItems.reverse()) {
             if (chapter.chapterLevel === _cLevel) {
                 return chapter;
@@ -720,6 +731,9 @@ function H1IdGlava(_chStart, _chLastLocked, _chStop) {
         tmpText = "last";
     }
     else if (_chStart == _chLastLocked || _chLastLocked == _chStop) {
+        tmpText = _chStart + " / " + _chStop;
+    }
+    else if (_chStart > _chLastLocked) {
         tmpText = _chStart + " / " + _chStop;
     }
     else {
@@ -860,7 +874,7 @@ class artBook extends ParserBook {
     async totalChapters() {
         let isLucky = false;
         var isError = '';
-        await gmfetch(this.siteSearch.href)
+        await fetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("div.result-container_2.result-container > ul.result-list > li.list-item");
@@ -890,7 +904,7 @@ class artBook extends ParserBook {
         }
 
         if (isLucky) {
-            return await gmfetch(this.siteBook.href)
+            return await fetch(this.siteBook.href)
                 .then(res => fetchStatusHTML(res))
                 .then(data => {
                     let allCH = data.querySelector("#detail > div.chapter-wrapper > ul").getElementsByTagName("a");
@@ -947,8 +961,13 @@ function CreateTableSites(_sites, _bookInfo) {
 
             // Site
             let tdSite = trB.insertCell();
-            tdSite.textContent = _sites[i][j].site.hostname;
+            //tdSite.textContent = _sites[i][j].site.hostname;
             tdSite.style.border = '1px solid black';
+            tdSite.title = _sites[i][j].site.hostname;
+            tdSite.textContent = [i] + "_" + [j];
+            tdSite.addEventListener('click', function () {
+                alert([i] + "_" + [j] + ": " + _sites[i][j].site);
+            });
 
 
             // Search
@@ -1381,7 +1400,7 @@ class lightnovelreaderOrg extends ParserChapter {
 
         let isLucky = false;
         var isError = '';
-        await gmfetch(this.apiSearch.href)
+        await fetch(this.apiSearch.href)
             .then(res => fetchStatusJSON(res))
             .then(data => {
                 if (Object.keys(data).length == 0) {
@@ -1409,7 +1428,7 @@ class lightnovelreaderOrg extends ParserChapter {
         }
 
         if (isLucky) {
-            return await gmfetch(this.siteBook.href)
+            return await fetch(this.siteBook.href)
                 .then(res => fetchStatusHTML(res))
                 .then(data => {
                     this.total = data.querySelector("body > section:nth-child(4) > div > div > div.col-12.col-xl-9 > div > div:nth-child(2) > div > div.novels-detail-right > ul > li:nth-child(9) > div.novels-detail-right-in-right > a:nth-child(1)").textContent.match(/\D*(\d+)/)[1];
@@ -1448,7 +1467,7 @@ class ltnovelCom extends ParserChapter {
 
         let isLucky = false;
         var isError = '';
-        await gmfetch(this.apiSearch.href, {
+        await fetch(this.apiSearch.href, {
             "headers": {
                 "content-type": "application/x-www-form-urlencoded",
             },
@@ -1484,7 +1503,7 @@ class ltnovelCom extends ParserChapter {
         }
 
         if (isLucky) {
-            return await gmfetch(this.siteBook.href)
+            return await fetch(this.siteBook.href)
                 .then(res => fetchStatusHTML(res))
                 .then(data => {
                     this.total = data.querySelector("div.novel-info > div.header-stats > span:nth-child(1) > strong").textContent.trim();
@@ -1523,7 +1542,7 @@ class novelmtCom extends ParserChapter {
 
         let isLucky = false;
         var isError = '';
-        await gmfetch(this.apiSearch.href, {
+        await fetch(this.apiSearch.href, {
             "headers": {
                 "content-type": "application/x-www-form-urlencoded",
             },
@@ -1559,7 +1578,7 @@ class novelmtCom extends ParserChapter {
         }
 
         if (isLucky) {
-            return await gmfetch(this.siteBook.href)
+            return await fetch(this.siteBook.href)
                 .then(res => fetchStatusHTML(res))
                 .then(data => {
                     this.total = data.querySelector("div.novel-info > div.header-stats > span:nth-child(1) > strong").textContent.trim();
@@ -1598,7 +1617,7 @@ class readwnCom extends ParserChapter {
 
         let isLucky = false;
         var isError = '';
-        await gmfetch(this.apiSearch.href, {
+        await fetch(this.apiSearch.href, {
             "headers": {
                 "content-type": "application/x-www-form-urlencoded",
             },
@@ -1634,7 +1653,7 @@ class readwnCom extends ParserChapter {
         }
 
         if (isLucky) {
-            return await gmfetch(this.siteBook.href)
+            return await fetch(this.siteBook.href)
                 .then(res => fetchStatusHTML(res))
                 .then(data => {
                     this.total = data.querySelector("div.novel-info > div.header-stats > span:nth-child(1) > strong").textContent.trim();
@@ -1673,7 +1692,7 @@ class wuxiahereCom extends ParserChapter {
 
         let isLucky = false;
         var isError = '';
-        await gmfetch(this.apiSearch.href, {
+        await fetch(this.apiSearch.href, {
             "headers": {
                 "content-type": "application/x-www-form-urlencoded",
             },
@@ -1709,7 +1728,7 @@ class wuxiahereCom extends ParserChapter {
         }
 
         if (isLucky) {
-            return await gmfetch(this.siteBook.href)
+            return await fetch(this.siteBook.href)
                 .then(res => fetchStatusHTML(res))
                 .then(data => {
                     this.total = data.querySelector("div.novel-info > div.header-stats > span:nth-child(1) > strong").textContent.trim();
@@ -1748,7 +1767,7 @@ class wuxiapubCom extends ParserChapter {
 
         let isLucky = false;
         var isError = '';
-        await gmfetch(this.apiSearch.href, {
+        await fetch(this.apiSearch.href, {
             "headers": {
                 "content-type": "application/x-www-form-urlencoded",
             },
@@ -1784,7 +1803,7 @@ class wuxiapubCom extends ParserChapter {
         }
 
         if (isLucky) {
-            return await gmfetch(this.siteBook.href)
+            return await fetch(this.siteBook.href)
                 .then(res => fetchStatusHTML(res))
                 .then(data => {
                     this.total = data.querySelector("div.novel-info > div.header-stats > span:nth-child(1) > strong").textContent.trim();
@@ -1813,7 +1832,7 @@ class mMylovenovelCom extends ParserBook {
     async totalChapters() {
         let isLucky = false;
         var isError = '';
-        await gmfetch(this.siteSearch.href)
+        await fetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("div.main > ul.list > li");
@@ -1843,7 +1862,7 @@ class mMylovenovelCom extends ParserBook {
         }
 
         if (isLucky) {
-            return await gmfetch(this.siteBook.href)
+            return await fetch(this.siteBook.href)
                 .then(res => fetchStatusHTML(res))
                 .then(data => {
                     this.total = data.querySelector("#info > div.main > div.detail > p.chapter > a").textContent.match(/\D*(\d+)/)[1] * -1;
@@ -1877,7 +1896,7 @@ class freewebnovelCom extends ParserChapter {
     async totalChapters() {
         let isLucky = false;
         var isError = '';
-        await gmfetch(this.siteSearch.href)
+        await fetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("div.col-content > div > div.li-row");
@@ -1907,7 +1926,7 @@ class freewebnovelCom extends ParserChapter {
         }
 
         if (isLucky) {
-            return await gmfetch(this.siteBook.href)
+            return await fetch(this.siteBook.href)
                 .then(res => fetchStatusHTML(res))
                 .then(data => {
                     this.total = data.querySelector("body > div.main > div > div > div.col-content > div.m-newest1 > ul > li:nth-child(1) > a").textContent.match(/\D*(\d+)/)[1] * -1;
@@ -1941,7 +1960,7 @@ class novelfullvipCom extends ParserChapter {
     async totalChapters() {
         let isLucky = false;
         var isError = '';
-        await gmfetch(this.siteSearch.href)
+        await fetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("#truyen-slide > div.list.list-thumbnail.col-xs-12.col-md-9 > div.row > div.col-xs-4.col-sm-3.col-md-3");
@@ -1971,7 +1990,7 @@ class novelfullvipCom extends ParserChapter {
         }
 
         if (isLucky) {
-            return await gmfetch(this.siteBook.href)
+            return await fetch(this.siteBook.href)
                 .then(res => fetchStatusHTML(res))
                 .then(data => {
                     this.total = data.querySelector("#truyen > div.col-xs-12.col-sm-12.col-md-9.col-truyen-main > div.col-xs-12.col-info-desc > div.col-xs-12.col-sm-8.col-md-8.desc > div.l-chapter > ul > li:nth-child(1) > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
@@ -2005,7 +2024,7 @@ class novelscafeCom extends ParserChapter {
     async totalChapters() {
         let isLucky = false;
         var isError = '';
-        await gmfetch(this.siteSearch.href)
+        await fetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("div.posts.row > div.col-4.col-md-3.col-lg-2.post-column.mt-3");
@@ -2035,7 +2054,7 @@ class novelscafeCom extends ParserChapter {
         }
 
         if (isLucky) {
-            return await gmfetch(this.siteBook.href)
+            return await fetch(this.siteBook.href)
                 .then(res => fetchStatusHTML(res))
                 .then(data => {
                     this.total = data.querySelector("#primary > div:nth-child(2) > div.col-12.col-md-9 > div.last-10-chapters > div > div:nth-child(1) > h3 > a").textContent.match(/\D*(\d+)/)[1] * -1;
@@ -2072,7 +2091,7 @@ class novelsonlineNet extends ParserChapter {
 
         let isLucky = false;
         var isError = '';
-        await gmfetch(url.href, {
+        await fetch(url.href, {
             "headers": {
                 "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
             },
@@ -2109,7 +2128,7 @@ class novelsonlineNet extends ParserChapter {
         }
 
         if (isLucky) {
-            return await gmfetch(this.siteBook.href)
+            return await fetch(this.siteBook.href)
                 .then(res => fetchStatusHTML(res))
                 .then(data => {
                     this.total = data.querySelector("#collapse-1 > div > div > div.tab-pane.active > ul > li:last-child").textContent.match(/\D*(\d+)/)[1];
@@ -2147,7 +2166,7 @@ class lightnovelplusCom extends ParserSearch {
 
         let isLucky = false;
         var isError = '';
-        await gmfetch(this.site.href)
+        await fetch(this.site.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("#list-page > div.col-xs-12.col-sm-12.col-md-9.col-truyen-main_1.archive > div > div.row");
@@ -2181,7 +2200,7 @@ class lightnovelplusCom extends ParserSearch {
 
         if (isLucky) {
             isLucky = false;
-            await gmfetch(this.site.href)
+            await fetch(this.site.href)
                 .then(res => fetchStatusHTML(res))
                 .then(data => {
                     this.site = new URL(this.site.origin + data.querySelector("#list-chapter > ul > li.last > a").pathname + data.querySelector("#list-chapter > ul > li.last > a").search);
@@ -2200,7 +2219,7 @@ class lightnovelplusCom extends ParserSearch {
                 window.open(this.site);
                 return;
 
-                //return await gmfetch(this.site)
+                //return await fetch(this.site)
                 //    .then(res => fetchStatusHTML(res))
                 //    .then(data => {
                 //        return data.querySelector("#list-chapter > div.row > div:nth-child(1) > ul:last-child- > li > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
@@ -2233,7 +2252,7 @@ class lightnovelsMe extends ParserBook {
     async totalChapters() {
         this.apiSearch = new URL(this.site.origin + "/api/search?keyword=" + this.bTitle + "&index=0&limit=20");
 
-        await gmfetch(this.apiSearch.href)
+        await fetch(this.apiSearch.href)
             .then(res => fetchStatusJSON(res))
             .then(data => {
                 if (Object.keys(data.results).length == 0) {
@@ -2248,6 +2267,62 @@ class lightnovelsMe extends ParserBook {
 
                     if (diff > 0.8) {
                         this.siteBook = this.site.origin + '/novel' + book.novel_slug;
+                        this.total = book.chapter_name.match(/\D*(\d+)/)[1];
+                        return;
+                    }
+                }
+
+                this.total = "S0";
+                return;
+            })
+            .catch(err => this.total = fetchCatch(err, this.apiSearch.href));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/apiSearchChapter/octopiiCo.js
+
+
+
+
+class octopiiCo extends ParserChapter {
+    constructor() {
+        super('https://octopii.co/');
+        this.apiSearch = '';
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/search/' + this.bTitle;
+
+        // API
+    }
+
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href + '/chapter-' + _cIndex + '-' + ReplaceName(_cTitle));
+    }
+
+    async totalChapters() {
+        this.apiSearch = new URL(this.site.origin + "/api/advance-search");
+
+        await fetch(this.apiSearch.href, {
+            "headers": {
+                "content-type": "application/json",
+            },
+            "body": "{\"clicked\":false,\"limit\":\"24\",\"page\":0,\"pageCount\":1,\"value\":\"" + this.bTitle + "\",\"sort\":3,\"selected\":{\"genre\":[],\"status\":[],\"sort\":[],\"author\":[]},\"results\":[],\"label\":\"searching ....\"}",
+            "method": "POST",
+        })
+            .then(res => fetchStatusJSON(res))
+            .then(data => {
+                if (Object.keys(data.results).length == 0) {
+                    this.total = "B0";
+                    return;
+                }
+
+                for (let book of data.results) {
+                    let titleParser = book.novel_name;
+
+                    let diff = tanimoto(this.bTitle, titleParser);
+
+                    if (diff > 0.8) {
+                        this.siteBook = this.site.origin + "/novel/" + book.novel_slug;
                         this.total = book.chapter_name.match(/\D*(\d+)/)[1];
                         return;
                     }
@@ -2283,7 +2358,7 @@ class webnovelonlineCom extends ParserChapter {
     async totalChapters() {
         this.apiSearch = new URL(this.site.protocol + "//api." + this.site.hostname + "/api/v1/wuxia/search?name=" + this.bTitle);
 
-        await gmfetch(this.apiSearch.href)
+        await fetch(this.apiSearch.href)
             .then(res => fetchStatusJSON(res))
             .then(data => {
                 if (Object.keys(data.data).length == 0) {
@@ -2324,7 +2399,7 @@ class lightnovelWorld extends ParserBook {
     }
 
     async totalChapters() {
-        await gmfetch(this.siteSearch.href)
+        await fetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("div.book_info");
@@ -2368,7 +2443,7 @@ class novelhallCom extends ParserBook {
     }
 
     async totalChapters() {
-        await gmfetch(this.siteSearch.href)
+        await fetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("#main > div.container > div > table > tbody > tr");
@@ -2411,10 +2486,10 @@ class pandanovelCom extends ParserBook {
     }
 
     async totalChapters() {
-        await gmfetch(this.siteSearch.href)
+        await fetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
-                let block = data.querySelectorAll("#panda-app > div.sr-body > div > div.novel-list.gray-mask > ul > li");
+                let block = data.querySelectorAll("#panda-app > div.sr-body > div.novel-list > ul > li"); 
 
                 if (block.length == 0) {
                     this.total = "B0";
@@ -2428,7 +2503,12 @@ class pandanovelCom extends ParserBook {
 
                     if (diff > 0.8) {
                         this.siteBook = this.site.origin + book.querySelector("a").pathname;
-                        this.total = book.querySelector("div.novel-desc > div > label > em").textContent.match(/\D*(\d+)/)[1] * -1;
+
+                        let tmpTotal = book.querySelector("div.novel-desc > div > label > em");
+                        if (tmpTotal === null) {
+                            tmpTotal = book.querySelector("div.novel-desc > h6 > label > em")
+                        }
+                        this.total = tmpTotal.textContent.match(/\D*(\d+)/)[1] * -1;
                         return;
                     }
                 }
@@ -2455,7 +2535,7 @@ class readlightnovelsNet extends ParserBook {
     }
 
     async totalChapters() {
-        await gmfetch(this.siteSearch.href)
+        await fetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("div.col-md-3.col-sm-6.col-xs-6.home-truyendecu");
@@ -2473,54 +2553,6 @@ class readlightnovelsNet extends ParserBook {
                     if (diff > 0.8) {
                         this.siteBook = book.querySelector("a").href;
                         this.total = book.querySelector("a > div > small").textContent.match(/\D*(\d+)/)[1] * -1;
-                        return;
-                    }
-                }
-
-                this.total = "S0";
-                return;
-            })
-            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
-    }
-}
-;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/octopiiCo.js
-
-
-
-
-class octopiiCo extends ParserChapter {
-    constructor() {
-        super('https://octopii.co/');
-        this.endUrl = "/";
-    }
-
-    SetSiteSearch() {
-        this.siteSearch = this.site.origin + '/?s=' + this.bTitle;
-    }
-
-    linkChapter(_cIndex, _cTitle) {
-        window.open(this.siteBook.href.replace('/novel/', '/').replace(/\/$/, '') + '-chapter-' + _cIndex + '-' + ReplaceName(_cTitle) + this.endUrl);
-    }
-
-    async totalChapters() {
-        await gmfetch(this.siteSearch.href)
-            .then(res => fetchStatusHTML(res))
-            .then(data => {
-                let block = data.querySelectorAll("#primary > div > div.col-12.col-md-6.d-flex.mb-4.flex-wrap.position-relative.overflow-hidden");
-
-                if (block.length == 0) {
-                    this.total = "B0";
-                    return;
-                }
-
-                for (let book of block) {
-                    let titleParser = book.querySelector("h3.novel-name.m-0 > a").textContent;
-
-                    let diff = tanimoto(this.bTitle, titleParser);
-
-                    if (diff > 0.8) {
-                        this.siteBook = this.site.origin + book.querySelector("h3.novel-name.m-0 > a").pathname;
-                        this.total = book.querySelector("h4.chapter-name.m-0 > a.chapter-name").textContent.match(/\D*(\d+)/)[1] * -1;
                         return;
                     }
                 }
@@ -2550,7 +2582,7 @@ class madnovelCom extends ParserChapter {
     }
 
     async totalChapters() {
-        await gmfetch(this.siteSearch.href)
+        await fetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("div.section-body > div.list > div.book-item");
@@ -2597,7 +2629,7 @@ class novelbuddyCom extends ParserChapter {
     }
 
     async totalChapters() {
-        await gmfetch(this.siteSearch.href)
+        await fetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("div.section-body > div.list > div.book-item");
@@ -2644,7 +2676,7 @@ class novelforestCom extends ParserChapter {
     }
 
     async totalChapters() {
-        await gmfetch(this.siteSearch.href)
+        await fetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("div.section-body > div.list > div.book-item");
@@ -2691,7 +2723,7 @@ class novelfullMe extends ParserChapter {
     }
 
     async totalChapters() {
-        await gmfetch(this.siteSearch.href)
+        await fetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("div.section-body > div.list > div.book-item");
@@ -2709,53 +2741,6 @@ class novelfullMe extends ParserChapter {
                     if (diff > 0.8) {
                         this.siteBook = this.site.origin + book.querySelector("div.title > h3 > a").pathname;
                         this.total = book.querySelector("div.thumb > span").textContent.match(/\D*(\d+)/)[1] * -1;
-                        return;
-                    }
-                }
-
-                this.total = "S0";
-                return;
-            })
-            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
-    }
-}
-;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/truyenNovel/novel/boxnovelOrg.js
-
-
-
-
-class boxnovelOrg extends ParserChapter {
-    constructor() {
-        super(new URL('https://boxnovel.org'));
-    }
-
-    SetSiteSearch() {
-        this.siteSearch = this.site.origin + '/search?keyword=' + this.bTitle;
-    }
-
-    linkChapter(_cIndex, _cTitle) {
-        window.open(this.siteBook.href.replace('/novel/', '/') + "-chapter-" + _cIndex + "-" + ReplaceName(_cTitle));
-    }
-
-    async totalChapters() {
-        await gmfetch(this.siteSearch.href)
-            .then(res => fetchStatusHTML(res))
-            .then(data => {
-                let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-novel-main.archive > div.list.list-novel.col-xs-12 > div.row");
-
-                if (block.length == 0) {
-                    this.total = "B0";
-                    return;
-                }
-
-                for (let book of block) {
-                    let titleParser = book.querySelector("h3.novel-title > a").textContent;
-
-                    let diff = tanimoto(this.bTitle, titleParser);
-
-                    if (diff > 0.8) {
-                        this.siteBook = book.querySelector("h3.novel-title > a").href;
-                        this.total = book.querySelector("div.col-xs-2.text-info > div > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
                         return;
                     }
                 }
@@ -2785,7 +2770,54 @@ class novelfullplusCom extends ParserChapter {
     }
 
     async totalChapters() {
-        await gmfetch(this.siteSearch.href)
+        await fetch(this.siteSearch.href)
+            .then(res => fetchStatusHTML(res))
+            .then(data => {
+                let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-novel-main.archive > div.list.list-novel.col-xs-12 > div.row");
+
+                if (block.length == 0) {
+                    this.total = "B0";
+                    return;
+                }
+
+                for (let book of block) {
+                    let titleParser = book.querySelector("h3.novel-title > a").textContent;
+
+                    let diff = tanimoto(this.bTitle, titleParser);
+
+                    if (diff > 0.8) {
+                        this.siteBook = book.querySelector("h3.novel-title > a").href;
+                        this.total = book.querySelector("div.col-xs-2.text-info > div > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
+                        return;
+                    }
+                }
+
+                this.total = "S0";
+                return;
+            })
+            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/truyenNovel/novel/novelpokiCom.js
+
+
+
+
+class novelpokiCom extends ParserChapter {
+    constructor() {
+        super(new URL('https://novelpoki.com/'));
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/search?keyword=' + this.bTitle;
+    }
+
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href.replace('/novel/', '/') + "-chapter-" + _cIndex + "-" + ReplaceName(_cTitle));
+    }
+
+    async totalChapters() {
+        await fetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-novel-main.archive > div.list.list-novel.col-xs-12 > div.row");
@@ -2833,7 +2865,7 @@ class readnovelfullCom extends ParserChapter {
     }
 
     async totalChapters() {
-        await gmfetch(this.siteSearch.href)
+        await fetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-novel-main.archive > div.list.list-novel.col-xs-12 > div.row");
@@ -2876,7 +2908,7 @@ class topwebnovelCom extends ParserBook {
     }
 
     async totalChapters() {
-        await gmfetch(this.siteSearch.href)
+        await fetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-novel-main.archive > div.list.list-novel.col-xs-12 > div.row");
@@ -2924,7 +2956,7 @@ class allnovelfullCom extends ParserChapter {
     }
 
     async totalChapters() {
-        await gmfetch(this.siteSearch.href)
+        await fetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-truyen-main.archive > div.list.list-truyen.col-xs-12 > div.row");
@@ -2972,7 +3004,7 @@ class allnovelOrg extends ParserChapter {
     }
 
     async totalChapters() {
-        await gmfetch(this.siteSearch.href)
+        await fetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-truyen-main.archive > div.list.list-truyen.col-xs-12 > div.row");
@@ -3020,7 +3052,7 @@ class novelfullCom extends ParserChapter {
     }
 
     async totalChapters() {
-        await gmfetch(this.siteSearch.href)
+        await fetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-truyen-main.archive > div.list.list-truyen.col-xs-12 > div.row");
@@ -3063,7 +3095,7 @@ class novelgreatNet extends ParserBook {
     }
 
     async totalChapters() {
-        await gmfetch(this.siteSearch.href)
+        await fetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-truyen-main.archive > div.list.list-truyen.col-xs-12 > div.row");
@@ -3111,7 +3143,7 @@ class oneStkissnovelLove extends ParserChapter {
     }
 
     async totalChapters() {
-        await gmfetch(this.siteSearch.href)
+        await fetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("div.row.c-tabs-item__content");
@@ -3158,7 +3190,7 @@ class latestnovelNet extends ParserChapter {
     }
 
     async totalChapters() {
-        await gmfetch(this.siteSearch.href)
+        await fetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("div.row.c-tabs-item__content");
@@ -3206,7 +3238,7 @@ class lightnovelMobi extends ParserChapter {
     }
 
     async totalChapters() {
-        await gmfetch(this.siteSearch.href)
+        await fetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("div.row.c-tabs-item__content");
@@ -3254,7 +3286,7 @@ class novelteamNet extends ParserChapter {
     }
 
     async totalChapters() {
-        await gmfetch(this.siteSearch.href)
+        await fetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("div.row.c-tabs-item__content");
@@ -3302,7 +3334,7 @@ class noveltrenchCom extends ParserChapter {
     }
 
     async totalChapters() {
-        await gmfetch(this.siteSearch.href)
+        await fetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("div.row.c-tabs-item__content");
@@ -3350,7 +3382,7 @@ class readnovelsOrg extends ParserChapter {
     }
 
     async totalChapters() {
-        await gmfetch(this.siteSearch.href)
+        await fetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("div.row.c-tabs-item__content");
@@ -3398,7 +3430,7 @@ class webnovelonlineNet extends ParserChapter {
     }
 
     async totalChapters() {
-        await gmfetch(this.siteSearch.href)
+        await fetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 let block = data.querySelectorAll("div.row.c-tabs-item__content");
@@ -3450,7 +3482,7 @@ class readlightnovelMe extends ParserChapter {
     }
 
     async totalChapters() {
-        await gmfetch(this.siteSearch.href)
+        await fetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 this.total = data.querySelector("div.novel-detail-item[style='display:flex;'] > div.novel-detail-body > ul > li:first-child > a").textContent.match(/\D*(\d+)/)[1];
@@ -3479,7 +3511,7 @@ class lightnovelpubCom extends ParserChapter {
     }
 
     async totalChapters() {
-        await gmfetch(this.siteSearch.href)
+        await fetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 this.total = data.querySelector("#novel > div.novel-body.container > nav > a.grdbtn.chapter-latest-container > div > p.latest.text1row").textContent.match(/\D*(\d+)/)[1];
@@ -3508,7 +3540,7 @@ class lightnovelworldCom extends ParserChapter {
     }
 
     async totalChapters() {
-        await gmfetch(this.siteSearch.href)
+        await fetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
                 this.total = data.querySelector("#novel > div.novel-body.container > nav > a.grdbtn.chapter-latest-container > div > p.latest.text1row").textContent.match(/\D*(\d+)/)[1];
@@ -3562,9 +3594,7 @@ class ranobesNet extends ParserSearch {
 // @author      Nay
 // @match       https://*.webnovel.com/book/*/*
 // @grant       GM_xmlhttpRequest
-// @grant       GM.xmlHttpRequest
-// @require     https://raw.githubusercontent.com/maple3142/gmxhr-fetch/master/gmxhr-fetch.min.js
-// @version     0.3.1
+// @version     0.3.3
 // ==/UserScript==
 
 
@@ -3613,6 +3643,7 @@ class ranobesNet extends ParserSearch {
 // apiSearchChapter
 
 
+
 // htmlSearch
 
 
@@ -3620,7 +3651,6 @@ class ranobesNet extends ParserSearch {
 
 
 // htmlSearchChapter
-
 //    madentertainment
 
 
@@ -3712,7 +3742,7 @@ new octopiiCo(),
         new novelforestCom(),
         new novelfullMe(),
         //    truyenNovel/novel
-        new boxnovelOrg(),
+        new novelpokiCom(),
 new novelfullplusCom(),
         new readnovelfullCom(),
         new topwebnovelCom(),
@@ -3743,10 +3773,42 @@ new latestnovelNet(),
     ]
 ];
 
-async function CreateDivMain(_cId) {
-    let chapter = GetChapterId(BookInfo, _cId);
+async function CreateDivMain(_statusChapter, _cId = "") {
+    let divMain;
+    if (_statusChapter === StatusChapter.PRIVATE) {
+        divMain = DivPanel(DivMain + "_" + _statusChapter, _statusChapter);
 
-    let divMain = DivPanel(DivMain + "_" + _cId, DivMain);
+        _cId = glavaWebNovel(location);
+
+        if (GetChapterId(BookInfo, _cId).chapterLevel === 0) {
+            let tmpChId = "";
+            for (let volume of BookInfo.data.volumeItems) {
+                for (let chapter of volume.chapterItems) {
+                    if (chapter.chapterLevel > 0) {
+                        tmpChId = chapter.chapterId;
+                        break;
+                    }
+                }
+
+                if (tmpChId !== "") {
+                    break
+                }
+            }
+
+            if (tmpChId !== "") {
+                _cId = tmpChId;
+            }
+            else {
+                return divMain;
+            }
+
+        }
+    }
+    else {
+        divMain = DivPanel(DivMain + "_" + _cId, _statusChapter);
+    }
+
+    let chapter = GetChapterId(BookInfo, _cId);
 
     divMain.append(InputBookInfo(WebnovelCom_Crawler_BookId));
 
@@ -3769,7 +3831,12 @@ async function CreateDivMain(_cId) {
     locked.addEventListener('click', async function () {
         let crawlerTable = document.querySelector("#crawlerId");
         if (crawlerTable !== null) {
-            document.querySelector("#" + DivMain + "_" + _cId).appendChild(crawlerTable);
+            if (_statusChapter === StatusChapter.PRIVATE) {
+                document.querySelector("#" + DivMain + "_" + _statusChapter).appendChild(crawlerTable);
+            }
+            else {
+                document.querySelector("#" + DivMain + "_" + _cId).appendChild(crawlerTable);
+            }
             crawlerTable.setAttribute("cId", _cId);
             crawlerTable.hidden = false;
         }
@@ -3843,8 +3910,7 @@ var ChLastLocked = "";
         for (let c of contents) {
             let chapterId = c.id.match(/^content-(\d+)$/);
             if (chapterId && c.parentElement.querySelector("#" + DivMain + "_" + chapterId[1]) === null) {
-                let divMain = await CreateDivMain(chapterId[1]);
-                divMain.classList.add(StatusChapter.LOCKED);
+                let divMain = await CreateDivMain(StatusChapter.LOCKED, chapterId[1]);
 
                 let contentTitle = c.parentElement.querySelector("div.ChapterTitle_chapter_title_container__Wq5T8");
                 contentTitle.after(divMain);
@@ -3854,11 +3920,15 @@ var ChLastLocked = "";
             }
         }
 
+        console.info(1);
         let contentsUnlocked = document.querySelectorAll("div.pr > div > div.styles_content__3tuD4:not(.styles_locked_content__16dUX)");
         if (contentsUnlocked.length > 0) {
+            console.info(2);
             for (let c of contentsUnlocked) {
-                let divMain = c.parentElement.querySelector("div." + DivMain + "." + StatusChapter.LOCKED);
+                console.info(3);
+                let divMain = c.parentElement.querySelector("div." + StatusChapter.LOCKED);
                 if (divMain !== null) {
+                    console.info(4);
                     divMain.classList.remove(StatusChapter.LOCKED);
                     divMain.classList.add(StatusChapter.UNLOCKED);
                 }
@@ -3866,11 +3936,8 @@ var ChLastLocked = "";
         }
 
         let contentsPrivate = document.querySelector("div.pr > div > div.styles_last_chapter_footer__SPOMm");
-        if (contentsPrivate !== null && contentsPrivate.querySelector("div." + DivMain + "." + StatusChapter.PRIVATE) === null) {
-            let divMain = await CreateDivMain(chapterId[1]);
-            //let divMain = await CreateDivMain(BookInfo, "61829347492807077");
-            divMain.classList.add(StatusChapter.PRIVATE);
-
+        if (contentsPrivate !== null && contentsPrivate.querySelector("#" + DivMain + "_" + StatusChapter.PRIVATE) === null) {
+            let divMain = await CreateDivMain(StatusChapter.PRIVATE);
             contentsPrivate.prepend(divMain);
         }
 
