@@ -4,9 +4,9 @@
 // @icon        https://github.com/NayGit/NovelScripts/raw/master/icon.png
 // @supportURL  https://github.com/NayGit/NovelScripts/issues
 // @author      Nay
-// @match       https://*.webnovel.com/book/*/*
+// @match       https://m.webnovel.com/book/*/*
 // @grant       GM_xmlhttpRequest
-// @version     0.3.4
+// @version     0.3.5
 // ==/UserScript==
 
 'use strict';

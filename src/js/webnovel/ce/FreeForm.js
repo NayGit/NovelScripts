@@ -99,7 +99,7 @@ export function CreateTableSites(_sites, _bookInfo) {
                 }
                 else if (iB.value === "B0" || iB.value === "S0" || iB.value === "Fetch" || Math.abs(iB.value) <= (chIndex * 1)) {
                     iB.className = "tcDown";
-                    iB.parentElement.parentElement.hidden = true;
+                    //iB.parentElement.parentElement.hidden = true;
                 }
                 else {
                     iB.className = "tcError";
