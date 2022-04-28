@@ -1113,7 +1113,7 @@ function CreateTableSites(_sites, _bookInfo) {
                 }
                 else if (iB.value === "B0" || iB.value === "S0" || iB.value === "Fetch" || Math.abs(iB.value) <= (chIndex * 1)) {
                     iB.className = "tcDown";
-                    iB.parentElement.parentElement.hidden = true;
+                    //iB.parentElement.parentElement.hidden = true;
                 }
                 else {
                     iB.className = "tcError";
@@ -2559,13 +2559,15 @@ class pandanovelCom extends ParserBook {
     }
 
     async totalChapters() {
+        let isLucky = false;
+        var isError = '';
         await fetch(this.siteSearch.href)
             .then(res => fetchStatusHTML(res))
             .then(data => {
-                let block = data.querySelectorAll("#panda-app > div.sr-body > div.novel-list > ul > li"); 
+                let block = data.querySelectorAll("#panda-app > div.sr-body > div.novel-list > ul > li");
 
                 if (block.length == 0) {
-                    this.total = "B0";
+                    isError = this.total = "B0";
                     return;
                 }
 
@@ -2576,20 +2578,29 @@ class pandanovelCom extends ParserBook {
 
                     if (diff > 0.8) {
                         this.siteBook = this.site.origin + book.querySelector("a").pathname;
-
-                        let tmpTotal = book.querySelector("div.novel-desc > div > label > em");
-                        if (tmpTotal === null) {
-                            tmpTotal = book.querySelector("div.novel-desc > h6 > label > em")
-                        }
-                        this.total = tmpTotal.textContent.match(/\D*(\d+)/)[1] * -1;
+                        isLucky = true;
                         return;
                     }
                 }
-
-                this.total = "S0";
-                return;
             })
-            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+            .catch(err => isError = fetchCatch(err, this.siteSearch.href));
+
+        if (isError != '') {
+            this.total = isError;
+            return;
+        }
+
+        if (isLucky) {
+            return await fetch(this.siteBook.href)
+                .then(res => fetchStatusHTML(res))
+                .then(data => {
+                    this.total = data.querySelector("#panda-app > div.details-header > div.novel-desc > ul:nth-child(3) > li:nth-child(2) > h3 > em").textContent.match(/\D*(\d+)/)[1] * -1;
+                    return;
+                })
+                .catch(err => this.total = fetchCatch(err, this.siteBook.href));
+        }
+
+        this.total = "S0";
     }
 }
 ;// CONCATENATED MODULE: ./src/js/parsers/htmlSearch/readlightnovelsNet.js
@@ -3665,9 +3676,9 @@ class ranobesNet extends ParserSearch {
 // @icon        https://github.com/NayGit/NovelScripts/raw/master/icon.png
 // @supportURL  https://github.com/NayGit/NovelScripts/issues
 // @author      Nay
-// @match       https://*.webnovel.com/book/*/*
+// @match       https://m.webnovel.com/book/*/*
 // @grant       GM_xmlhttpRequest
-// @version     0.3.4
+// @version     0.3.5
 // ==/UserScript==
 
 
