@@ -12,12 +12,19 @@
 /* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(645);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(667);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2__);
 // Imports
 
 
+
+var ___CSS_LOADER_URL_IMPORT_0___ = new URL(/* asset import */ __webpack_require__(60), __webpack_require__.b);
+var ___CSS_LOADER_URL_IMPORT_1___ = new URL(/* asset import */ __webpack_require__(651), __webpack_require__.b);
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
+var ___CSS_LOADER_URL_REPLACEMENT_0___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default()(___CSS_LOADER_URL_IMPORT_0___);
+var ___CSS_LOADER_URL_REPLACEMENT_1___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default()(___CSS_LOADER_URL_IMPORT_1___);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "#idGlava {\r\n    background: lightgray;\r\n}\r\n/*#divPanel { position: fixed; top: 0; right: 0; z-index: 999999; max-width: 450px; }*/\r\ninput.iMain {\r\n    height: 100px;\r\n    width: 100%;\r\n    background: black;\r\n    color: gray;\r\n    margin: 1px;\r\n}\r\n#divPanel input[type=radio] { height:35px; width:35px; vertical-align: middle; background: black; color: gray }\r\n#divPanel input[type=submit] { height: 50px; width: 100%; background: black; color: gray }\r\n#showHide { z-index: -999; height: 150px; width: 100%; background: black; color: gray; }\r\n.tcError, .tcUp, .tcDown {\r\n    height: 35px;\r\n    width: auto;\r\n    min-width: 25px;\r\n    margin: 3px;\r\n}\r\ninput.tcError {\r\n    background: red;\r\n}\r\ninput.tcUp {\r\n    background: lime;\r\n}\r\ninput.tcDown {\r\n    background: orange;\r\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "/* https://icomoon.io/ --> IcoMoon - Free */\r\n/* to base64 */\r\n/* https://transfonter.org/ */\r\n@font-face {\r\n    font-family: 'icomoon';\r\n    src: \r\n        url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ") format('woff2'),\r\n        url(" + ___CSS_LOADER_URL_REPLACEMENT_1___ + ") format('woff');\r\n    font-weight: normal;\r\n    font-style: normal;\r\n    font-display: swap;\r\n}\r\n\r\ntd.search:before, td.read:before, td.parsing:before {\r\n    font-family: icomoon;\r\n    margin: 0px 5px;\r\n}\r\n\r\ntd.search:before {\r\n    content: \"\\e986\";\r\n}\r\n\r\ntd.read:before {\r\n    content: \"\\e926\";\r\n}\r\n\r\ntd.parsing:before {\r\n    content: \"\\e982\";\r\n}\r\n\r\n\r\ndiv.locked > div > input, div.unlocked > div > input, div.private > div > input {\r\n    background: black;\r\n    color: darkgray;\r\n}\r\n\r\ndiv.locked > input.replace, div.private > input.replace {\r\n    display: none;\r\n}\r\n\r\ndiv.private > input.gettext {\r\n    display: none;\r\n}\r\n\r\ndiv.HomeNextChapter, div.ParsingReplaceGetText {\r\n    width: 100%;\r\n    margin-bottom: 5px;\r\n    display: flex;\r\n    justify-content: space-between;\r\n}\r\n\r\ndiv.ParsingReplaceGetText {\r\n    justify-content: space-around;\r\n}\r\n\r\nh1.idGlava {\r\n    background: darkgray;\r\n    color: black;\r\n    /*background: lightgray;*/\r\n}\r\n\r\ninput.tcError, input.tcUp, input.tcDown {\r\n    width: 100%;\r\n}\r\n\r\ninput.tcError {\r\n    background: red;\r\n}\r\n\r\ninput.tcUp {\r\n    background: lime;\r\n}\r\n\r\ninput.tcDown {\r\n    background: orange;\r\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -128,6 +135,41 @@ module.exports = function (cssWithMappingToString) {
   };
 
   return list;
+};
+
+/***/ }),
+
+/***/ 667:
+/***/ ((module) => {
+
+
+
+module.exports = function (url, options) {
+  if (!options) {
+    options = {};
+  }
+
+  if (!url) {
+    return url;
+  }
+
+  url = String(url.__esModule ? url.default : url); // If url is already wrapped in quotes, remove them
+
+  if (/^['"].*['"]$/.test(url)) {
+    url = url.slice(1, -1);
+  }
+
+  if (options.hash) {
+    url += options.hash;
+  } // Should url be wrapped?
+  // See https://drafts.csswg.org/css-values-3/#urls
+
+
+  if (/["'() \t\n]|(%20)/.test(url) || options.needQuotes) {
+    return "\"".concat(url.replace(/"/g, '\\"').replace(/\n/g, "\\n"), "\"");
+  }
+
+  return url;
 };
 
 /***/ }),
@@ -429,6 +471,20 @@ function styleTagTransform(css, styleElement) {
 
 module.exports = styleTagTransform;
 
+/***/ }),
+
+/***/ 60:
+/***/ ((module) => {
+
+module.exports = "data:font/woff2;charset=utf-8;base64,d09GMgABAAAAAAPQAA0AAAAACIAAAAN8AAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP0ZGVE0cGh4GYACCbhEICoVshQsLEgABNgIkAxwEIAWDGwdZGyQHUZQNzgKyrxK4OaR1RAtgosSskgEDnkE7ayqq8z0+HaGSw/PffuZ9M/MhYbWAP9kSLFOBACWqnOoqZLWubMPz1e3t/ps4piYJJONAArBuooD6aZx/N+iNCmWuKgEueQm8eleHZDR9MA9OYPf+/Cf3LQPAicvxNzDfmyLLaMyJY08MFwWShYGNeR5I552nYRhwai1umz8hZqE9QSV7QehVgABeXW3rAnw+2GldeG8BQZACFCEcwgAFdE7JQSyoWz0DDsA68lJUPkJesrK1nsztOpFEfQgBBAqnR4BWZQ3gMJNK3KcYfUGYS7EJb7Zp2dyyPTkAeCV5ypeUrSmb0EQYv43QkAUkACANKPDPCAy4t5CfCAAXQBSEwH9kBwAMAJDDiWyKCsIz3LQwNR6v2az4d5qf/dlnR/vbRiKlH8hPULBvzCctd2L6aZLI8DNbqUrktI6FpAEEGAOG0SlASkpnmMxBxqboJDEI5Gnsfg8QsVfyhQcWfzzs6KVJuGGSeD7RlGHzpuR9l0lCZ+yYXBvXGd2bnU/MNtr/l6olj0mW+fgQr2C1aYtPH475M039b0/3ChPP+hV4B+bbP1xL1Lm4e3dmAAAAqDg/2E93new0cc6+wM9YsYkZ8HWvhYG3D7aWTO+ZOH06uNWdkubsdL4CMNFPv+2JFPM1FA99vZAUCVCMUwc39BPxkpg1pk0C37Wj3egd1AwZHevvDVi4rHesV2zY8D5x2LJwVe4gb+C4divacdHstmPbjtu9exwvw77Kpf2oNeo7eAt+dvM39BiY3ZzdbebMbmgYOLCVZ6siW4cGLn2hHhvyMyL/1eHXsndunda910nJjxfdutXUlpTU1nTr9uJHSfT+ACAAWHjVPxMi1f9cMPin40hmlE4ALgVA4FM2YwCYdhEAexENcgDqDIN6AAJcU9naJn6GsPsEgHBECQDF0Y4A0Bz1BIDhGEkAWAJWEgA2x1ECwC/DczQZPkQYHaCgaYCG5gMG2pNiSTGRYgvbeqBfsbNmmWKBeRZYYD5miXXOgvkw2DQzLDPXJIvxV90kHO1wiXu4aRZbYla1p0AX+XjfzlbQJf+aie7D8qU8M0wz/xHGSZaaZmr6ZKt4ehG0n7MLGr/p6+PsNWXBj+IKoMS3uZBGlUaXEUtse8bcVQtnFjjL5s/KB1GF7lZRWAorL1SWAg==";
+
+/***/ }),
+
+/***/ 651:
+/***/ ((module) => {
+
+module.exports = "data:font/woff;charset=utf-8;base64,d09GRgABAAAAAAWIAA0AAAAACIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABGRlRNAAAFbAAAABoAAAAcksSAA0dERUYAAAVQAAAAHAAAAB4AJwAOT1MvMgAAAZQAAAA/AAAAYA8TBkpjbWFwAAAB7AAAAFoAAAFuALzD5Gdhc3AAAAVIAAAACAAAAAgAAAAQZ2x5ZgAAAlwAAAHXAAAC7C+wK1xoZWFkAAABMAAAACwAAAA2IECddWhoZWEAAAFcAAAAHQAAACQHxAPHaG10eAAAAdQAAAAXAAAAHAtVAEBsb2NhAAACSAAAABIAAAASAjIBLG1heHAAAAF8AAAAGAAAACAADwBmbmFtZQAABDQAAADcAAABm/pYTdhwb3N0AAAFEAAAADcAAABZFbApY3jaY2BkAIOGHqcT8fw2Xxm4WcD8exN0ahH0/30sTMwHgFwOBiaQKAAr1QqEeNpjYGRgYD7w/wADAwsDCLAwMTAyoAI2AEx+ApUAAAB42mNgZGBg4GBIYWBjAAEmBjQAAAuHAHZ42mNgZp7JOIGBlYGBaSbTGQYGhn4IzfiawZiRkwEVMAqgCTA4MDC+bGM+8P8AgwMzEIPUIMkqMDACAGEjC2gAeNpjYYAAxlAIzQTELAwMDiA2AAhnAKEAeNpjYGBgZoBgGQZGBhDIAPIYwXwWBh8gzcfAwcDEwAYUU3ip9rLpZdv/v///g1Wi8P8/Ebsv1iLWCNbNx4AMGEHmM7IBMTNUgAlIMDEwoKkCWji8AQBvmxVVAAAAAAAAAAgACAAQABgApAEMAXYAAHjahVFNS+NAGH4nKQlFUhImTWgr0UloPhAbmzRJXUGE1RasulVQkNoieLE9rZc97Kks7CJ634Mnf8celv4C/8Beetyz59ruJK2giN13huF5P3mfZwDBszEA6wz8z+dgazJg6YEcEFiHOhzDBQAqISu5BtG5rCQrPvHCQKqYLtKQagQawjJHcyaNhf6a/wH5XjkrKxuIjYM0RjwlK3PWHI/9Ka3m8r5qOQtjkbguYYbEzSx+V4vCneT8SPNPy3w6ze8f/No/wMLwfrwlYCygQfy+g5k/qp/PrUqLGZeM7pOZnxccK1Qd6U4ojv7G89hzPj0U8BiwEPcJuP8GTNWZDFJAdSHwkeqh8xnEc3wYbaIo9D2VqkA5KD5VpRIrZbJekoq4pNDQk2BQMQ2qn5yUM9A9O7txHJbRyVVj9/hkb+9qmVRtm97bTrs3N8sOLOu61bpsfWp+0XXD+Hp02LarVbvX7tza9gjmZWe/PfmdYigfG7YBinQ9fhPNdjem7GZ7Uk4RpyzRj45CEz0TeU08qWeHj9gSV8qa1q3tNJs7ta6mTXG97yFReig0CvnU07fALdVkarWSG7zApw+SiLx+/WXjFJdXRAs/aql8oYGYN30zDP8ANzKGAwB42nXOsWrCUBjF8X80WrQgnUrpdEenoOADdCp1cOkgHRvjJQT0XogRdO8jdOwz9GF8Ik/CtyZww+87N+cjwIx/Eton4YEn80Cem4fymzmVv8wjHrmYx8p/zVNeuamVpBMls25D64H8Yh7KC3Mqf5hHPPNtHiv/MU9Z8UdFQeSoEwlQFfEYo/CJp+TMgZxaoy/Ph1zo+74v32pPzUn3be5Ykukv2fr6VMXgltmiv/vezY1apbaEblOu2bNXtuOq97rrbqybqRRD40offJ03fu92V7cu4kb7Mu7l2z5DeNpjYGLADzgYGBiZGJgYmRmYGVkYWRnZ2NJzKgsyDNlL8zINDAzAtKulkRmEtjCC0mYA7MULSwAAAQAB//8AD3jaY2BkYGDgAWIxIGZiYARCdiBmAfMYAAPrADZ42mNgYGBkAIKrS9Q5QPS9CTq1MBoAPP0F2AAA";
+
 /***/ })
 
 /******/ 	});
@@ -456,6 +512,9 @@ module.exports = styleTagTransform;
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
+/******/ 	
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = __webpack_modules__;
 /******/ 	
 /************************************************************************/
 /******/ 	/* webpack/runtime/compat get default export */
@@ -485,6 +544,32 @@ module.exports = styleTagTransform;
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
 /******/ 	(() => {
 /******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/jsonp chunk loading */
+/******/ 	(() => {
+/******/ 		__webpack_require__.b = document.baseURI || self.location.href;
+/******/ 		
+/******/ 		// object to store loaded and loading chunks
+/******/ 		// undefined = chunk not loaded, null = chunk preloaded/prefetched
+/******/ 		// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
+/******/ 		var installedChunks = {
+/******/ 			284: 0
+/******/ 		};
+/******/ 		
+/******/ 		// no chunk on demand loading
+/******/ 		
+/******/ 		// no prefetching
+/******/ 		
+/******/ 		// no preloaded
+/******/ 		
+/******/ 		// no HMR
+/******/ 		
+/******/ 		// no HMR manifest
+/******/ 		
+/******/ 		// no on chunks loaded
+/******/ 		
+/******/ 		// no jsonp function
 /******/ 	})();
 /******/ 	
 /************************************************************************/
@@ -741,7 +826,7 @@ function H1IdGlava(_chStart, _chLastLocked, _chStop) {
     }
 
     return Object.assign(document.createElement("h1"), {
-        id: "idGlava",
+        className: "idGlava",
         textContent: tmpText    
     });
 }
@@ -961,18 +1046,13 @@ function CreateTableSites(_sites, _bookInfo) {
 
             // Site
             let tdSite = trB.insertCell();
-            //tdSite.textContent = _sites[i][j].site.hostname;
+            tdSite.textContent = _sites[i][j].site.hostname;
             tdSite.style.border = '1px solid black';
-            tdSite.title = _sites[i][j].site.hostname;
-            tdSite.textContent = [i] + "_" + [j];
-            tdSite.addEventListener('click', function () {
-                alert([i] + "_" + [j] + ": " + _sites[i][j].site);
-            });
 
 
             // Search
             let tdSearch = trB.insertCell();
-            tdSearch.textContent = "Search";
+            tdSearch.className = "search";
             tdSearch.style.border = '1px solid black';
             tdSearch.addEventListener('click', function () {
                 _sites[i][j].linkSearch();
@@ -985,7 +1065,7 @@ function CreateTableSites(_sites, _bookInfo) {
 
             // Total
             let tdTotal = trB.insertCell();
-            tdTotal.className = "total"
+            tdTotal.className = "total";
             tdTotal.style.border = '1px solid black';
             let inputButton = Object.assign(document.createElement("input"), {
                 type: "button",
@@ -1003,33 +1083,25 @@ function CreateTableSites(_sites, _bookInfo) {
                 let tdRead = trB.insertCell();
                 tdRead.className = "read"
                 tdRead.style.border = '1px solid black';
-                let ibRead = Object.assign(document.createElement("input"), {
-                    type: "button",
-                    value: "Read"
-                });
-                ibRead.addEventListener('click', function () {
+                tdRead.addEventListener('click', function () {
                     let cId = document.querySelector("#crawlerId").getAttribute("cId");
-                    //let cId = this.parentElement.parentElement.parentElement.parentElement.getAttribute("cId");
 
                     let ch = GetChapterId(_bookInfo, cId);
 
                     _sites[i][j].linkChapter(ch.chapterIndex, ch.chapterName);
                     document.querySelector("#InputChapterNext").value = _sites[i][j].total;
                 });
-                tdRead.append(ibRead);
             }
 
 
             // Parsing
             let tdParsing = trB.insertCell();
             tdParsing.className = "parsing";
-            tdParsing.textContent = "parsing";
             tdParsing.style.border = '1px solid black';
             tdParsing.addEventListener('click', async function () {
                 await _sites[i][j].totalChapters();
 
                 let cId = document.querySelector("#crawlerId").getAttribute("cId");
-                //let cId = this.parentElement.parentElement.parentElement.getAttribute("cId");
 
                 let ch= GetChapterId(_bookInfo, cId);
                 let chIndex = ch.chapterIndex * 1;
@@ -1039,11 +1111,12 @@ function CreateTableSites(_sites, _bookInfo) {
                 if (Math.abs(iB.value) > (chIndex * 1)) {
                     iB.className = "tcUp";
                 }
-                else if (iB.value === "B0" || iB.value === "S0" || Math.abs(iB.value) <= (chIndex * 1)) {
-                    //iB.parentElement.parentElement.hidden = true;
+                else if (iB.value === "B0" || iB.value === "S0" || iB.value === "Fetch" || Math.abs(iB.value) <= (chIndex * 1)) {
+                    iB.className = "tcDown";
+                    iB.parentElement.parentElement.hidden = true;
                 }
                 else {
-                    iB.className = "tcDown";
+                    iB.className = "tcError";
                 }
             });
 
@@ -3594,7 +3667,7 @@ class ranobesNet extends ParserSearch {
 // @author      Nay
 // @match       https://*.webnovel.com/book/*/*
 // @grant       GM_xmlhttpRequest
-// @version     0.3.3
+// @version     0.3.4
 // ==/UserScript==
 
 
@@ -3774,6 +3847,7 @@ new latestnovelNet(),
 ];
 
 async function CreateDivMain(_statusChapter, _cId = "") {
+    // divMain
     let divMain;
     if (_statusChapter === StatusChapter.PRIVATE) {
         divMain = DivPanel(DivMain + "_" + _statusChapter, _statusChapter);
@@ -3808,27 +3882,52 @@ async function CreateDivMain(_statusChapter, _cId = "") {
         divMain = DivPanel(DivMain + "_" + _cId, _statusChapter);
     }
 
+    // divHomeNextChapter
+    let divHomeNextChapter = Object.assign(document.createElement("div"), {
+        className: "HomeNextChapter",
+    });
+
+    // InputBookInfo
+    divHomeNextChapter.appendChild(InputBookInfo(WebnovelCom_Crawler_BookId));
+
+
+    // chapter
     let chapter = GetChapterId(BookInfo, _cId);
 
-    divMain.append(InputBookInfo(WebnovelCom_Crawler_BookId));
 
-    if (_cId === BookInfo.data.lastChapterItem.chapterId) {
-        let tmpH1 = document.createElement("h1");
-        tmpH1.textContent = "The End";
-        divMain.append(tmpH1);
-        return divMain;
-    }
+    // InputChapterNext
+    divHomeNextChapter.appendChild(InputChapterNext(BookInfo, chapter.chapterIndex));
 
-    divMain.append(InputChapterNext(BookInfo, chapter.chapterIndex));
-    
-    divMain.append(H1IdGlava(chapter.chapterIndex, ChLastLocked, BookInfo.data.lastChapterItem.chapterIndex));
 
-    let locked = Object.assign(document.createElement("input"), {
-        className: "lockedButton",
+    // H1IdGlava
+    divHomeNextChapter.appendChild(H1IdGlava(chapter.chapterIndex, ChLastLocked, BookInfo.data.lastChapterItem.chapterIndex));
+
+
+    // add HomeNextChapter
+    divMain.appendChild(divHomeNextChapter);
+
+
+    //// Check "The End"
+    //if (_cId === BookInfo.data.lastChapterItem.chapterId) {
+    //    let tmpH1 = document.createElement("h1");
+    //    tmpH1.textContent = "The End";
+    //    divMain.appendChild(tmpH1);
+    //    return divMain;
+    //}
+
+
+    // divHomeNextChapter
+    let divParsingReplaceGetText = Object.assign(document.createElement("div"), {
+        className: "ParsingReplaceGetText",
+    });
+
+
+    // inputParsing
+    let inputParsing = Object.assign(document.createElement("input"), {
         type: "button",
         value: "Parsing"
     });
-    locked.addEventListener('click', async function () {
+    inputParsing.addEventListener('click', async function () {
         let crawlerTable = document.querySelector("#crawlerId");
         if (crawlerTable !== null) {
             if (_statusChapter === StatusChapter.PRIVATE) {
@@ -3841,36 +3940,46 @@ async function CreateDivMain(_statusChapter, _cId = "") {
             crawlerTable.hidden = false;
         }
     });
-    divMain.appendChild(locked);
+    divParsingReplaceGetText.appendChild(inputParsing);
 
-    let unlocked = Object.assign(document.createElement("input"), {
-        className: "unlockedButton",
+
+    // inputReplace
+    let inputReplace = Object.assign(document.createElement("input"), {
+        className: "replace",
         type: "button",
         value: "Replace"
     });
-    unlocked.addEventListener('click', async function () {
+    inputReplace.addEventListener('click', async function () {
         this.disabled = true;
         await ReplaceText(WebnovelCom_Crawler_BookId, _cId);
         this.hidden = true;
     });
-    divMain.appendChild(unlocked);
+    divParsingReplaceGetText.appendChild(inputReplace);
 
-    let getText = Object.assign(document.createElement("input"), {
-        className: "getTextButton",
+
+    // inputGetText
+    let inputGetText = Object.assign(document.createElement("input"), {
+        className: "gettext",
         type: "button",
         value: "GetText"
     });
-    getText.addEventListener('click', async function () {
+    inputGetText.addEventListener('click', async function () {
         this.disabled = true;
         await GetText(WebnovelCom_Crawler_BookId, _cId, BookTitle, chapter.chapterName);
         this.hidden = true;
     });
-    divMain.appendChild(getText);
+    divParsingReplaceGetText.appendChild(inputGetText);
 
+
+    // add ParsingReplaceGetText
+    divMain.appendChild(divParsingReplaceGetText);
+
+
+    // tableCrawler
     if (document.querySelector("#crawlerId") === null) {
-        let createTableSites = CreateTableSites(SitesAll, BookInfo);
-        createTableSites.setAttribute("cId", _cId);
-        divMain.appendChild(createTableSites);
+        let tableCrawler = CreateTableSites(SitesAll, BookInfo);
+        tableCrawler.setAttribute("cId", _cId);
+        divMain.appendChild(tableCrawler);
     }
 
     return divMain;
@@ -3920,15 +4029,11 @@ var ChLastLocked = "";
             }
         }
 
-        console.info(1);
         let contentsUnlocked = document.querySelectorAll("div.pr > div > div.styles_content__3tuD4:not(.styles_locked_content__16dUX)");
         if (contentsUnlocked.length > 0) {
-            console.info(2);
             for (let c of contentsUnlocked) {
-                console.info(3);
                 let divMain = c.parentElement.querySelector("div." + StatusChapter.LOCKED);
                 if (divMain !== null) {
-                    console.info(4);
                     divMain.classList.remove(StatusChapter.LOCKED);
                     divMain.classList.add(StatusChapter.UNLOCKED);
                 }
