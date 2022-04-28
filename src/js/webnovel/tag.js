@@ -1,6 +1,7 @@
-export function ceTagId(_tagName, _id) {
+export function ceTagId(_tagName, _id, _translate) {
     return Object.assign(document.createElement(_tagName), {
-        id: _id
+        id: _id,
+        translate: _translate
     });
 }
 

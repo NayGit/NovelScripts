@@ -689,9 +689,10 @@ function copyHtml(el) {
     }
 }
 ;// CONCATENATED MODULE: ./src/js/webnovel/tag.js
-function ceTagId(_tagName, _id) {
+function ceTagId(_tagName, _id, _translate) {
     return Object.assign(document.createElement(_tagName), {
-        id: _id
+        id: _id,
+        translate: _translate
     });
 }
 
@@ -741,7 +742,7 @@ function ceInputCheckbox(_id) {
 // @author      Nay
 // @include     https://*.webnovel.com/tags/*
 // @grant       none
-// @version     0.1
+// @version     0.2
 // ==/UserScript==
 
 
@@ -843,7 +844,7 @@ async function StartCreate() {
 
 
 
-    var divMain = ceTagId("div", "divMain");
+    var divMain = ceTagId("div", "divMain", false);
     divMain.append(
         ceNav([
             h2Tag,
@@ -859,7 +860,7 @@ async function StartCreate() {
             inSortU,
             inSortC
         ]),
-        ceTagId("ul", "divBook"),
+        ceTagId("ul", "divBook", true),
         ceNav([
             ceInputNumber("inNumber", 1),
             inNumberGo

@@ -6,7 +6,7 @@
 // @author      Nay
 // @include     https://*.webnovel.com/tags/*
 // @grant       none
-// @version     0.1
+// @version     0.2
 // ==/UserScript==
 
 import './css/webnovelTag.css'
@@ -108,7 +108,7 @@ async function StartCreate() {
 
 
 
-    var divMain = ceTagId("div", "divMain");
+    var divMain = ceTagId("div", "divMain", false);
     divMain.append(
         ceNav([
             h2Tag,
@@ -124,7 +124,7 @@ async function StartCreate() {
             inSortU,
             inSortC
         ]),
-        ceTagId("ul", "divBook"),
+        ceTagId("ul", "divBook", true),
         ceNav([
             ceInputNumber("inNumber", 1),
             inNumberGo
