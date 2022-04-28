@@ -1,29 +1,76 @@
-#idGlava {
-    background: lightgray;
+/* https://icomoon.io/ --> IcoMoon - Free */
+/* to base64 */
+/* https://transfonter.org/ */
+@font-face {
+    font-family: 'icomoon';
+    src: 
+        url('data:font/woff2;charset=utf-8;base64,d09GMgABAAAAAAPQAA0AAAAACIAAAAN8AAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP0ZGVE0cGh4GYACCbhEICoVshQsLEgABNgIkAxwEIAWDGwdZGyQHUZQNzgKyrxK4OaR1RAtgosSskgEDnkE7ayqq8z0+HaGSw/PffuZ9M/MhYbWAP9kSLFOBACWqnOoqZLWubMPz1e3t/ps4piYJJONAArBuooD6aZx/N+iNCmWuKgEueQm8eleHZDR9MA9OYPf+/Cf3LQPAicvxNzDfmyLLaMyJY08MFwWShYGNeR5I552nYRhwai1umz8hZqE9QSV7QehVgABeXW3rAnw+2GldeG8BQZACFCEcwgAFdE7JQSyoWz0DDsA68lJUPkJesrK1nsztOpFEfQgBBAqnR4BWZQ3gMJNK3KcYfUGYS7EJb7Zp2dyyPTkAeCV5ypeUrSmb0EQYv43QkAUkACANKPDPCAy4t5CfCAAXQBSEwH9kBwAMAJDDiWyKCsIz3LQwNR6v2az4d5qf/dlnR/vbRiKlH8hPULBvzCctd2L6aZLI8DNbqUrktI6FpAEEGAOG0SlASkpnmMxBxqboJDEI5Gnsfg8QsVfyhQcWfzzs6KVJuGGSeD7RlGHzpuR9l0lCZ+yYXBvXGd2bnU/MNtr/l6olj0mW+fgQr2C1aYtPH475M039b0/3ChPP+hV4B+bbP1xL1Lm4e3dmAAAAqDg/2E93new0cc6+wM9YsYkZ8HWvhYG3D7aWTO+ZOH06uNWdkubsdL4CMNFPv+2JFPM1FA99vZAUCVCMUwc39BPxkpg1pk0C37Wj3egd1AwZHevvDVi4rHesV2zY8D5x2LJwVe4gb+C4divacdHstmPbjtu9exwvw77Kpf2oNeo7eAt+dvM39BiY3ZzdbebMbmgYOLCVZ6siW4cGLn2hHhvyMyL/1eHXsndunda910nJjxfdutXUlpTU1nTr9uJHSfT+ACAAWHjVPxMi1f9cMPin40hmlE4ALgVA4FM2YwCYdhEAexENcgDqDIN6AAJcU9naJn6GsPsEgHBECQDF0Y4A0Bz1BIDhGEkAWAJWEgA2x1ECwC/DczQZPkQYHaCgaYCG5gMG2pNiSTGRYgvbeqBfsbNmmWKBeRZYYD5miXXOgvkw2DQzLDPXJIvxV90kHO1wiXu4aRZbYla1p0AX+XjfzlbQJf+aie7D8qU8M0wz/xHGSZaaZmr6ZKt4ehG0n7MLGr/p6+PsNWXBj+IKoMS3uZBGlUaXEUtse8bcVQtnFjjL5s/KB1GF7lZRWAorL1SWAg==') format('woff2'),
+        url('data:font/woff;charset=utf-8;base64,d09GRgABAAAAAAWIAA0AAAAACIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABGRlRNAAAFbAAAABoAAAAcksSAA0dERUYAAAVQAAAAHAAAAB4AJwAOT1MvMgAAAZQAAAA/AAAAYA8TBkpjbWFwAAAB7AAAAFoAAAFuALzD5Gdhc3AAAAVIAAAACAAAAAgAAAAQZ2x5ZgAAAlwAAAHXAAAC7C+wK1xoZWFkAAABMAAAACwAAAA2IECddWhoZWEAAAFcAAAAHQAAACQHxAPHaG10eAAAAdQAAAAXAAAAHAtVAEBsb2NhAAACSAAAABIAAAASAjIBLG1heHAAAAF8AAAAGAAAACAADwBmbmFtZQAABDQAAADcAAABm/pYTdhwb3N0AAAFEAAAADcAAABZFbApY3jaY2BkAIOGHqcT8fw2Xxm4WcD8exN0ahH0/30sTMwHgFwOBiaQKAAr1QqEeNpjYGRgYD7w/wADAwsDCLAwMTAyoAI2AEx+ApUAAAB42mNgZGBg4GBIYWBjAAEmBjQAAAuHAHZ42mNgZp7JOIGBlYGBaSbTGQYGhn4IzfiawZiRkwEVMAqgCTA4MDC+bGM+8P8AgwMzEIPUIMkqMDACAGEjC2gAeNpjYYAAxlAIzQTELAwMDiA2AAhnAKEAeNpjYGBgZoBgGQZGBhDIAPIYwXwWBh8gzcfAwcDEwAYUU3ip9rLpZdv/v///g1Wi8P8/Ebsv1iLWCNbNx4AMGEHmM7IBMTNUgAlIMDEwoKkCWji8AQBvmxVVAAAAAAAAAAgACAAQABgApAEMAXYAAHjahVFNS+NAGH4nKQlFUhImTWgr0UloPhAbmzRJXUGE1RasulVQkNoieLE9rZc97Kks7CJ634Mnf8celv4C/8Beetyz59ruJK2giN13huF5P3mfZwDBszEA6wz8z+dgazJg6YEcEFiHOhzDBQAqISu5BtG5rCQrPvHCQKqYLtKQagQawjJHcyaNhf6a/wH5XjkrKxuIjYM0RjwlK3PWHI/9Ka3m8r5qOQtjkbguYYbEzSx+V4vCneT8SPNPy3w6ze8f/No/wMLwfrwlYCygQfy+g5k/qp/PrUqLGZeM7pOZnxccK1Qd6U4ojv7G89hzPj0U8BiwEPcJuP8GTNWZDFJAdSHwkeqh8xnEc3wYbaIo9D2VqkA5KD5VpRIrZbJekoq4pNDQk2BQMQ2qn5yUM9A9O7txHJbRyVVj9/hkb+9qmVRtm97bTrs3N8sOLOu61bpsfWp+0XXD+Hp02LarVbvX7tza9gjmZWe/PfmdYigfG7YBinQ9fhPNdjem7GZ7Uk4RpyzRj45CEz0TeU08qWeHj9gSV8qa1q3tNJs7ta6mTXG97yFReig0CvnU07fALdVkarWSG7zApw+SiLx+/WXjFJdXRAs/aql8oYGYN30zDP8ANzKGAwB42nXOsWrCUBjF8X80WrQgnUrpdEenoOADdCp1cOkgHRvjJQT0XogRdO8jdOwz9GF8Ik/CtyZww+87N+cjwIx/Eton4YEn80Cem4fymzmVv8wjHrmYx8p/zVNeuamVpBMls25D64H8Yh7KC3Mqf5hHPPNtHiv/MU9Z8UdFQeSoEwlQFfEYo/CJp+TMgZxaoy/Ph1zo+74v32pPzUn3be5Ykukv2fr6VMXgltmiv/vezY1apbaEblOu2bNXtuOq97rrbqybqRRD40offJ03fu92V7cu4kb7Mu7l2z5DeNpjYGLADzgYGBiZGJgYmRmYGVkYWRnZ2NJzKgsyDNlL8zINDAzAtKulkRmEtjCC0mYA7MULSwAAAQAB//8AD3jaY2BkYGDgAWIxIGZiYARCdiBmAfMYAAPrADZ42mNgYGBkAIKrS9Q5QPS9CTq1MBoAPP0F2AAA') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
 }
-/*#divPanel { position: fixed; top: 0; right: 0; z-index: 999999; max-width: 450px; }*/
-input.iMain {
-    height: 100px;
-    width: 100%;
+
+td.search:before, td.read:before, td.parsing:before {
+    font-family: icomoon;
+    margin: 0px 5px;
+}
+
+td.search:before {
+    content: "\e986";
+}
+
+td.read:before {
+    content: "\e926";
+}
+
+td.parsing:before {
+    content: "\e982";
+}
+
+
+div.locked > div > input, div.unlocked > div > input, div.private > div > input {
     background: black;
-    color: gray;
-    margin: 1px;
+    color: darkgray;
 }
-#divPanel input[type=radio] { height:35px; width:35px; vertical-align: middle; background: black; color: gray }
-#divPanel input[type=submit] { height: 50px; width: 100%; background: black; color: gray }
-#showHide { z-index: -999; height: 150px; width: 100%; background: black; color: gray; }
-.tcError, .tcUp, .tcDown {
-    height: 35px;
-    width: auto;
-    min-width: 25px;
-    margin: 3px;
+
+div.locked > input.replace, div.private > input.replace {
+    display: none;
 }
+
+div.private > input.gettext {
+    display: none;
+}
+
+div.HomeNextChapter, div.ParsingReplaceGetText {
+    width: 100%;
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: space-between;
+}
+
+div.ParsingReplaceGetText {
+    justify-content: space-around;
+}
+
+h1.idGlava {
+    background: darkgray;
+    color: black;
+    /*background: lightgray;*/
+}
+
+input.tcError, input.tcUp, input.tcDown {
+    width: 100%;
+}
+
 input.tcError {
     background: red;
 }
+
 input.tcUp {
     background: lime;
 }
+
 input.tcDown {
     background: orange;
 }

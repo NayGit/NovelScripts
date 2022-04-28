@@ -32,18 +32,13 @@ export function CreateTableSites(_sites, _bookInfo) {
 
             // Site
             let tdSite = trB.insertCell();
-            //tdSite.textContent = _sites[i][j].site.hostname;
+            tdSite.textContent = _sites[i][j].site.hostname;
             tdSite.style.border = '1px solid black';
-            tdSite.title = _sites[i][j].site.hostname;
-            tdSite.textContent = [i] + "_" + [j];
-            tdSite.addEventListener('click', function () {
-                alert([i] + "_" + [j] + ": " + _sites[i][j].site);
-            });
 
 
             // Search
             let tdSearch = trB.insertCell();
-            tdSearch.textContent = "Search";
+            tdSearch.className = "search";
             tdSearch.style.border = '1px solid black';
             tdSearch.addEventListener('click', function () {
                 _sites[i][j].linkSearch();
@@ -56,7 +51,7 @@ export function CreateTableSites(_sites, _bookInfo) {
 
             // Total
             let tdTotal = trB.insertCell();
-            tdTotal.className = "total"
+            tdTotal.className = "total";
             tdTotal.style.border = '1px solid black';
             let inputButton = Object.assign(document.createElement("input"), {
                 type: "button",
@@ -74,33 +69,25 @@ export function CreateTableSites(_sites, _bookInfo) {
                 let tdRead = trB.insertCell();
                 tdRead.className = "read"
                 tdRead.style.border = '1px solid black';
-                let ibRead = Object.assign(document.createElement("input"), {
-                    type: "button",
-                    value: "Read"
-                });
-                ibRead.addEventListener('click', function () {
+                tdRead.addEventListener('click', function () {
                     let cId = document.querySelector("#crawlerId").getAttribute("cId");
-                    //let cId = this.parentElement.parentElement.parentElement.parentElement.getAttribute("cId");
 
                     let ch = GetChapterId(_bookInfo, cId);
 
                     _sites[i][j].linkChapter(ch.chapterIndex, ch.chapterName);
                     document.querySelector("#InputChapterNext").value = _sites[i][j].total;
                 });
-                tdRead.append(ibRead);
             }
 
 
             // Parsing
             let tdParsing = trB.insertCell();
             tdParsing.className = "parsing";
-            tdParsing.textContent = "parsing";
             tdParsing.style.border = '1px solid black';
             tdParsing.addEventListener('click', async function () {
                 await _sites[i][j].totalChapters();
 
                 let cId = document.querySelector("#crawlerId").getAttribute("cId");
-                //let cId = this.parentElement.parentElement.parentElement.getAttribute("cId");
 
                 let ch= GetChapterId(_bookInfo, cId);
                 let chIndex = ch.chapterIndex * 1;
@@ -110,11 +97,12 @@ export function CreateTableSites(_sites, _bookInfo) {
                 if (Math.abs(iB.value) > (chIndex * 1)) {
                     iB.className = "tcUp";
                 }
-                else if (iB.value === "B0" || iB.value === "S0" || Math.abs(iB.value) <= (chIndex * 1)) {
-                    //iB.parentElement.parentElement.hidden = true;
+                else if (iB.value === "B0" || iB.value === "S0" || iB.value === "Fetch" || Math.abs(iB.value) <= (chIndex * 1)) {
+                    iB.className = "tcDown";
+                    iB.parentElement.parentElement.hidden = true;
                 }
                 else {
-                    iB.className = "tcDown";
+                    iB.className = "tcError";
                 }
             });
 

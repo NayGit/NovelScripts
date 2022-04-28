@@ -50,7 +50,7 @@ export function H1IdGlava(_chStart, _chLastLocked, _chStop) {
     }
 
     return Object.assign(document.createElement("h1"), {
-        id: "idGlava",
+        className: "idGlava",
         textContent: tmpText    
     });
 }

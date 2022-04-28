@@ -6,7 +6,7 @@
 // @author      Nay
 // @match       https://*.webnovel.com/book/*/*
 // @grant       GM_xmlhttpRequest
-// @version     0.3.3
+// @version     0.3.4
 // ==/UserScript==
 
 'use strict';
@@ -186,6 +186,7 @@ new latestnovelNet(),
 ];
 
 async function CreateDivMain(_statusChapter, _cId = "") {
+    // divMain
     let divMain;
     if (_statusChapter === StatusChapter.PRIVATE) {
         divMain = DivPanel(DivMain + "_" + _statusChapter, _statusChapter);
@@ -220,27 +221,52 @@ async function CreateDivMain(_statusChapter, _cId = "") {
         divMain = DivPanel(DivMain + "_" + _cId, _statusChapter);
     }
 
+    // divHomeNextChapter
+    let divHomeNextChapter = Object.assign(document.createElement("div"), {
+        className: "HomeNextChapter",
+    });
+
+    // InputBookInfo
+    divHomeNextChapter.appendChild(InputBookInfo(BookId));
+
+
+    // chapter
     let chapter = GetChapterId(BookInfo, _cId);
 
-    divMain.append(InputBookInfo(BookId));
 
-    if (_cId === BookInfo.data.lastChapterItem.chapterId) {
-        let tmpH1 = document.createElement("h1");
-        tmpH1.textContent = "The End";
-        divMain.append(tmpH1);
-        return divMain;
-    }
+    // InputChapterNext
+    divHomeNextChapter.appendChild(InputChapterNext(BookInfo, chapter.chapterIndex));
 
-    divMain.append(InputChapterNext(BookInfo, chapter.chapterIndex));
-    
-    divMain.append(H1IdGlava(chapter.chapterIndex, ChLastLocked, BookInfo.data.lastChapterItem.chapterIndex));
 
-    let locked = Object.assign(document.createElement("input"), {
-        className: "lockedButton",
+    // H1IdGlava
+    divHomeNextChapter.appendChild(H1IdGlava(chapter.chapterIndex, ChLastLocked, BookInfo.data.lastChapterItem.chapterIndex));
+
+
+    // add HomeNextChapter
+    divMain.appendChild(divHomeNextChapter);
+
+
+    //// Check "The End"
+    //if (_cId === BookInfo.data.lastChapterItem.chapterId) {
+    //    let tmpH1 = document.createElement("h1");
+    //    tmpH1.textContent = "The End";
+    //    divMain.appendChild(tmpH1);
+    //    return divMain;
+    //}
+
+
+    // divHomeNextChapter
+    let divParsingReplaceGetText = Object.assign(document.createElement("div"), {
+        className: "ParsingReplaceGetText",
+    });
+
+
+    // inputParsing
+    let inputParsing = Object.assign(document.createElement("input"), {
         type: "button",
         value: "Parsing"
     });
-    locked.addEventListener('click', async function () {
+    inputParsing.addEventListener('click', async function () {
         let crawlerTable = document.querySelector("#crawlerId");
         if (crawlerTable !== null) {
             if (_statusChapter === StatusChapter.PRIVATE) {
@@ -253,36 +279,46 @@ async function CreateDivMain(_statusChapter, _cId = "") {
             crawlerTable.hidden = false;
         }
     });
-    divMain.appendChild(locked);
+    divParsingReplaceGetText.appendChild(inputParsing);
 
-    let unlocked = Object.assign(document.createElement("input"), {
-        className: "unlockedButton",
+
+    // inputReplace
+    let inputReplace = Object.assign(document.createElement("input"), {
+        className: "replace",
         type: "button",
         value: "Replace"
     });
-    unlocked.addEventListener('click', async function () {
+    inputReplace.addEventListener('click', async function () {
         this.disabled = true;
         await ReplaceText(BookId, _cId);
         this.hidden = true;
     });
-    divMain.appendChild(unlocked);
+    divParsingReplaceGetText.appendChild(inputReplace);
 
-    let getText = Object.assign(document.createElement("input"), {
-        className: "getTextButton",
+
+    // inputGetText
+    let inputGetText = Object.assign(document.createElement("input"), {
+        className: "gettext",
         type: "button",
         value: "GetText"
     });
-    getText.addEventListener('click', async function () {
+    inputGetText.addEventListener('click', async function () {
         this.disabled = true;
         await GetText(BookId, _cId, BookTitle, chapter.chapterName);
         this.hidden = true;
     });
-    divMain.appendChild(getText);
+    divParsingReplaceGetText.appendChild(inputGetText);
 
+
+    // add ParsingReplaceGetText
+    divMain.appendChild(divParsingReplaceGetText);
+
+
+    // tableCrawler
     if (document.querySelector("#crawlerId") === null) {
-        let createTableSites = CreateTableSites(SitesAll, BookInfo);
-        createTableSites.setAttribute("cId", _cId);
-        divMain.appendChild(createTableSites);
+        let tableCrawler = CreateTableSites(SitesAll, BookInfo);
+        tableCrawler.setAttribute("cId", _cId);
+        divMain.appendChild(tableCrawler);
     }
 
     return divMain;
@@ -332,15 +368,11 @@ var ChLastLocked = "";
             }
         }
 
-        console.info(1);
         let contentsUnlocked = document.querySelectorAll("div.pr > div > div.styles_content__3tuD4:not(.styles_locked_content__16dUX)");
         if (contentsUnlocked.length > 0) {
-            console.info(2);
             for (let c of contentsUnlocked) {
-                console.info(3);
                 let divMain = c.parentElement.querySelector("div." + StatusChapter.LOCKED);
                 if (divMain !== null) {
-                    console.info(4);
                     divMain.classList.remove(StatusChapter.LOCKED);
                     divMain.classList.add(StatusChapter.UNLOCKED);
                 }
