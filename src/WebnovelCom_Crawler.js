@@ -6,7 +6,7 @@
 // @author      Nay
 // @match       https://m.webnovel.com/book/*/*
 // @grant       GM_xmlhttpRequest
-// @version     0.3.5
+// @version     0.3.6
 // ==/UserScript==
 
 'use strict';
@@ -358,6 +358,8 @@ var ChLastLocked = "";
         for (let c of contents) {
             let chapterId = c.id.match(/^content-(\d+)$/);
             if (chapterId && c.parentElement.querySelector("#" + DivMain + "_" + chapterId[1]) === null) {
+                c.translate = false;
+
                 let divMain = await CreateDivMain(StatusChapter.LOCKED, chapterId[1]);
 
                 let contentTitle = c.parentElement.querySelector("div.ChapterTitle_chapter_title_container__Wq5T8");

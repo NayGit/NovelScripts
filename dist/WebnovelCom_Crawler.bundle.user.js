@@ -1187,6 +1187,44 @@ async function GetChapter(_url, _cId) {
     });
 }
 
+function ArraySortOrder(_parrent) {
+    let str = "";
+    [].slice.call(_parrent.children).sort(function (a, b) {
+        if (getComputedStyle(a).order * 1 > getComputedStyle(b).order * 1) {
+            return 1;
+        }
+        if (getComputedStyle(a).order * 1 < getComputedStyle(b).order * 1) {
+            return -1;
+        }
+        // a ������ ���� ������ b
+        return 0;
+    })
+        .forEach(function (val) {
+            str = str + val.innerText;
+        });
+
+    if (str === "") {
+        return _parrent.innerText;
+    }
+
+    //return innerText;
+    return str;
+}
+
+function ReplaceSymbol(_element, _dict) {
+    let str = "";
+    _element.innerText.split('').forEach(element => {
+        if (_dict[element] !== undefined) {
+            str = str + _dict[element];
+        }
+        else {
+            str = str + element;
+        }
+    });
+
+    _element.innerText = str;
+}
+
 async function ReplaceText(_bId, _cId) {
     let contentCheck = document.querySelector("#content-" + _cId);
     if (contentCheck.querySelector("pre")) {
@@ -1201,25 +1239,10 @@ async function ReplaceText(_bId, _cId) {
         contentCheck.appendChild(pre);
 
         for (let i = 0; i < pOrder.length; i++) {
-            let str = "";
-            [].slice.call(pOrder[i].children).sort(function (a, b) {
-                if (getComputedStyle(a).order * 1 > getComputedStyle(b).order * 1) {
-                    return 1;
-                }
-                if (getComputedStyle(a).order * 1 < getComputedStyle(b).order * 1) {
-                    return -1;
-                }
-                // a ������ ���� ������ b
-                return 0;
-            })
-                .forEach(function (val) {
-                    str = str + val.innerText;
-                });
-
-            pOrder[i].innerText = str;
+            pOrder[i].innerText = ArraySortOrder(pOrder[i]);
         }
 
-        let p2 = await GetChapter("https://m-webnovel-com.translate.goog/book/" + _bId + "/" + _cId + "?_x_tr_sl=en&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp");
+        let p2 = await GetChapter("https://m-webnovel-com.translate.goog/book/" + _bId + "/" + _cId + "?_x_tr_sl=en&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp", _cId);
         //let p2 = await GetChapter("https://m-webnovel-com.translate.goog" + new URL(_loc).pathname + "?_x_tr_sl=en&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp", _gWN);
         //let p2 = await GetChapter(_loc, _gWN);
         if (p2.length > 0) {
@@ -1235,19 +1258,60 @@ async function ReplaceText(_bId, _cId) {
                 }
             }
 
-            for (let i = 0; i < pReplace.length; i++) {
-                let str = "";
-                pReplace[i].innerText.split('').forEach(element => {
-                    if (dict[element] !== undefined) {
-                        str = str + dict[element];
-                    }
-                    else {
-                        str = str + element;
-                    }
-                });
-
-                pReplace[i].innerText = str;
+            let p_cfnp = document.querySelectorAll("#content-" + _cId + " > p._cfnp");
+            for (let i = 0; i < p_cfnp.length; i++) {
+                ReplaceSymbol(p_cfnp[i], dict);
             }
+            
+            let p_cfcmp = document.querySelectorAll("#content-" + _cId + " > p._cfcmp");
+            for (let i = 0; i < p_cfcmp.length; i++) {
+                p_cfcmp[i].translate = false;
+            }
+
+            contentCheck.translate = true;
+
+            // ������� �����������
+            let observer = new IntersectionObserver((entries, observer) => {
+                // ��� ������ ������-�������� ��������
+                entries.forEach(entry => {
+                    // ���� ������� �������� �����������
+                    if (entry.isIntersecting) {
+                        const pObserve = entry.target;
+
+                        // ���������� ����������
+                        observer.unobserve(pObserve)
+
+
+                        let pClone = pObserve.cloneNode(true);
+                        //pClone.className = '';
+                        pClone.removeAttribute("class");
+
+                        pClone.innerText = ArraySortOrder(pClone);
+                        ReplaceSymbol(pClone, dict);
+
+                        pClone.translate = true;
+
+                        pObserve.after(pClone);
+
+
+                        pObserve.style.display = "none";
+                    }
+                })
+            },
+            {
+                // �������� �������� �������� - ������� ���������
+                root: null,
+                // ��� ��������
+                rootMargin: '0px',
+                // ������� ����������� - �������� �����������
+                threshold: 1.0
+            });
+
+            // � ������� ����� ������ �� ����� img �� ��������
+            let p_cfcmpMix = document.querySelectorAll("#content-" + _cId + " > p._cfcmp");
+            p_cfcmpMix.forEach(i => {
+                observer.observe(i)
+            });
         }
     }
     else {
@@ -1380,6 +1444,8 @@ async function GetText(_bId, _cId, _bTitle, _cTitle) {
     if (content.querySelector("pre")) {
         return;
     }
+
+    content.translate = true;
 
     let tmpP = content.querySelectorAll("p");
     for (let i = 0, p; p = tmpP[i]; i++) {
@@ -3678,7 +3744,7 @@ class ranobesNet extends ParserSearch {
 // @author      Nay
 // @match       https://m.webnovel.com/book/*/*
 // @grant       GM_xmlhttpRequest
-// @version     0.3.5
+// @version     0.3.6
 // ==/UserScript==
 
 
@@ -4030,6 +4096,8 @@ var ChLastLocked = "";
         for (let c of contents) {
             let chapterId = c.id.match(/^content-(\d+)$/);
             if (chapterId && c.parentElement.querySelector("#" + DivMain + "_" + chapterId[1]) === null) {
+                c.translate = false;
+
                 let divMain = await CreateDivMain(StatusChapter.LOCKED, chapterId[1]);
 
                 let contentTitle = c.parentElement.querySelector("div.ChapterTitle_chapter_title_container__Wq5T8");

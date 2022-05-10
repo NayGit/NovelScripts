@@ -123,6 +123,8 @@ export async function GetText(_bId, _cId, _bTitle, _cTitle) {
         return;
     }
 
+    content.translate = true;
+
     let tmpP = content.querySelectorAll("p");
     for (let i = 0, p; p = tmpP[i]; i++) {
         if (i === 0) {
