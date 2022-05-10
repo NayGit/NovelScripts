@@ -29,16 +29,16 @@ td.parsing:before {
 }
 
 
-div.locked > div > input, div.unlocked > div > input, div.private > div > input {
+div.locked > div > input, div.unlocked > div > input, div.free > div > input, div.private > div > input {
     background: black;
     color: darkgray;
 }
 
-div.locked > input.replace, div.private > input.replace {
+div.locked input.replace, div.free input.replace, div.private input.replace {
     display: none;
 }
 
-div.private > input.gettext {
+div.free input.gettext, div.private input.gettext {
     display: none;
 }
 

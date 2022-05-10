@@ -24,7 +24,7 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 var ___CSS_LOADER_URL_REPLACEMENT_0___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default()(___CSS_LOADER_URL_IMPORT_0___);
 var ___CSS_LOADER_URL_REPLACEMENT_1___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default()(___CSS_LOADER_URL_IMPORT_1___);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "/* https://icomoon.io/ --> IcoMoon - Free */\r\n/* to base64 */\r\n/* https://transfonter.org/ */\r\n@font-face {\r\n    font-family: 'icomoon';\r\n    src: \r\n        url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ") format('woff2'),\r\n        url(" + ___CSS_LOADER_URL_REPLACEMENT_1___ + ") format('woff');\r\n    font-weight: normal;\r\n    font-style: normal;\r\n    font-display: swap;\r\n}\r\n\r\ntd.search:before, td.read:before, td.parsing:before {\r\n    font-family: icomoon;\r\n    margin: 0px 5px;\r\n}\r\n\r\ntd.search:before {\r\n    content: \"\\e986\";\r\n}\r\n\r\ntd.read:before {\r\n    content: \"\\e926\";\r\n}\r\n\r\ntd.parsing:before {\r\n    content: \"\\e982\";\r\n}\r\n\r\n\r\ndiv.locked > div > input, div.unlocked > div > input, div.private > div > input {\r\n    background: black;\r\n    color: darkgray;\r\n}\r\n\r\ndiv.locked > input.replace, div.private > input.replace {\r\n    display: none;\r\n}\r\n\r\ndiv.private > input.gettext {\r\n    display: none;\r\n}\r\n\r\ndiv.HomeNextChapter, div.ParsingReplaceGetText {\r\n    width: 100%;\r\n    margin-bottom: 5px;\r\n    display: flex;\r\n    justify-content: space-between;\r\n}\r\n\r\ndiv.ParsingReplaceGetText {\r\n    justify-content: space-around;\r\n}\r\n\r\nh1.idGlava {\r\n    background: darkgray;\r\n    color: black;\r\n    /*background: lightgray;*/\r\n}\r\n\r\ninput.tcError, input.tcUp, input.tcDown {\r\n    width: 100%;\r\n}\r\n\r\ninput.tcError {\r\n    background: red;\r\n}\r\n\r\ninput.tcUp {\r\n    background: lime;\r\n}\r\n\r\ninput.tcDown {\r\n    background: orange;\r\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "/* https://icomoon.io/ --> IcoMoon - Free */\r\n/* to base64 */\r\n/* https://transfonter.org/ */\r\n@font-face {\r\n    font-family: 'icomoon';\r\n    src: \r\n        url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ") format('woff2'),\r\n        url(" + ___CSS_LOADER_URL_REPLACEMENT_1___ + ") format('woff');\r\n    font-weight: normal;\r\n    font-style: normal;\r\n    font-display: swap;\r\n}\r\n\r\ntd.search:before, td.read:before, td.parsing:before {\r\n    font-family: icomoon;\r\n    margin: 0px 5px;\r\n}\r\n\r\ntd.search:before {\r\n    content: \"\\e986\";\r\n}\r\n\r\ntd.read:before {\r\n    content: \"\\e926\";\r\n}\r\n\r\ntd.parsing:before {\r\n    content: \"\\e982\";\r\n}\r\n\r\n\r\ndiv.locked > div > input, div.unlocked > div > input, div.free > div > input, div.private > div > input {\r\n    background: black;\r\n    color: darkgray;\r\n}\r\n\r\ndiv.locked input.replace, div.free input.replace, div.private input.replace {\r\n    display: none;\r\n}\r\n\r\ndiv.free input.gettext, div.private input.gettext {\r\n    display: none;\r\n}\r\n\r\ndiv.HomeNextChapter, div.ParsingReplaceGetText {\r\n    width: 100%;\r\n    margin-bottom: 5px;\r\n    display: flex;\r\n    justify-content: space-between;\r\n}\r\n\r\ndiv.ParsingReplaceGetText {\r\n    justify-content: space-around;\r\n}\r\n\r\nh1.idGlava {\r\n    background: darkgray;\r\n    color: black;\r\n    /*background: lightgray;*/\r\n}\r\n\r\ninput.tcError, input.tcUp, input.tcDown {\r\n    width: 100%;\r\n}\r\n\r\ninput.tcError {\r\n    background: red;\r\n}\r\n\r\ninput.tcUp {\r\n    background: lime;\r\n}\r\n\r\ninput.tcDown {\r\n    background: orange;\r\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -4067,7 +4067,7 @@ var BookTitle;
 var WebnovelCom_Crawler_BookId;
 
 const DivMain = "divMain";
-const StatusChapter = { LOCKED: 'locked', UNLOCKED: 'unlocked', PRIVATE: 'private' };
+const StatusChapter = { LOCKED: 'locked', UNLOCKED: 'unlocked', FREE: 'free', PRIVATE: 'private' };
 var ChLastLocked = "";
 
 
@@ -4114,7 +4114,14 @@ var ChLastLocked = "";
                 let divMain = c.parentElement.querySelector("div." + StatusChapter.LOCKED);
                 if (divMain !== null) {
                     divMain.classList.remove(StatusChapter.LOCKED);
-                    divMain.classList.add(StatusChapter.UNLOCKED);
+
+                    if (c.querySelector("p._cfcmp")) {
+                        divMain.classList.add(StatusChapter.UNLOCKED);
+                    }
+                    else {
+                        divMain.classList.add(StatusChapter.FREE);
+                        c.translate = true;
+                    }
                 }
             }
         }

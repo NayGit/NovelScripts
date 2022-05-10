@@ -6,7 +6,7 @@
 // @author      Nay
 // @match       https://m.webnovel.com/book/*/*
 // @grant       GM_xmlhttpRequest
-// @version     0.3.6
+// @version     0.3.7
 // ==/UserScript==
 
 'use strict';
@@ -329,7 +329,7 @@ var BookTitle;
 var BookId;
 
 const DivMain = "divMain";
-const StatusChapter = { LOCKED: 'locked', UNLOCKED: 'unlocked', PRIVATE: 'private' };
+const StatusChapter = { LOCKED: 'locked', UNLOCKED: 'unlocked', FREE: 'free', PRIVATE: 'private' };
 var ChLastLocked = "";
 
 
@@ -376,7 +376,14 @@ var ChLastLocked = "";
                 let divMain = c.parentElement.querySelector("div." + StatusChapter.LOCKED);
                 if (divMain !== null) {
                     divMain.classList.remove(StatusChapter.LOCKED);
-                    divMain.classList.add(StatusChapter.UNLOCKED);
+
+                    if (c.querySelector("p._cfcmp")) {
+                        divMain.classList.add(StatusChapter.UNLOCKED);
+                    }
+                    else {
+                        divMain.classList.add(StatusChapter.FREE);
+                        c.translate = true;
+                    }
                 }
             }
         }
