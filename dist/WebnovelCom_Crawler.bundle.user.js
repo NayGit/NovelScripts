@@ -1190,7 +1190,6 @@ async function GetChapter(_url, _cId) {
 async function ArraySortOrder(_parrent) {
     let pCopy = _parrent;
     while (true) {
-        console.info(pCopy);
         if (!pCopy.classList.contains("_mix")) {
             break;
         }
@@ -1220,12 +1219,10 @@ async function ArraySortOrder(_parrent) {
         });
 
     if (str === "") {
-        console.warn("_", _parrent.innerText)
         return _parrent.innerText;
     }
 
     //return innerText;
-    console.info(str)
     return str;
 }
 
