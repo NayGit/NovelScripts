@@ -1133,58 +1133,80 @@ function CreateTableSites(_sites, _bookInfo) {
 ;// CONCATENATED MODULE: ./src/js/ReplaceText.js
 
 
-async function GetChapter(_url, _cId) {
-    return new Promise((resolve, reject) => {
-        GM_xmlhttpRequest({
-            method: 'GET',
-            url: _url,
-            //anonymous: true,
-            type: 'document',
-            //headers: { 'User-Agent': 'Mozilla/5.0 (Linux; Android 12) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Mobile Safari/537.36' },
-            onload: function (data) {
-                // User-Agent: Mobile
-                let bodyText = data.response;
 
-                let parser = new DOMParser();
-                let bodyHtml = parser.parseFromString(bodyText, 'text/html');
 
-                let pOrig = bodyHtml.querySelectorAll("#content-" + _cId + " > p");
+//async function GetChapter(_url, _cId) {
+//    return new Promise((resolve, reject) => {
+//        GM_xmlhttpRequest({
+//            method: 'GET',
+//            url: _url,
+//            //anonymous: true,
+//            type: 'document',
+//            headers: { 'User-Agent': 'Mozilla/5.0 (Linux; Android 12) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Mobile Safari/537.36' },
+//            onload: function (data) {
+//                // User-Agent: Mobile
+//                let bodyText = data.response;
 
-                if (pOrig.length > 0) {
-                    let pTmp = [];
-                    for (let c of pOrig) {
-                        pTmp.push(c.innerText);
-                    }
-                    resolve(pTmp);
+//                let parser = new DOMParser();
+//                let bodyHtml = parser.parseFromString(bodyText, 'text/html');
+
+//                let pOrig = bodyHtml.querySelectorAll("#content-" + _cId + " > p");
+
+//                if (pOrig.length > 0) {
+//                    let pTmp = [];
+//                    for (let c of pOrig) {
+//                        pTmp.push(c.innerText);
+//                    }
+//                    resolve(pTmp);
+//                }
+//                else {
+//                    // User-Agent: ---> PC
+//                    let str = data.responseText.match(/chapInfo.*?({.*?});/);
+
+//                    if (str) {
+//                        str = str[1].replaceAll(/\\([<> '&])/g, "$1");
+//                        //console.log(str);
+
+//                        let json = JSON.parse(str);
+//                        //console.log(json);
+
+//                        let pTmp = [];
+//                        for (let c of json.chapterInfo.contents) {
+//                            pTmp.push(c.content.replaceAll(/<[/]?p>/g, ""));
+//                        }
+//                        resolve(pTmp);
+//                    }
+//                    else {
+//                        resolve("Error");
+//                    }
+//                }
+
+//            },
+//            onerror: function (error) {
+//                reject(error);
+//            }
+//        });
+//    });
+//}
+
+async function GetChapterFetch(_url, _cId) {
+    return await fetch(_url)
+        .then(res => fetchStatusHTML(res))
+        .then(data => {
+            let pOrig = data.querySelectorAll("#content-" + _cId + " > p");
+
+            if (pOrig.length > 0) {
+                let pTmp = [];
+                for (let c of pOrig) {
+                    pTmp.push(c.innerText);
                 }
-                else {
-                    // User-Agent: ---> PC
-                    let str = data.responseText.match(/chapInfo.*?({.*?});/);
-
-                    if (str) {
-                        str = str[1].replaceAll(/\\([<> '&])/g, "$1");
-                        //console.log(str);
-
-                        let json = JSON.parse(str);
-                        //console.log(json);
-
-                        let pTmp = [];
-                        for (let c of json.chapterInfo.contents) {
-                            pTmp.push(c.content.replaceAll(/<[/]?p>/g, ""));
-                        }
-                        resolve(pTmp);
-                    }
-                    else {
-                        resolve("Error");
-                    }
-                }
-
-            },
-            onerror: function (error) {
-                reject(error);
+                return pTmp;
             }
-        });
-    });
+            else {
+                return "Error";
+            }
+        })
+        .catch(err => fetchCatch(err, this.siteSearch.href));
 }
 
 async function ArraySortOrder(_parrent) {
@@ -1257,7 +1279,8 @@ async function ReplaceText(_bId, _cId) {
         //    pOrder[i].innerText = await ArraySortOrder(pOrder[i]);
         //}
 
-        let p2 = await GetChapter("https://m-webnovel-com.translate.goog/book/" + _bId + "/" + _cId + "?_x_tr_sl=en&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp", _cId);
+        //let p2 = await GetChapter("https://m-webnovel-com.translate.goog/book/" + _bId + "/" + _cId + "?_x_tr_sl=en&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp", _cId);
+        let p2 = await GetChapterFetch("https://m-webnovel-com.translate.goog/book/" + _bId + "/" + _cId + "?_x_tr_sl=en&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp", _cId);
         //let p2 = await GetChapter("https://m-webnovel-com.translate.goog" + new URL(_loc).pathname + "?_x_tr_sl=en&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp", _gWN);
         //let p2 = await GetChapter(_loc, _gWN);
         if (p2.length > 0) {
@@ -1267,14 +1290,17 @@ async function ReplaceText(_bId, _cId) {
             for (let i = 0; i < p2.length; i++) {
                 let p2Array = p2[i].split('');
 
-                pReplace[i].scrollIntoView({ behavior: "smooth" });
+                if (pReplace[i].classList.contains("_cfcmp")) {
+                    pReplace[i].scrollIntoView({ behavior: "smooth" });
+                    await new Promise(r => setTimeout(r, 750));
+                }
                 let contentChArray = (await ArraySortOrder(pReplace[i])).split('');
 
                 for (let prop in contentChArray) {
                     dict[contentChArray[prop]] = p2Array[prop];
                 }
             }
-            contentCheck.scrollIntoView({ behavior: "smooth" });
+            contentCheck.parentElement.querySelector("div.ChapterTitle_chapter_title_container__Wq5T8").scrollIntoView({ behavior: "smooth" });
 
             let p_cfnp = document.querySelectorAll("#content-" + _cId + " > p._cfnp");
             for (let i = 0; i < p_cfnp.length; i++) {
@@ -1386,7 +1412,7 @@ async function GetCatalog(_bId) {
     });
 }
 
-async function GetText_GetChapter(_bId, _chId) {
+async function GetChapter(_bId, _chId) {
     return new Promise((resolve, reject) => {
         GM_xmlhttpRequest({
             method: 'GET',
@@ -1472,7 +1498,7 @@ async function GetText(_bId, _cId, _bTitle, _cTitle) {
     let jsonChapter = "";
     for (let catalog of ChapterListReverse) {
         if (catalog.chapter_title === _cTitle) {
-            jsonChapter = await GetText_GetChapter(catalog.book_id, catalog.chapter_id);
+            jsonChapter = await GetChapter(catalog.book_id, catalog.chapter_id);
             break;
         }
     }
@@ -3758,7 +3784,7 @@ class ranobesNet extends ParserSearch {
 // @author      Nay
 // @match       https://m.webnovel.com/book/*/*
 // @grant       GM_xmlhttpRequest
-// @version     0.3.10
+// @version     0.3.11
 // ==/UserScript==
 
 
