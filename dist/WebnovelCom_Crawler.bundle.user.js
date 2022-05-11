@@ -1269,12 +1269,15 @@ async function ReplaceText(_bId, _cId) {
 
             for (let i = 0; i < p2.length; i++) {
                 let p2Array = p2[i].split('');
+
+                pReplace[i].scrollIntoView({ behavior: "smooth" });
                 let contentChArray = (await ArraySortOrder(pReplace[i])).split('');
 
                 for (let prop in contentChArray) {
                     dict[contentChArray[prop]] = p2Array[prop];
                 }
             }
+            contentCheck.scrollIntoView({ behavior: "smooth" });
 
             let p_cfnp = document.querySelectorAll("#content-" + _cId + " > p._cfnp");
             for (let i = 0; i < p_cfnp.length; i++) {
@@ -3758,7 +3761,7 @@ class ranobesNet extends ParserSearch {
 // @author      Nay
 // @match       https://m.webnovel.com/book/*/*
 // @grant       GM_xmlhttpRequest
-// @version     0.3.9
+// @version     0.3.10
 // ==/UserScript==
 
 
