@@ -7,7 +7,7 @@ async function GetChapter(_url, _cId) {
             url: _url,
             //anonymous: true,
             type: 'document',
-            headers: { 'User-Agent': 'Mozilla/5.0 (Linux; Android 12) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Mobile Safari/537.36' },
+            //headers: { 'User-Agent': 'Mozilla/5.0 (Linux; Android 12) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Mobile Safari/537.36' },
             onload: function (data) {
                 // User-Agent: Mobile
                 let bodyText = data.response;
@@ -54,9 +54,25 @@ async function GetChapter(_url, _cId) {
     });
 }
 
-function ArraySortOrder(_parrent) {
+async function ArraySortOrder(_parrent) {
+    let pCopy = _parrent;
+    while (true) {
+        console.info(pCopy);
+        if (!pCopy.classList.contains("_mix")) {
+            break;
+        }
+        else {
+            await new Promise(r => setTimeout(r, 250));
+
+            let tmpP = _parrent.parentElement.querySelector("." + _parrent.className.replaceAll(" ", ".").replace("._mix", ""));
+            if (tmpP) {
+                pCopy = tmpP;
+            }
+        }
+    }
+
     let str = "";
-    [].slice.call(_parrent.children).sort(function (a, b) {
+    [].slice.call(pCopy.children).sort(function (a, b) {
         if (getComputedStyle(a).order * 1 > getComputedStyle(b).order * 1) {
             return 1;
         }
@@ -71,10 +87,12 @@ function ArraySortOrder(_parrent) {
         });
 
     if (str === "") {
+        console.warn("_", _parrent.innerText)
         return _parrent.innerText;
     }
 
     //return innerText;
+    console.info(str)
     return str;
 }
 
@@ -105,9 +123,9 @@ export async function ReplaceText(_bId, _cId) {
         let pre = document.createElement('pre');
         contentCheck.appendChild(pre);
 
-        for (let i = 0; i < pOrder.length; i++) {
-            pOrder[i].innerText = ArraySortOrder(pOrder[i]);
-        }
+        //for (let i = 0; i < pOrder.length; i++) {
+        //    pOrder[i].innerText = await ArraySortOrder(pOrder[i]);
+        //}
 
         let p2 = await GetChapter("https://m-webnovel-com.translate.goog/book/" + _bId + "/" + _cId + "?_x_tr_sl=en&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp", _cId);
         //let p2 = await GetChapter("https://m-webnovel-com.translate.goog" + new URL(_loc).pathname + "?_x_tr_sl=en&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp", _gWN);
@@ -118,7 +136,7 @@ export async function ReplaceText(_bId, _cId) {
 
             for (let i = 0; i < p2.length; i++) {
                 let p2Array = p2[i].split('');
-                let contentChArray = pReplace[i].innerText.split('');
+                let contentChArray = (await ArraySortOrder(pReplace[i])).split('');
 
                 for (let prop in contentChArray) {
                     dict[contentChArray[prop]] = p2Array[prop];
@@ -148,26 +166,10 @@ export async function ReplaceText(_bId, _cId) {
                         // прекращаем наблюдение
                         observer.unobserve(pObserve);
 
-                        var pCopy = pObserve;
-
-                        while (true) {
-                            if (!pCopy.classList.contains("_mix")) {
-                                break;
-                            }
-                            else {
-                                await new Promise(r => setTimeout(r, 250));
-
-                                let tmpP = pObserve.parentElement.querySelector("." + pObserve.className.replaceAll(" ", ".").replace("._mix", ""));
-                                if (tmpP) {
-                                    pCopy = tmpP;
-                                }
-                            }
-                        }
-
                         let pTr = document.createElement("p");
                         pTr.translate = true;
 
-                        pTr.innerText = ArraySortOrder(pCopy);
+                        pTr.innerText = await ArraySortOrder(pObserve);
                         ReplaceSymbol(pTr, dict);
 
 
