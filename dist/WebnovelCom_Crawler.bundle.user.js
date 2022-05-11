@@ -1140,7 +1140,7 @@ async function GetChapter(_url, _cId) {
             url: _url,
             //anonymous: true,
             type: 'document',
-            //headers: { 'User-Agent': 'Mozilla/5.0 (Linux; Android 12) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Mobile Safari/537.36' },
+            headers: { 'User-Agent': 'Mozilla/5.0 (Linux; Android 12) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Mobile Safari/537.36' },
             onload: function (data) {
                 // User-Agent: Mobile
                 let bodyText = data.response;
@@ -1273,26 +1273,38 @@ async function ReplaceText(_bId, _cId) {
             // ������� �����������
             let observer = new IntersectionObserver((entries, observer) => {
                 // ��� ������ ������-�������� ��������
-                entries.forEach(entry => {
+                entries.forEach(async entry => {
                     // ���� ������� �������� �����������
                     if (entry.isIntersecting) {
                         const pObserve = entry.target;
 
                         // ���������� ����������
-                        observer.unobserve(pObserve)
+                        observer.unobserve(pObserve);
+
+                        var pCopy = pObserve;
+
+                        while (true) {
+                            if (!pCopy.classList.contains("_mix")) {
+                                break;
+                            }
+                            else {
+                                await new Promise(r => setTimeout(r, 250));
+
+                                let tmpP = pObserve.parentElement.querySelector("." + pObserve.className.replaceAll(" ", ".").replace("._mix", ""));
+                                if (tmpP) {
+                                    pCopy = tmpP;
+                                }
+                            }
+                        }
+
+                        let pTr = document.createElement("p");
+                        pTr.translate = true;
+
+                        pTr.innerText = ArraySortOrder(pCopy);
+                        ReplaceSymbol(pTr, dict);
 
 
-                        let pClone = pObserve.cloneNode(true);
-                        //pClone.className = '';
-                        pClone.removeAttribute("class");
-
-                        pClone.innerText = ArraySortOrder(pClone);
-                        ReplaceSymbol(pClone, dict);
-
-                        pClone.translate = true;
-
-                        pObserve.after(pClone);
-
+                        pObserve.after(pTr);
 
                         pObserve.style.display = "none";
                     }
@@ -3744,7 +3756,7 @@ class ranobesNet extends ParserSearch {
 // @author      Nay
 // @match       https://m.webnovel.com/book/*/*
 // @grant       GM_xmlhttpRequest
-// @version     0.3.6
+// @version     0.3.8
 // ==/UserScript==
 
 
