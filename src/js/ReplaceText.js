@@ -85,7 +85,7 @@ async function ArraySortOrder(_parrent) {
         else {
             await new Promise(r => setTimeout(r, 250));
 
-            let tmpP = _parrent.parentElement.querySelector("." + _parrent.className.replaceAll(" ", ".").replace("._mix", ""));
+            let tmpP = _parrent.parentElement.querySelector("p." + _parrent.className.replaceAll(" ", ".").replace("._mix", ""));
             if (tmpP) {
                 pCopy = tmpP;
             }
@@ -115,9 +115,9 @@ async function ArraySortOrder(_parrent) {
     return str;
 }
 
-function ReplaceSymbol(_element, _dict) {
+function ReplaceSymbolGO(_element, _dict) {
     let str = "";
-    _element.innerText.split('').forEach(element => {
+    _element.textContent.split('').forEach(element => {
         if (_dict[element] !== undefined) {
             str = str + _dict[element];
         }
@@ -126,30 +126,34 @@ function ReplaceSymbol(_element, _dict) {
         }
     });
 
-    _element.innerText = str;
+    _element.textContent = str;
+}
+
+function ReplaceSymbol(_element, _dict) {
+    if (_element.hasChildNodes()) {
+        let children = _element.childNodes;
+
+        for (let ch of children) {
+            if (ch.hasChildNodes()) {
+                ReplaceSymbol(ch, _dict);
+            }
+            else {
+                ReplaceSymbolGO(ch, _dict);
+            }
+        }
+    }
+    else {
+        ReplaceSymbolGO(_element, _dict);
+    }
 }
 
 export async function ReplaceText(_bId, _cId) {
     let contentCheck = document.querySelector("#content-" + _cId);
-    if (contentCheck.querySelector("pre")) {
-        return;
-    }
 
     // Сортировка
     let pOrder = contentCheck.querySelectorAll("p._cfcmp");
     if (pOrder.length > 0) {
-        
-        let pre = document.createElement('pre');
-        contentCheck.appendChild(pre);
-
-        //for (let i = 0; i < pOrder.length; i++) {
-        //    pOrder[i].innerText = await ArraySortOrder(pOrder[i]);
-        //}
-
-        //let p2 = await GetChapter("https://m-webnovel-com.translate.goog/book/" + _bId + "/" + _cId + "?_x_tr_sl=en&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp", _cId);
         let p2 = await GetChapterFetch("https://m-webnovel-com.translate.goog/book/" + _bId + "/" + _cId + "?_x_tr_sl=en&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp", _cId);
-        //let p2 = await GetChapter("https://m-webnovel-com.translate.goog" + new URL(_loc).pathname + "?_x_tr_sl=en&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp", _gWN);
-        //let p2 = await GetChapter(_loc, _gWN);
         if (p2.length > 0) {
             var dict = {};
             let pReplace = document.querySelectorAll("#content-" + _cId + " > p");
@@ -193,7 +197,6 @@ export async function ReplaceText(_bId, _cId) {
                         observer.unobserve(pObserve);
 
                         let pTr = document.createElement("p");
-                        pTr.translate = true;
 
                         pTr.innerText = await ArraySortOrder(pObserve);
                         ReplaceSymbol(pTr, dict);

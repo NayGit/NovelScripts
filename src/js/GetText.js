@@ -82,9 +82,9 @@ var ChapterListReverse = "";
 export async function GetText(_bId, _cId, _bTitle, _cTitle) {
     'use strict';
 
-    if (!document.querySelector("#content-" + _cId + " ~ div > .styles_locked_area__Luqxf")) {
-        return;
-    }
+    //if (!document.querySelector("#content-" + _cId + " ~ div > .styles_locked_area__Luqxf")) {
+    //    return;
+    //}
 
 
     BookId = localStorage.getItem("ln_" + _bId);
