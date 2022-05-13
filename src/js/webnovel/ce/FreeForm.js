@@ -1,9 +1,14 @@
 import { ParserSearch, ParserBook, ParserChapter } from '../../parser';
 import { GetChapterId } from '../../webNovel';
 
+var eventCheck = "event_check";
+var event = new Event(eventCheck);
+var clH = "hTrue";
+
 export function CreateTableSites(_sites, _bookInfo) {
     let tbl = document.createElement('table');
     tbl.id = "crawlerId";
+    tbl.classList.add(clH);
     tbl.hidden = true;
     tbl.style.fontSize = "16px";
     tbl.style.width = '200px';
@@ -11,15 +16,35 @@ export function CreateTableSites(_sites, _bookInfo) {
 
     let tH = tbl.createTHead();
     let trH = tH.insertRow();
+
+
+    // Hidden?
+    var tdCheckBox = trH.insertCell();
+    tdCheckBox.classList.add("eye-hidden");
+    tdCheckBox.addEventListener('click', function () {
+        let tmpCkeck = document.querySelector("#crawlerId");
+        if (this.classList.contains("eye")) {
+            tmpCkeck.classList.add(clH);
+
+            this.classList.remove("eye");
+            this.classList.add("eye-hidden");
+        }
+        else {
+            tmpCkeck.classList.remove(clH);
+
+            this.classList.add("eye");
+            this.classList.remove("eye-hidden");
+        }
+    });
+
+
+    // ParsingAll
     var tdH = trH.insertCell();
     tdH.textContent = "Parsing All";
-    tdH.colSpan = "5";
+    tdH.colSpan = "4";
     tdH.style.textAlign = "right";
-    trH.addEventListener('click', function () {
-        let tmpParsing = document.querySelectorAll("#crawlerId > tbody > tr > td.parsing");
-        for (let p of tmpParsing) {
-            p.click();
-        }
+    tdH.addEventListener('click', function () {
+        ParsingAll();
     });
 
     let tB = tbl.createTBody();
@@ -27,7 +52,7 @@ export function CreateTableSites(_sites, _bookInfo) {
     for (let i in _sites) {
         for (let j in _sites[i]) {
             let trB = tB.insertRow();
-            trB.className = i + "_" + j;
+            trB.classList.add(i + "_" + j);
 
 
             // Site
@@ -61,6 +86,36 @@ export function CreateTableSites(_sites, _bookInfo) {
                 _sites[i][j].linkBook();
                 document.querySelector("#InputChapterNext").value = _sites[i][j].total;
             });
+            inputButton.addEventListener(eventCheck, function () {
+                if (this.value === "???" && _sites[i][j].total === 0) {
+                    return;
+                }
+
+                let cId = document.querySelector("#crawlerId").getAttribute("cId");
+
+                let ch = GetChapterId(_bookInfo, cId);
+                let chIndex = ch.chapterIndex * 1;
+
+                this.value = _sites[i][j].total;
+                if (Math.abs(this.value) > (chIndex * 1)) {
+                    this.className = "tcUp";
+                }
+                else if (this.value === "B0" || this.value === "S0" || this.value === "Fetch" || Math.abs(this.value) <= (chIndex * 1)) {
+                    this.className = "tcDown";
+                    //this.parentElement.parentElement.hidden = true;
+                }
+                else {
+                    this.className = "tcError";
+                }
+
+                if (this.className === "tcDown") {
+                    this.parentElement.parentElement.classList.add("tcHidden");
+                }
+                else {
+                    this.parentElement.parentElement.classList.remove("tcHidden");
+                }
+            });
+
             tdTotal.append(inputButton);
 
 
@@ -87,23 +142,8 @@ export function CreateTableSites(_sites, _bookInfo) {
             tdParsing.addEventListener('click', async function () {
                 await _sites[i][j].totalChapters();
 
-                let cId = document.querySelector("#crawlerId").getAttribute("cId");
-
-                let ch= GetChapterId(_bookInfo, cId);
-                let chIndex = ch.chapterIndex * 1;
-
                 let iB = this.parentElement.querySelector("td.total > input");
-                iB.value = _sites[i][j].total;
-                if (Math.abs(iB.value) > (chIndex * 1)) {
-                    iB.className = "tcUp";
-                }
-                else if (iB.value === "B0" || iB.value === "S0" || iB.value === "Fetch" || Math.abs(iB.value) <= (chIndex * 1)) {
-                    iB.className = "tcDown";
-                    //iB.parentElement.parentElement.hidden = true;
-                }
-                else {
-                    iB.className = "tcError";
-                }
+                iB.dispatchEvent(event);
             });
 
 
@@ -115,4 +155,18 @@ export function CreateTableSites(_sites, _bookInfo) {
     }
 
     return tbl;
+}
+
+export function CheckTotalAll() {
+    let tmpTotal = document.querySelectorAll("#crawlerId > tbody > tr > td.total > input");
+    for (let i of tmpTotal) {
+        i.dispatchEvent(event);
+    }
+}
+
+export function ParsingAll() {
+    let tmpParsing = document.querySelectorAll("#crawlerId > tbody > tr > td.parsing");
+    for (let p of tmpParsing) {
+        p.click();
+    }
 }

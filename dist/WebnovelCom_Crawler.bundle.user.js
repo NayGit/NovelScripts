@@ -18,13 +18,13 @@
 
 
 
-var ___CSS_LOADER_URL_IMPORT_0___ = new URL(/* asset import */ __webpack_require__(60), __webpack_require__.b);
-var ___CSS_LOADER_URL_IMPORT_1___ = new URL(/* asset import */ __webpack_require__(651), __webpack_require__.b);
+var ___CSS_LOADER_URL_IMPORT_0___ = new URL(/* asset import */ __webpack_require__(121), __webpack_require__.b);
+var ___CSS_LOADER_URL_IMPORT_1___ = new URL(/* asset import */ __webpack_require__(244), __webpack_require__.b);
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 var ___CSS_LOADER_URL_REPLACEMENT_0___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default()(___CSS_LOADER_URL_IMPORT_0___);
 var ___CSS_LOADER_URL_REPLACEMENT_1___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default()(___CSS_LOADER_URL_IMPORT_1___);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "/* https://icomoon.io/ --> IcoMoon - Free */\r\n/* to base64 */\r\n/* https://transfonter.org/ */\r\n@font-face {\r\n    font-family: 'icomoon';\r\n    src: \r\n        url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ") format('woff2'),\r\n        url(" + ___CSS_LOADER_URL_REPLACEMENT_1___ + ") format('woff');\r\n    font-weight: normal;\r\n    font-style: normal;\r\n    font-display: swap;\r\n}\r\n\r\ntd.search:before, td.read:before, td.parsing:before {\r\n    font-family: icomoon;\r\n    margin: 0px 5px;\r\n}\r\n\r\ntd.search:before {\r\n    content: \"\\e986\";\r\n}\r\n\r\ntd.read:before {\r\n    content: \"\\e926\";\r\n}\r\n\r\ntd.parsing:before {\r\n    content: \"\\e982\";\r\n}\r\n\r\n\r\ndiv.locked > div > input, div.unlocked > div > input, div.free > div > input, div.private > div > input {\r\n    background: black;\r\n    color: darkgray;\r\n}\r\n\r\ndiv.locked input.replace, div.free input.replace, div.private input.replace {\r\n    display: none;\r\n}\r\n\r\ndiv.free input.gettext, div.private input.gettext {\r\n    display: none;\r\n}\r\n\r\ndiv.HomeNextChapter, div.ParsingReplaceGetText {\r\n    width: 100%;\r\n    margin-bottom: 5px;\r\n    display: flex;\r\n    justify-content: space-between;\r\n}\r\n\r\ndiv.ParsingReplaceGetText {\r\n    justify-content: space-around;\r\n}\r\n\r\nh1.idGlava {\r\n    background: darkgray;\r\n    color: black;\r\n    /*background: lightgray;*/\r\n}\r\n\r\ninput.tcError, input.tcUp, input.tcDown {\r\n    width: 100%;\r\n}\r\n\r\ninput.tcError {\r\n    background: red;\r\n}\r\n\r\ninput.tcUp {\r\n    background: lime;\r\n}\r\n\r\ninput.tcDown {\r\n    background: orange;\r\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "/* https://icomoon.io/ --> IcoMoon - Free */\r\n/* to base64 */\r\n/* https://transfonter.org/ */\r\n@font-face {\r\n    font-family: 'icomoon';\r\n    src:\r\n        url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ") format('woff2'),\r\n        url(" + ___CSS_LOADER_URL_REPLACEMENT_1___ + ") format('woff');\r\n    font-weight: normal;\r\n    font-style: normal;\r\n    font-display: swap;\r\n}\r\n\r\ntd.search:before, td.read:before, td.parsing:before, .eye:before, .eye-hidden:before {\r\n    font-family: icomoon;\r\n    margin: 0px 5px;\r\n}\r\n\r\ntd.search:before {\r\n    content: \"\\e986\";\r\n}\r\n\r\ntd.read:before {\r\n    content: \"\\e926\";\r\n}\r\n\r\ntd.parsing:before {\r\n    content: \"\\e982\";\r\n}\r\n\r\n.eye:before {\r\n    content: \"\\e9ce\";\r\n}\r\n\r\n.eye-hidden:before {\r\n    content: \"\\e9d1\";\r\n}\r\n\r\n.eye, .eye-hidden {\r\n    text-align: center;\r\n}\r\n\r\ndiv.locked > div > input, div.unlocked > div > input, div.free > div > input, div.private > div > input {\r\n    background: black;\r\n    color: darkgray;\r\n}\r\n\r\ndiv.locked input.replace, div.free input.replace, div.private input.replace {\r\n    display: none;\r\n}\r\n\r\ndiv.free input.gettext, div.private input.gettext {\r\n    display: none;\r\n}\r\n\r\ndiv.HomeNextChapter, div.ParsingReplaceGetText {\r\n    width: 100%;\r\n    margin-bottom: 5px;\r\n    display: flex;\r\n    justify-content: space-between;\r\n}\r\n\r\ndiv.ParsingReplaceGetText {\r\n    justify-content: space-around;\r\n}\r\n\r\nh1.idGlava {\r\n    background: darkgray;\r\n    color: black;\r\n    /*background: lightgray;*/\r\n}\r\n\r\ninput.tcError, input.tcUp, input.tcDown {\r\n    width: 100%;\r\n}\r\n\r\ninput.tcError {\r\n    background: red;\r\n}\r\n\r\ninput.tcUp {\r\n    background: lime;\r\n}\r\n\r\ninput.tcDown {\r\n    background: orange;\r\n}\r\n\r\ntable.hTrue tr.tcHidden {\r\n    display: none;\r\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -473,17 +473,17 @@ module.exports = styleTagTransform;
 
 /***/ }),
 
-/***/ 60:
+/***/ 121:
 /***/ ((module) => {
 
-module.exports = "data:font/woff2;charset=utf-8;base64,d09GMgABAAAAAAPQAA0AAAAACIAAAAN8AAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP0ZGVE0cGh4GYACCbhEICoVshQsLEgABNgIkAxwEIAWDGwdZGyQHUZQNzgKyrxK4OaR1RAtgosSskgEDnkE7ayqq8z0+HaGSw/PffuZ9M/MhYbWAP9kSLFOBACWqnOoqZLWubMPz1e3t/ps4piYJJONAArBuooD6aZx/N+iNCmWuKgEueQm8eleHZDR9MA9OYPf+/Cf3LQPAicvxNzDfmyLLaMyJY08MFwWShYGNeR5I552nYRhwai1umz8hZqE9QSV7QehVgABeXW3rAnw+2GldeG8BQZACFCEcwgAFdE7JQSyoWz0DDsA68lJUPkJesrK1nsztOpFEfQgBBAqnR4BWZQ3gMJNK3KcYfUGYS7EJb7Zp2dyyPTkAeCV5ypeUrSmb0EQYv43QkAUkACANKPDPCAy4t5CfCAAXQBSEwH9kBwAMAJDDiWyKCsIz3LQwNR6v2az4d5qf/dlnR/vbRiKlH8hPULBvzCctd2L6aZLI8DNbqUrktI6FpAEEGAOG0SlASkpnmMxBxqboJDEI5Gnsfg8QsVfyhQcWfzzs6KVJuGGSeD7RlGHzpuR9l0lCZ+yYXBvXGd2bnU/MNtr/l6olj0mW+fgQr2C1aYtPH475M039b0/3ChPP+hV4B+bbP1xL1Lm4e3dmAAAAqDg/2E93new0cc6+wM9YsYkZ8HWvhYG3D7aWTO+ZOH06uNWdkubsdL4CMNFPv+2JFPM1FA99vZAUCVCMUwc39BPxkpg1pk0C37Wj3egd1AwZHevvDVi4rHesV2zY8D5x2LJwVe4gb+C4divacdHstmPbjtu9exwvw77Kpf2oNeo7eAt+dvM39BiY3ZzdbebMbmgYOLCVZ6siW4cGLn2hHhvyMyL/1eHXsndunda910nJjxfdutXUlpTU1nTr9uJHSfT+ACAAWHjVPxMi1f9cMPin40hmlE4ALgVA4FM2YwCYdhEAexENcgDqDIN6AAJcU9naJn6GsPsEgHBECQDF0Y4A0Bz1BIDhGEkAWAJWEgA2x1ECwC/DczQZPkQYHaCgaYCG5gMG2pNiSTGRYgvbeqBfsbNmmWKBeRZYYD5miXXOgvkw2DQzLDPXJIvxV90kHO1wiXu4aRZbYla1p0AX+XjfzlbQJf+aie7D8qU8M0wz/xHGSZaaZmr6ZKt4ehG0n7MLGr/p6+PsNWXBj+IKoMS3uZBGlUaXEUtse8bcVQtnFjjL5s/KB1GF7lZRWAorL1SWAg==";
+module.exports = "data:font/woff2;charset=utf-8;base64,d09GMgABAAAAAAUcAA0AAAAACuwAAATGAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP0ZGVE0cGh4GYACCdhEICoo0iFALFgABNgIkAyAEIAWDGwdtGwkJyB6FcRvdpEplZf/kPh/+3fTPTdCkolQMakJFnIqlUHHbBpvDXAzYE/8SEYLqtvf3kxZ4gIHFTVQgRfKiCafURAHV/77+5CeOpX4lRaQlwRtFJi66MCJoexpGJO9GMB6NHwc8s61s+zHTdbFG5E0ACAD6vT4iAPh4b1m88tkEYAKQACgEIUbwABSAzvNkJfhAXdRTwArIhbyYQgxNExmwXwp8+Yq++X9SpJ0wAwisLUUANO90zq+GATQSz18eDmDBAg0gpI/3l3O/XPjl8y9f/Q8g9Z3/T/KJZL5EI4mTxICYykkEDaQDSArbFwBUjf8MeDQ5gvz0UIyTbQC2QG6AWtDNq2msvR8BCoXGT5LsKLI3O93d3c/ZWW7ixliauRH4O50+fNv/8HP/y+cZE+1VCNo11lx3g/A12+XKQ9ccGLLv2qR6LWOmXU+Emg2shtXpWB2B+hDLVphoDxPNEdZUdwjqg8pYwbSWe/tWpnBGlZHN6sr1+ijaK7/CG6JRGgwYmNBlB1RvKwUYbUaUaF77iZdoVWtPKw+ft7ljpJ1Mb6Z8LX6YsWjtNr/yQ/qAI4Yhbdxlg/w40QSfMMZfYXWxl/RBx6AOPPo25mJ3E5nil5y+5FVjldFY9kZlKH0t2srr6MobP33LaA2Flw3ylhU3bLDbuBVq+n762EusLv6KMfgE0Wx3XLfOlnDql+RNr4nmDat7Nb1ea8OdNzAdNzylL+DWqm3X7eMPPGA3vUEzoHvmwO2/XW9AQ38n6/2KLxvk/Zrtji37zvXrVXHMAMxg0X1v7tz8JhsKoV0ce3wguL1kY2BD9zL2B9l3sgYe+OmDBth35+dHtuXc3LzZZL6o2V64WPgpABuyKFgvU43xqam76ac7/r+p6tCIozaZE60Iad7srPbWyUsW+Vbdg2onVbJCadHAqEKWKytX5rnDAQOTbiXS4lrfcV+yUZdPjU+tVltLLoRgL1o9DEkqv2fS/h92hczJLnbJcMns6MhEX3FxYHWhbS70oOK8Xyh7Toij+W/Usx+PKehDm2nFLBL5xZvMzMSkyMikxMzMN19Equfgt+VL8u3mlSkUHlm6V6HwtbGZ8yVcTsUDhz5Q5D99aop9MKz2Sk93D8dztCyTtUzbDdDSbrpFVmaJvyNXZTC+jvjx9Ee+Hz161F3CBoxQ6VtVh2r79tyfa5OIxZK2KLrhI183Dylvy+TkpRSp77j4hvwSP3tF3dOp1MyNqzJtlKWpqV6tNsPtlvg0IwMWMcW9XRaez89/UW8RNlCeyNKaBh4BABAAgDezv/OuN0/4VcTysNXcyiUB/1cp+iZAhGph2B5i4CkBfBoQGl5QgSM71CkAD1K0JgBGO4HYDUqZOQ6ilBCyCIEU1BdIQ1OAPGiFgI81IRAQWnszw9FrJFLFIMwAgBTUHkhDQ4A8aI6AT6JBIGBm/qMZEbaiU7N+vfr164POs/9oeDNQqlW7UT0aDcHXgyNB3R7mKSq1GjKss7VUKLkQeK6YZag8pJ0jK15xhFS7VtnQi2SjEa1aqjeZJJVLQgvicniZ6XSajec29/934xoAivZ+BkgBFTTo4BE+ERAhEQnaeyYHOkKFo32dIWBw6ZmxYVHYmDBTHJOe6c8IBQAA";
 
 /***/ }),
 
-/***/ 651:
+/***/ 244:
 /***/ ((module) => {
 
-module.exports = "data:font/woff;charset=utf-8;base64,d09GRgABAAAAAAWIAA0AAAAACIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABGRlRNAAAFbAAAABoAAAAcksSAA0dERUYAAAVQAAAAHAAAAB4AJwAOT1MvMgAAAZQAAAA/AAAAYA8TBkpjbWFwAAAB7AAAAFoAAAFuALzD5Gdhc3AAAAVIAAAACAAAAAgAAAAQZ2x5ZgAAAlwAAAHXAAAC7C+wK1xoZWFkAAABMAAAACwAAAA2IECddWhoZWEAAAFcAAAAHQAAACQHxAPHaG10eAAAAdQAAAAXAAAAHAtVAEBsb2NhAAACSAAAABIAAAASAjIBLG1heHAAAAF8AAAAGAAAACAADwBmbmFtZQAABDQAAADcAAABm/pYTdhwb3N0AAAFEAAAADcAAABZFbApY3jaY2BkAIOGHqcT8fw2Xxm4WcD8exN0ahH0/30sTMwHgFwOBiaQKAAr1QqEeNpjYGRgYD7w/wADAwsDCLAwMTAyoAI2AEx+ApUAAAB42mNgZGBg4GBIYWBjAAEmBjQAAAuHAHZ42mNgZp7JOIGBlYGBaSbTGQYGhn4IzfiawZiRkwEVMAqgCTA4MDC+bGM+8P8AgwMzEIPUIMkqMDACAGEjC2gAeNpjYYAAxlAIzQTELAwMDiA2AAhnAKEAeNpjYGBgZoBgGQZGBhDIAPIYwXwWBh8gzcfAwcDEwAYUU3ip9rLpZdv/v///g1Wi8P8/Ebsv1iLWCNbNx4AMGEHmM7IBMTNUgAlIMDEwoKkCWji8AQBvmxVVAAAAAAAAAAgACAAQABgApAEMAXYAAHjahVFNS+NAGH4nKQlFUhImTWgr0UloPhAbmzRJXUGE1RasulVQkNoieLE9rZc97Kks7CJ634Mnf8celv4C/8Beetyz59ruJK2giN13huF5P3mfZwDBszEA6wz8z+dgazJg6YEcEFiHOhzDBQAqISu5BtG5rCQrPvHCQKqYLtKQagQawjJHcyaNhf6a/wH5XjkrKxuIjYM0RjwlK3PWHI/9Ka3m8r5qOQtjkbguYYbEzSx+V4vCneT8SPNPy3w6ze8f/No/wMLwfrwlYCygQfy+g5k/qp/PrUqLGZeM7pOZnxccK1Qd6U4ojv7G89hzPj0U8BiwEPcJuP8GTNWZDFJAdSHwkeqh8xnEc3wYbaIo9D2VqkA5KD5VpRIrZbJekoq4pNDQk2BQMQ2qn5yUM9A9O7txHJbRyVVj9/hkb+9qmVRtm97bTrs3N8sOLOu61bpsfWp+0XXD+Hp02LarVbvX7tza9gjmZWe/PfmdYigfG7YBinQ9fhPNdjem7GZ7Uk4RpyzRj45CEz0TeU08qWeHj9gSV8qa1q3tNJs7ta6mTXG97yFReig0CvnU07fALdVkarWSG7zApw+SiLx+/WXjFJdXRAs/aql8oYGYN30zDP8ANzKGAwB42nXOsWrCUBjF8X80WrQgnUrpdEenoOADdCp1cOkgHRvjJQT0XogRdO8jdOwz9GF8Ik/CtyZww+87N+cjwIx/Eton4YEn80Cem4fymzmVv8wjHrmYx8p/zVNeuamVpBMls25D64H8Yh7KC3Mqf5hHPPNtHiv/MU9Z8UdFQeSoEwlQFfEYo/CJp+TMgZxaoy/Ph1zo+74v32pPzUn3be5Ykukv2fr6VMXgltmiv/vezY1apbaEblOu2bNXtuOq97rrbqybqRRD40offJ03fu92V7cu4kb7Mu7l2z5DeNpjYGLADzgYGBiZGJgYmRmYGVkYWRnZ2NJzKgsyDNlL8zINDAzAtKulkRmEtjCC0mYA7MULSwAAAQAB//8AD3jaY2BkYGDgAWIxIGZiYARCdiBmAfMYAAPrADZ42mNgYGBkAIKrS9Q5QPS9CTq1MBoAPP0F2AAA";
+module.exports = "data:font/woff;charset=utf-8;base64,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";
 
 /***/ })
 
@@ -1015,9 +1015,14 @@ class artBook extends ParserBook {
 
 
 
+var eventCheck = "event_check";
+var FreeForm_event = new Event(eventCheck);
+var clH = "hTrue";
+
 function CreateTableSites(_sites, _bookInfo) {
     let tbl = document.createElement('table');
     tbl.id = "crawlerId";
+    tbl.classList.add(clH);
     tbl.hidden = true;
     tbl.style.fontSize = "16px";
     tbl.style.width = '200px';
@@ -1025,15 +1030,35 @@ function CreateTableSites(_sites, _bookInfo) {
 
     let tH = tbl.createTHead();
     let trH = tH.insertRow();
+
+
+    // Hidden?
+    var tdCheckBox = trH.insertCell();
+    tdCheckBox.classList.add("eye-hidden");
+    tdCheckBox.addEventListener('click', function () {
+        let tmpCkeck = document.querySelector("#crawlerId");
+        if (this.classList.contains("eye")) {
+            tmpCkeck.classList.add(clH);
+
+            this.classList.remove("eye");
+            this.classList.add("eye-hidden");
+        }
+        else {
+            tmpCkeck.classList.remove(clH);
+
+            this.classList.add("eye");
+            this.classList.remove("eye-hidden");
+        }
+    });
+
+
+    // ParsingAll
     var tdH = trH.insertCell();
     tdH.textContent = "Parsing All";
-    tdH.colSpan = "5";
+    tdH.colSpan = "4";
     tdH.style.textAlign = "right";
-    trH.addEventListener('click', function () {
-        let tmpParsing = document.querySelectorAll("#crawlerId > tbody > tr > td.parsing");
-        for (let p of tmpParsing) {
-            p.click();
-        }
+    tdH.addEventListener('click', function () {
+        ParsingAll();
     });
 
     let tB = tbl.createTBody();
@@ -1041,7 +1066,7 @@ function CreateTableSites(_sites, _bookInfo) {
     for (let i in _sites) {
         for (let j in _sites[i]) {
             let trB = tB.insertRow();
-            trB.className = i + "_" + j;
+            trB.classList.add(i + "_" + j);
 
 
             // Site
@@ -1075,6 +1100,36 @@ function CreateTableSites(_sites, _bookInfo) {
                 _sites[i][j].linkBook();
                 document.querySelector("#InputChapterNext").value = _sites[i][j].total;
             });
+            inputButton.addEventListener(eventCheck, function () {
+                if (this.value === "???" && _sites[i][j].total === 0) {
+                    return;
+                }
+
+                let cId = document.querySelector("#crawlerId").getAttribute("cId");
+
+                let ch = GetChapterId(_bookInfo, cId);
+                let chIndex = ch.chapterIndex * 1;
+
+                this.value = _sites[i][j].total;
+                if (Math.abs(this.value) > (chIndex * 1)) {
+                    this.className = "tcUp";
+                }
+                else if (this.value === "B0" || this.value === "S0" || this.value === "Fetch" || Math.abs(this.value) <= (chIndex * 1)) {
+                    this.className = "tcDown";
+                    //this.parentElement.parentElement.hidden = true;
+                }
+                else {
+                    this.className = "tcError";
+                }
+
+                if (this.className === "tcDown") {
+                    this.parentElement.parentElement.classList.add("tcHidden");
+                }
+                else {
+                    this.parentElement.parentElement.classList.remove("tcHidden");
+                }
+            });
+
             tdTotal.append(inputButton);
 
 
@@ -1101,23 +1156,8 @@ function CreateTableSites(_sites, _bookInfo) {
             tdParsing.addEventListener('click', async function () {
                 await _sites[i][j].totalChapters();
 
-                let cId = document.querySelector("#crawlerId").getAttribute("cId");
-
-                let ch= GetChapterId(_bookInfo, cId);
-                let chIndex = ch.chapterIndex * 1;
-
                 let iB = this.parentElement.querySelector("td.total > input");
-                iB.value = _sites[i][j].total;
-                if (Math.abs(iB.value) > (chIndex * 1)) {
-                    iB.className = "tcUp";
-                }
-                else if (iB.value === "B0" || iB.value === "S0" || iB.value === "Fetch" || Math.abs(iB.value) <= (chIndex * 1)) {
-                    iB.className = "tcDown";
-                    //iB.parentElement.parentElement.hidden = true;
-                }
-                else {
-                    iB.className = "tcError";
-                }
+                iB.dispatchEvent(FreeForm_event);
             });
 
 
@@ -1129,6 +1169,20 @@ function CreateTableSites(_sites, _bookInfo) {
     }
 
     return tbl;
+}
+
+function CheckTotalAll() {
+    let tmpTotal = document.querySelectorAll("#crawlerId > tbody > tr > td.total > input");
+    for (let i of tmpTotal) {
+        i.dispatchEvent(FreeForm_event);
+    }
+}
+
+function ParsingAll() {
+    let tmpParsing = document.querySelectorAll("#crawlerId > tbody > tr > td.parsing");
+    for (let p of tmpParsing) {
+        p.click();
+    }
 }
 ;// CONCATENATED MODULE: ./src/js/ReplaceText.js
 
@@ -1373,13 +1427,9 @@ async function GetBooks(_title) {
             anonymous: true,
             type: 'json',
             headers: { 'User-Agent': 'okhttp/4.9.1' },
-            data: JSON.stringify({ "packageName": "com.lightnovelplus.webnovel", "marketChannel": "none", "page_num": "1", "sysVer": "5.1.1", "osType": "2", "keyword": _title, "language": "en", "ver": "2.1.7", "product": "1" }),
+            data: JSON.stringify({ "packageName": "com.lightnovelplus.webnovel", "marketChannel": "none", "page_num": "1", "sysVer": "5.1.1", "osType": "2", "keyword": _title, "language": "en", "ver": "2.2.0", "product": "1" }),
             onload: function (data) {
-                console.log(data);
-
                 let json = JSON.parse(data.responseText);
-                console.log(json);
-
                 resolve(json);
 
             },
@@ -1398,15 +1448,10 @@ async function GetCatalog(_bId) {
             anonymous: true,
             type: 'json',
             headers: { 'User-Agent': 'okhttp/4.9.1' },
-            data: JSON.stringify({ "sysVer": "5.1.1", "book_id": _bId, "packageName": "com.lightnovelplus.webnovel", "osType": "2", "marketChannel": "none", "language": "en", "ver": "2.1.7", "product": "1" }),
+            data: JSON.stringify({ "sysVer": "5.1.1", "book_id": _bId, "packageName": "com.lightnovelplus.webnovel", "osType": "2", "marketChannel": "none", "language": "en", "ver": "2.2.0", "product": "1" }),
             onload: function (data) {
-                console.log(data);
-
                 let json = JSON.parse(data.responseText);
-                console.log(json);
-
                 resolve(json);
-
             },
             onerror: function (error) {
                 reject(error);
@@ -1424,11 +1469,7 @@ async function GetChapter(_bId, _chId) {
             type: 'json',
             headers: { 'User-Agent': 'okhttp/4.9.1' },
             onload: function (data) {
-                console.log(data);
-
                 let json = JSON.parse(data.responseText);
-                console.log(json);
-
                 resolve(json);
 
             },
@@ -1478,7 +1519,6 @@ async function GetText(_bId, _cId, _bTitle, _cTitle) {
     if (ChapterListReverse === "") {
         let jsonCatalog = await GetCatalog(BookId);
         ChapterListReverse = jsonCatalog.data.chapter_list.reverse();
-        alert("Rev");
     }
 
 
@@ -1506,11 +1546,19 @@ async function GetText(_bId, _cId, _bTitle, _cTitle) {
         }
     }
 
+    if ('error' in jsonChapter) {
+        console.warn(jsonChapter);
+
+        alert(jsonChapter.error, "\nStart App");
+        return -1;
+    }
+
     if (jsonChapter !== "") {
         content.style.height = "auto";
         content.style.position = "inherit";
 
         let pre = document.createElement('pre');
+
         pre.innerHTML = jsonChapter.data.content;
 
         content.appendChild(pre);
@@ -3834,7 +3882,7 @@ class ranobesNet extends ParserSearch {
 // @author      Nay
 // @match       https://m.webnovel.com/book/*/*
 // @grant       GM_xmlhttpRequest
-// @version     0.3.13
+// @version     0.3.14
 // ==/UserScript==
 
 
@@ -4107,7 +4155,11 @@ async function CreateDivMain(_statusChapter, _cId = "") {
             }
             crawlerTable.setAttribute("cId", _cId);
             crawlerTable.hidden = false;
+
+            //ParsingAll();
         }
+
+        CheckTotalAll();
     });
     divParsingReplaceGetText.appendChild(inputParsing);
 

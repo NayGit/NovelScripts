@@ -8,13 +8,9 @@ async function GetBooks(_title) {
             anonymous: true,
             type: 'json',
             headers: { 'User-Agent': 'okhttp/4.9.1' },
-            data: JSON.stringify({ "packageName": "com.lightnovelplus.webnovel", "marketChannel": "none", "page_num": "1", "sysVer": "5.1.1", "osType": "2", "keyword": _title, "language": "en", "ver": "2.1.7", "product": "1" }),
+            data: JSON.stringify({ "packageName": "com.lightnovelplus.webnovel", "marketChannel": "none", "page_num": "1", "sysVer": "5.1.1", "osType": "2", "keyword": _title, "language": "en", "ver": "2.2.0", "product": "1" }),
             onload: function (data) {
-                console.log(data);
-
                 let json = JSON.parse(data.responseText);
-                console.log(json);
-
                 resolve(json);
 
             },
@@ -33,15 +29,10 @@ async function GetCatalog(_bId) {
             anonymous: true,
             type: 'json',
             headers: { 'User-Agent': 'okhttp/4.9.1' },
-            data: JSON.stringify({ "sysVer": "5.1.1", "book_id": _bId, "packageName": "com.lightnovelplus.webnovel", "osType": "2", "marketChannel": "none", "language": "en", "ver": "2.1.7", "product": "1" }),
+            data: JSON.stringify({ "sysVer": "5.1.1", "book_id": _bId, "packageName": "com.lightnovelplus.webnovel", "osType": "2", "marketChannel": "none", "language": "en", "ver": "2.2.0", "product": "1" }),
             onload: function (data) {
-                console.log(data);
-
                 let json = JSON.parse(data.responseText);
-                console.log(json);
-
                 resolve(json);
-
             },
             onerror: function (error) {
                 reject(error);
@@ -59,11 +50,7 @@ async function GetChapter(_bId, _chId) {
             type: 'json',
             headers: { 'User-Agent': 'okhttp/4.9.1' },
             onload: function (data) {
-                console.log(data);
-
                 let json = JSON.parse(data.responseText);
-                console.log(json);
-
                 resolve(json);
 
             },
@@ -113,7 +100,6 @@ export async function GetText(_bId, _cId, _bTitle, _cTitle) {
     if (ChapterListReverse === "") {
         let jsonCatalog = await GetCatalog(BookId);
         ChapterListReverse = jsonCatalog.data.chapter_list.reverse();
-        alert("Rev");
     }
 
 
@@ -141,11 +127,19 @@ export async function GetText(_bId, _cId, _bTitle, _cTitle) {
         }
     }
 
+    if ('error' in jsonChapter) {
+        console.warn(jsonChapter);
+
+        alert(jsonChapter.error, "\nStart App");
+        return -1;
+    }
+
     if (jsonChapter !== "") {
         content.style.height = "auto";
         content.style.position = "inherit";
 
         let pre = document.createElement('pre');
+
         pre.innerHTML = jsonChapter.data.content;
 
         content.appendChild(pre);

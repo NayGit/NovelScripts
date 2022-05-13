@@ -6,7 +6,7 @@
 // @author      Nay
 // @match       https://m.webnovel.com/book/*/*
 // @grant       GM_xmlhttpRequest
-// @version     0.3.13
+// @version     0.3.14
 // ==/UserScript==
 
 'use strict';
@@ -15,7 +15,7 @@ import './css/webnovel.css'
 
 import { downloadBookIfno, glavaWebNovel, GetChapterId, GetChapterLevel } from './js/webNovel';
 import { DivPanel, InputDivPanelHide, InputBookInfo, H1IdGlava, InputChapterNext } from './js/webnovel/ce/DivPanel';
-import { CreateTableSites } from './js/webnovel/ce/FreeForm';
+import { CreateTableSites, CheckTotalAll, ParsingAll } from './js/webnovel/ce/FreeForm';
 
 import { ReplaceText } from './js/ReplaceText';
 import { GetText } from './js/GetText';
@@ -279,7 +279,11 @@ async function CreateDivMain(_statusChapter, _cId = "") {
             }
             crawlerTable.setAttribute("cId", _cId);
             crawlerTable.hidden = false;
+
+            //ParsingAll();
         }
+
+        CheckTotalAll();
     });
     divParsingReplaceGetText.appendChild(inputParsing);
 
