@@ -33,6 +33,7 @@
 | https://novelscafe.com/          |   |
 | https://novelsonline.net/        |   |
 | https://novelteam.net/           |   |
+| https://noveltop1.com/           |   |
 | https://noveltrench.com/         |   |
 | https://www.novelupdates.cc/     |   |
 | https://octopii.co/              |   |

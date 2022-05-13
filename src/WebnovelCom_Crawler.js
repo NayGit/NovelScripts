@@ -6,7 +6,7 @@
 // @author      Nay
 // @match       https://m.webnovel.com/book/*/*
 // @grant       GM_xmlhttpRequest
-// @version     0.3.12
+// @version     0.3.13
 // ==/UserScript==
 
 'use strict';
@@ -71,6 +71,7 @@ import novelfullMe from './js/parsers/htmlSearchChapter/madentertainment/novelfu
 //    truyenNovel/novel
 import novelfullplusCom from './js/parsers/htmlSearchChapter/truyenNovel/novel/novelfullplusCom';
 import novelpokiCom from './js/parsers/htmlSearchChapter/truyenNovel/novel/novelpokiCom';
+import noveltop1Com from './js/parsers/htmlSearchChapter/truyenNovel/novel/noveltop1Com';
 import readnovelfullCom from './js/parsers/htmlSearchChapter/truyenNovel/novel/readnovelfullCom';
 import topwebnovelCom from './js/parsers/htmlSearchChapter/truyenNovel/novel/topwebnovelCom';
 //    truyenNovel/truyen
@@ -147,15 +148,16 @@ const SitesAll = [
         new readlightnovelsNet(),
 
         // htmlSearchChapter
-new octopiiCo(),
+        new octopiiCo(),
         //    madentertainment
         new madnovelCom(),
         new novelbuddyCom(),
         new novelforestCom(),
         new novelfullMe(),
         //    truyenNovel/novel
+        new novelfullplusCom(),
         new novelpokiCom(),
-new novelfullplusCom(),
+        new noveltop1Com(),
         new readnovelfullCom(),
         new topwebnovelCom(),
         //    truyenNovel/truyen
@@ -165,7 +167,7 @@ new novelfullplusCom(),
         new novelgreatNet(),
         //    wpManga
         new oneStkissnovelLove(),
-new latestnovelNet(),
+        new latestnovelNet(),
         new lightnovelMobi(),
         new novelteamNet(),
         new noveltrenchCom(),
