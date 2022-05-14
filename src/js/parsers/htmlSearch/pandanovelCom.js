@@ -47,7 +47,7 @@ export default class pandanovelCom extends ParserBook {
             return await fetch(this.siteBook.href)
                 .then(res => fetchStatusHTML(res))
                 .then(data => {
-                    this.total = data.querySelector("#panda-app > div.details-header > div.novel-desc > ul:nth-child(3) > li:nth-child(2) > h3 > em").textContent.match(/\D*(\d+)/)[1] * -1;
+                    this.total = data.querySelector("#detailsBody > div > div.details-chapters > dl > dt > p > a").textContent.match(/\D*(\d+)/)[1] * -1;
                     return;
                 })
                 .catch(err => this.total = fetchCatch(err, this.siteBook.href));
