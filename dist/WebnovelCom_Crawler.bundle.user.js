@@ -1546,19 +1546,18 @@ async function GetText(_bId, _cId, _bTitle, _cTitle) {
         }
     }
 
-    if ('error' in jsonChapter) {
-        console.warn(jsonChapter);
-
-        alert(jsonChapter.error, "\nStart App");
-        return -1;
-    }
-
     if (jsonChapter !== "") {
+        if ('error' in jsonChapter) {
+            console.warn(jsonChapter);
+
+            alert(jsonChapter.error + "\n\nStart App:\n" + _bTitle);
+            return -1;
+        }
+
         content.style.height = "auto";
         content.style.position = "inherit";
 
         let pre = document.createElement('pre');
-
         pre.innerHTML = jsonChapter.data.content;
 
         content.appendChild(pre);
@@ -3882,7 +3881,7 @@ class ranobesNet extends ParserSearch {
 // @author      Nay
 // @match       https://m.webnovel.com/book/*/*
 // @grant       GM_xmlhttpRequest
-// @version     0.3.14
+// @version     0.3.15
 // ==/UserScript==
 
 
