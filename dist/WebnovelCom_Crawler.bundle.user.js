@@ -886,6 +886,7 @@ class Parser {
         this.site = new URL(_site);
         this._siteSearch = "";
         this.bTitle = "";
+        this.bId = "";
     }
 
     set siteSearch(_newSiteSearch) {
@@ -942,6 +943,42 @@ class ParserBook extends Parser {
     linkBook() {
         window.open(this.siteBook);
     }
+
+    getBookLocal() {
+        let bookId = localStorage.getItem(this.constructor.name);
+
+        if (bookId) {
+            return JSON.parse(bookId);
+        }
+        else {
+            return {};
+        }
+    }
+
+    setBookLocal() {
+        let bookId = this.getBookLocal();
+
+        bookId[this.bId] = this.siteBook.href;
+        bookId = JSON.stringify(bookId);
+        localStorage.setItem(this.constructor.name, bookId);
+    }
+
+    checkBookUndefined() {
+        let bookId = this.getBookLocal();
+        if (bookId[this.bId] === undefined) {
+            return true;
+        }
+        else {
+            this.siteBook = bookId[this.bId];
+            return false;
+        }
+    }
+
+    checkBookSite() {
+        let bookId = this.getBookLocal();
+
+        return bookId[this.bId] === this.siteBook.href;
+    }
 }
 
 class ParserChapter extends ParserBook {
@@ -957,38 +994,39 @@ class artBook extends ParserBook {
     }
 
     async totalChapters() {
-        let isLucky = false;
-        var isError = '';
-        await fetch(this.siteSearch.href)
-            .then(res => fetchStatusHTML(res))
-            .then(data => {
-                let block = data.querySelectorAll("div.result-container_2.result-container > ul.result-list > li.list-item");
+        if (this.checkBookUndefined()) {
+            let isError = '';
+            await fetch(this.siteSearch.href)
+                .then(res => fetchStatusHTML(res))
+                .then(data => {
+                    let block = data.querySelectorAll("div.result-container_2.result-container > ul.result-list > li.list-item");
 
-                if (block.length == 0) {
-                    isError = "B0";
-                    return;
-                }
-
-                for (let book of block) {
-                    let titleParser = book.querySelector("a.list-img > img.item-img").alt;
-
-                    let diff = tanimoto(this.bTitle, titleParser);
-
-                    if (diff > 0.8) {
-                        this.siteBook = this.site.origin + book.querySelector("a.list-img").pathname;
-                        isLucky = true;
-                        break;
+                    if (block.length == 0) {
+                        isError = "B0";
+                        return;
                     }
-                }
-            })
-            .catch(err => isError = fetchCatch(err, this.siteSearch.href));
 
-        if (isError != '') {
-            this.total = isError;
-            return;
+                    for (let book of block) {
+                        let titleParser = book.querySelector("a.list-img > img.item-img").alt;
+
+                        let diff = tanimoto(this.bTitle, titleParser);
+
+                        if (diff > 0.8) {
+                            this.siteBook = this.site.origin + book.querySelector("a.list-img").pathname;
+                            this.setBookLocal();
+                            break;
+                        }
+                    }
+                })
+                .catch(err => isError = fetchCatch(err, this.siteSearch.href));
+
+            if (isError != '') {
+                this.total = isError;
+                return;
+            }
         }
 
-        if (isLucky) {
+        if (this.checkBookSite()) {
             return await fetch(this.siteBook.href)
                 .then(res => fetchStatusHTML(res))
                 .then(data => {
@@ -1625,38 +1663,39 @@ class lightnovelreaderOrg extends ParserChapter {
     }
 
     async totalChapters() {
-        this.apiSearch = new URL(this.site.origin + "/search/autocomplete?query=" + this.bTitle);
+        if (this.checkBookUndefined()) {
+            this.apiSearch = new URL(this.site.origin + "/search/autocomplete?query=" + this.bTitle);
 
-        let isLucky = false;
-        var isError = '';
-        await fetch(this.apiSearch.href)
-            .then(res => fetchStatusJSON(res))
-            .then(data => {
-                if (Object.keys(data).length == 0) {
-                    isError = "B0";
-                    return;
-                }
-
-                for (let book of data.results) {
-                    let titleParser = book.original_title;
-
-                    let diff = tanimoto(this.bTitle, titleParser);
-
-                    if (diff > 0.8) {
-                        this.siteBook = book.link;
-                        isLucky = true;
-                        break;
+            let isError = '';
+            await fetch(this.apiSearch.href)
+                .then(res => fetchStatusJSON(res))
+                .then(data => {
+                    if (Object.keys(data).length == 0) {
+                        isError = "B0";
+                        return;
                     }
-                }
-            })
-            .catch(err => isError = fetchCatch(err, this.apiSearch.href));
 
-        if (isError != '') {
-            this.total = isError;
-            return;
+                    for (let book of data.results) {
+                        let titleParser = book.original_title;
+
+                        let diff = tanimoto(this.bTitle, titleParser);
+
+                        if (diff > 0.8) {
+                            this.siteBook = book.link;
+                            this.setBookLocal();
+                            break;
+                        }
+                    }
+                })
+                .catch(err => isError = fetchCatch(err, this.apiSearch.href));
+
+            if (isError != '') {
+                this.total = isError;
+                return;
+            }
         }
 
-        if (isLucky) {
+        if (this.checkBookSite()) {
             return await fetch(this.siteBook.href)
                 .then(res => fetchStatusHTML(res))
                 .then(data => {
@@ -1692,46 +1731,47 @@ class ltnovelCom extends ParserChapter {
     }
 
     async totalChapters() {
-        this.apiSearch = new URL(this.site.origin + "/e/search/index.php");
+        if (this.checkBookUndefined()) {
+            this.apiSearch = new URL(this.site.origin + "/e/search/index.php");
 
-        let isLucky = false;
-        var isError = '';
-        await fetch(this.apiSearch.href, {
-            "headers": {
-                "content-type": "application/x-www-form-urlencoded",
-            },
-            "referrer": this.site.origin + "/search.html",
-            "body": "show=title&tempid=1&tbname=news&keyboard=" + this.bTitle,
-            "method": "POST",
-        })
-            .then(res => fetchStatusHTML(res))
-            .then(data => {
-                if (data.title === "Message hint" || data.title == "") {
-                    isError = "B0";
-                    return;
-                }
-
-                let block = data.querySelectorAll("section > ul.novel-list.grid.col.col2 > li.novel-item");
-                for (let book of block) {
-                    let titleParser = book.querySelector("a > h4.novel-title.text2row").textContent;
-
-                    let diff = tanimoto(this.bTitle, titleParser);
-
-                    if (diff > 0.8) {
-                        this.siteBook = this.site.origin + book.querySelector("a").pathname;
-                        isLucky = true;
-                        break;
-                    }
-                }
+            let isError = '';
+            await fetch(this.apiSearch.href, {
+                "headers": {
+                    "content-type": "application/x-www-form-urlencoded",
+                },
+                "referrer": this.site.origin + "/search.html",
+                "body": "show=title&tempid=1&tbname=news&keyboard=" + this.bTitle,
+                "method": "POST",
             })
-            .catch(err => isError = fetchCatch(err, this.apiSearch.href));
+                .then(res => fetchStatusHTML(res))
+                .then(data => {
+                    if (data.title === "Message hint" || data.title == "") {
+                        isError = "B0";
+                        return;
+                    }
 
-        if (isError != '') {
-            this.total = isError;
-            return;
+                    let block = data.querySelectorAll("section > ul.novel-list.grid.col.col2 > li.novel-item");
+                    for (let book of block) {
+                        let titleParser = book.querySelector("a > h4.novel-title.text2row").textContent;
+
+                        let diff = tanimoto(this.bTitle, titleParser);
+
+                        if (diff > 0.8) {
+                            this.siteBook = this.site.origin + book.querySelector("a").pathname;
+                            this.setBookLocal();
+                            break;
+                        }
+                    }
+                })
+                .catch(err => isError = fetchCatch(err, this.apiSearch.href));
+
+            if (isError != '') {
+                this.total = isError;
+                return;
+            }
         }
 
-        if (isLucky) {
+        if (this.checkBookSite()) {
             return await fetch(this.siteBook.href)
                 .then(res => fetchStatusHTML(res))
                 .then(data => {
@@ -1767,46 +1807,47 @@ class novelmtCom extends ParserChapter {
     }
 
     async totalChapters() {
-        this.apiSearch = new URL(this.site.origin + "/e/search/index.php");
+        if (this.checkBookUndefined()) {
+            this.apiSearch = new URL(this.site.origin + "/e/search/index.php");
 
-        let isLucky = false;
-        var isError = '';
-        await fetch(this.apiSearch.href, {
-            "headers": {
-                "content-type": "application/x-www-form-urlencoded",
-            },
-            "referrer": this.site.origin + "/search.html",
-            "body": "show=title&tempid=1&tbname=news&keyboard=" + this.bTitle,
-            "method": "POST",
-        })
-            .then(res => fetchStatusHTML(res))
-            .then(data => {
-                if (data.title === "Message hint" || data.title == "") {
-                    isError = "B0";
-                    return;
-                }
-
-                let block = data.querySelectorAll("section > ul.novel-list.grid.col.col2 > li.novel-item");
-                for (let book of block) {
-                    let titleParser = book.querySelector("a > h4.novel-title.text2row").textContent;
-
-                    let diff = tanimoto(this.bTitle, titleParser);
-
-                    if (diff > 0.8) {
-                        this.siteBook = this.site.origin + book.querySelector("a").pathname;
-                        isLucky = true;
-                        break;
-                    }
-                }
+            let isError = '';
+            await fetch(this.apiSearch.href, {
+                "headers": {
+                    "content-type": "application/x-www-form-urlencoded",
+                },
+                "referrer": this.site.origin + "/search.html",
+                "body": "show=title&tempid=1&tbname=news&keyboard=" + this.bTitle,
+                "method": "POST",
             })
-            .catch(err => isError = fetchCatch(err, this.apiSearch.href));
+                .then(res => fetchStatusHTML(res))
+                .then(data => {
+                    if (data.title === "Message hint" || data.title == "") {
+                        isError = "B0";
+                        return;
+                    }
 
-        if (isError != '') {
-            this.total = isError;
-            return;
+                    let block = data.querySelectorAll("section > ul.novel-list.grid.col.col2 > li.novel-item");
+                    for (let book of block) {
+                        let titleParser = book.querySelector("a > h4.novel-title.text2row").textContent;
+
+                        let diff = tanimoto(this.bTitle, titleParser);
+
+                        if (diff > 0.8) {
+                            this.siteBook = this.site.origin + book.querySelector("a").pathname;
+                            this.setBookLocal();
+                            break;
+                        }
+                    }
+                })
+                .catch(err => isError = fetchCatch(err, this.apiSearch.href));
+
+            if (isError != '') {
+                this.total = isError;
+                return;
+            }
         }
 
-        if (isLucky) {
+        if (this.checkBookSite()) {
             return await fetch(this.siteBook.href)
                 .then(res => fetchStatusHTML(res))
                 .then(data => {
@@ -1842,46 +1883,47 @@ class readwnCom extends ParserChapter {
     }
 
     async totalChapters() {
-        this.apiSearch = new URL(this.site.origin + "/e/search/index.php");
+        if (this.checkBookUndefined()) {
+            this.apiSearch = new URL(this.site.origin + "/e/search/index.php");
 
-        let isLucky = false;
-        var isError = '';
-        await fetch(this.apiSearch.href, {
-            "headers": {
-                "content-type": "application/x-www-form-urlencoded",
-            },
-            "referrer": this.site.origin + "/search.html",
-            "body": "show=title&tempid=1&tbname=news&keyboard=" + this.bTitle,
-            "method": "POST",
-        })
-            .then(res => fetchStatusHTML(res))
-            .then(data => {
-                if (data.title === "Message hint" || data.title == "") {
-                    isError = "B0";
-                    return;
-                }
-
-                let block = data.querySelectorAll("section > ul.novel-list.grid.col.col2 > li.novel-item");
-                for (let book of block) {
-                    let titleParser = book.querySelector("a > h4.novel-title.text2row").textContent;
-
-                    let diff = tanimoto(this.bTitle, titleParser);
-
-                    if (diff > 0.8) {
-                        this.siteBook = this.site.origin + book.querySelector("a").pathname;
-                        isLucky = true;
-                        break;
-                    }
-                }
+            let isError = '';
+            await fetch(this.apiSearch.href, {
+                "headers": {
+                    "content-type": "application/x-www-form-urlencoded",
+                },
+                "referrer": this.site.origin + "/search.html",
+                "body": "show=title&tempid=1&tbname=news&keyboard=" + this.bTitle,
+                "method": "POST",
             })
-            .catch(err => isError = fetchCatch(err, this.apiSearch.href));
+                .then(res => fetchStatusHTML(res))
+                .then(data => {
+                    if (data.title === "Message hint" || data.title == "") {
+                        isError = "B0";
+                        return;
+                    }
 
-        if (isError != '') {
-            this.total = isError;
-            return;
+                    let block = data.querySelectorAll("section > ul.novel-list.grid.col.col2 > li.novel-item");
+                    for (let book of block) {
+                        let titleParser = book.querySelector("a > h4.novel-title.text2row").textContent;
+
+                        let diff = tanimoto(this.bTitle, titleParser);
+
+                        if (diff > 0.8) {
+                            this.siteBook = this.site.origin + book.querySelector("a").pathname;
+                            this.setBookLocal();
+                            break;
+                        }
+                    }
+                })
+                .catch(err => isError = fetchCatch(err, this.apiSearch.href));
+
+            if (isError != '') {
+                this.total = isError;
+                return;
+            }
         }
 
-        if (isLucky) {
+        if (this.checkBookSite()) {
             return await fetch(this.siteBook.href)
                 .then(res => fetchStatusHTML(res))
                 .then(data => {
@@ -1917,46 +1959,47 @@ class wuxiahereCom extends ParserChapter {
     }
 
     async totalChapters() {
-        this.apiSearch = new URL(this.site.origin + "/e/search/index.php");
+        if (this.checkBookUndefined()) {
+            this.apiSearch = new URL(this.site.origin + "/e/search/index.php");
 
-        let isLucky = false;
-        var isError = '';
-        await fetch(this.apiSearch.href, {
-            "headers": {
-                "content-type": "application/x-www-form-urlencoded",
-            },
-            "referrer": this.site.origin + "/search.html",
-            "body": "show=title&tempid=1&tbname=news&keyboard=" + this.bTitle,
-            "method": "POST",
-        })
-            .then(res => fetchStatusHTML(res))
-            .then(data => {
-                if (data.title === "Message hint" || data.title == "") {
-                    isError = "B0";
-                    return;
-                }
-
-                let block = data.querySelectorAll("section > ul.novel-list.grid.col.col2 > li.novel-item");
-                for (let book of block) {
-                    let titleParser = book.querySelector("a > h4.novel-title.text2row").textContent;
-
-                    let diff = tanimoto(this.bTitle, titleParser);
-
-                    if (diff > 0.8) {
-                        this.siteBook = this.site.origin + book.querySelector("a").pathname;
-                        isLucky = true;
-                        break;
-                    }
-                }
+            let isError = '';
+            await fetch(this.apiSearch.href, {
+                "headers": {
+                    "content-type": "application/x-www-form-urlencoded",
+                },
+                "referrer": this.site.origin + "/search.html",
+                "body": "show=title&tempid=1&tbname=news&keyboard=" + this.bTitle,
+                "method": "POST",
             })
-            .catch(err => isError = fetchCatch(err, this.apiSearch.href));
+                .then(res => fetchStatusHTML(res))
+                .then(data => {
+                    if (data.title === "Message hint" || data.title == "") {
+                        isError = "B0";
+                        return;
+                    }
 
-        if (isError != '') {
-            this.total = isError;
-            return;
+                    let block = data.querySelectorAll("section > ul.novel-list.grid.col.col2 > li.novel-item");
+                    for (let book of block) {
+                        let titleParser = book.querySelector("a > h4.novel-title.text2row").textContent;
+
+                        let diff = tanimoto(this.bTitle, titleParser);
+
+                        if (diff > 0.8) {
+                            this.siteBook = this.site.origin + book.querySelector("a").pathname;
+                            this.setBookLocal();
+                            break;
+                        }
+                    }
+                })
+                .catch(err => isError = fetchCatch(err, this.apiSearch.href));
+
+            if (isError != '') {
+                this.total = isError;
+                return;
+            }
         }
 
-        if (isLucky) {
+        if (this.checkBookSite()) {
             return await fetch(this.siteBook.href)
                 .then(res => fetchStatusHTML(res))
                 .then(data => {
@@ -1992,46 +2035,47 @@ class wuxiapubCom extends ParserChapter {
     }
 
     async totalChapters() {
-        this.apiSearch = new URL(this.site.origin + "/e/search/index.php");
+        if (this.checkBookUndefined()) {
+            this.apiSearch = new URL(this.site.origin + "/e/search/index.php");
 
-        let isLucky = false;
-        var isError = '';
-        await fetch(this.apiSearch.href, {
-            "headers": {
-                "content-type": "application/x-www-form-urlencoded",
-            },
-            "referrer": this.site.origin + "/search.html",
-            "body": "show=title&tempid=1&tbname=news&keyboard=" + this.bTitle,
-            "method": "POST",
-        })
-            .then(res => fetchStatusHTML(res))
-            .then(data => {
-                if (data.title === "Message hint" || data.title == "") {
-                    isError = "B0";
-                    return;
-                }
-
-                let block = data.querySelectorAll("section > ul.novel-list.grid.col.col2 > li.novel-item");
-                for (let book of block) {
-                    let titleParser = book.querySelector("a > h4.novel-title.text2row").textContent;
-
-                    let diff = tanimoto(this.bTitle, titleParser);
-
-                    if (diff > 0.8) {
-                        this.siteBook = this.site.origin + book.querySelector("a").pathname;
-                        isLucky = true;
-                        break;
-                    }
-                }
+            let isError = '';
+            await fetch(this.apiSearch.href, {
+                "headers": {
+                    "content-type": "application/x-www-form-urlencoded",
+                },
+                "referrer": this.site.origin + "/search.html",
+                "body": "show=title&tempid=1&tbname=news&keyboard=" + this.bTitle,
+                "method": "POST",
             })
-            .catch(err => isError = fetchCatch(err, this.apiSearch.href));
+                .then(res => fetchStatusHTML(res))
+                .then(data => {
+                    if (data.title === "Message hint" || data.title == "") {
+                        isError = "B0";
+                        return;
+                    }
 
-        if (isError != '') {
-            this.total = isError;
-            return;
+                    let block = data.querySelectorAll("section > ul.novel-list.grid.col.col2 > li.novel-item");
+                    for (let book of block) {
+                        let titleParser = book.querySelector("a > h4.novel-title.text2row").textContent;
+
+                        let diff = tanimoto(this.bTitle, titleParser);
+
+                        if (diff > 0.8) {
+                            this.siteBook = this.site.origin + book.querySelector("a").pathname;
+                            this.setBookLocal();
+                            break;
+                        }
+                    }
+                })
+                .catch(err => isError = fetchCatch(err, this.apiSearch.href));
+
+            if (isError != '') {
+                this.total = isError;
+                return;
+            }
         }
 
-        if (isLucky) {
+        if (this.checkBookSite()) {
             return await fetch(this.siteBook.href)
                 .then(res => fetchStatusHTML(res))
                 .then(data => {
@@ -2059,38 +2103,39 @@ class mMylovenovelCom extends ParserBook {
     }
 
     async totalChapters() {
-        let isLucky = false;
-        var isError = '';
-        await fetch(this.siteSearch.href)
-            .then(res => fetchStatusHTML(res))
-            .then(data => {
-                let block = data.querySelectorAll("div.main > ul.list > li");
+        if (this.checkBookUndefined()) {
+            let isError = '';
+            await fetch(this.siteSearch.href)
+                .then(res => fetchStatusHTML(res))
+                .then(data => {
+                    let block = data.querySelectorAll("div.main > ul.list > li");
 
-                if (block.length == 0) {
-                    isError = this.total = "B0";
-                    return;
-                }
-
-                for (let book of block) {
-                    let titleParser = book.querySelector("a > p.bookname").textContent;
-
-                    let diff = tanimoto(this.bTitle, titleParser);
-
-                    if (diff > 0.8) {
-                        this.siteBook = this.site.origin + book.querySelector("a").pathname;
-                        isLucky = true;
+                    if (block.length == 0) {
+                        isError = this.total = "B0";
                         return;
                     }
-                }
-            })
-            .catch(err => isError = fetchCatch(err, this.siteSearch.href));
 
-        if (isError != '') {
-            this.total = isError;
-            return;
+                    for (let book of block) {
+                        let titleParser = book.querySelector("a > p.bookname").textContent;
+
+                        let diff = tanimoto(this.bTitle, titleParser);
+
+                        if (diff > 0.8) {
+                            this.siteBook = this.site.origin + book.querySelector("a").pathname;
+                            this.setBookLocal();
+                            return;
+                        }
+                    }
+                })
+                .catch(err => isError = fetchCatch(err, this.siteSearch.href));
+
+            if (isError != '') {
+                this.total = isError;
+                return;
+            }
         }
 
-        if (isLucky) {
+        if (this.checkBookSite()) {
             return await fetch(this.siteBook.href)
                 .then(res => fetchStatusHTML(res))
                 .then(data => {
@@ -2123,38 +2168,39 @@ class freewebnovelCom extends ParserChapter {
     }
 
     async totalChapters() {
-        let isLucky = false;
-        var isError = '';
-        await fetch(this.siteSearch.href)
-            .then(res => fetchStatusHTML(res))
-            .then(data => {
-                let block = data.querySelectorAll("div.col-content > div > div.li-row");
+        if (this.checkBookUndefined()) {
+            let isError = '';
+            await fetch(this.siteSearch.href)
+                .then(res => fetchStatusHTML(res))
+                .then(data => {
+                    let block = data.querySelectorAll("div.col-content > div > div.li-row");
 
-                if (block.length == 1 && block[0].querySelectorAll("div.li > div.con").length == 0) {
-                    isError = "B0";
-                    return;
-                }
-
-                for (let book of block) {
-                    let titleParser = book.querySelector("div.txt > h3.tit > a").textContent;
-
-                    let diff = tanimoto(this.bTitle, titleParser);
-
-                    if (diff > 0.8) {
-                        this.siteBook = this.site.origin + book.querySelector("div.txt > h3.tit > a").pathname;
-                        isLucky = true;
-                        break;
+                    if (block.length == 1 && block[0].querySelectorAll("div.li > div.con").length == 0) {
+                        isError = "B0";
+                        return;
                     }
-                }
-            })
-            .catch(err => isError = fetchCatch(err, this.siteSearch.href));
 
-        if (isError != '') {
-            this.total = isError;
-            return;
+                    for (let book of block) {
+                        let titleParser = book.querySelector("div.txt > h3.tit > a").textContent;
+
+                        let diff = tanimoto(this.bTitle, titleParser);
+
+                        if (diff > 0.8) {
+                            this.siteBook = this.site.origin + book.querySelector("div.txt > h3.tit > a").pathname;
+                            this.setBookLocal();
+                            break;
+                        }
+                    }
+                })
+                .catch(err => isError = fetchCatch(err, this.siteSearch.href));
+
+            if (isError != '') {
+                this.total = isError;
+                return;
+            }
         }
 
-        if (isLucky) {
+        if (this.checkBookSite()) {
             return await fetch(this.siteBook.href)
                 .then(res => fetchStatusHTML(res))
                 .then(data => {
@@ -2187,38 +2233,39 @@ class novelfullvipCom extends ParserChapter {
     }
 
     async totalChapters() {
-        let isLucky = false;
-        var isError = '';
-        await fetch(this.siteSearch.href)
-            .then(res => fetchStatusHTML(res))
-            .then(data => {
-                let block = data.querySelectorAll("#truyen-slide > div.list.list-thumbnail.col-xs-12.col-md-9 > div.row > div.col-xs-4.col-sm-3.col-md-3");
+        if (this.checkBookUndefined()) {
+            let isError = '';
+            await fetch(this.siteSearch.href)
+                .then(res => fetchStatusHTML(res))
+                .then(data => {
+                    let block = data.querySelectorAll("#truyen-slide > div.list.list-thumbnail.col-xs-12.col-md-9 > div.row > div.col-xs-4.col-sm-3.col-md-3");
 
-                if (block.length == 0) {
-                    isError = "B0";
-                    return;
-                }
-
-                for (let book of block) {
-                    let titleParser = book.querySelector("a").title;
-
-                    let diff = tanimoto(this.bTitle, titleParser);
-
-                    if (diff > 0.8) {
-                        this.siteBook = book.querySelector("a").href;
-                        isLucky = true;
-                        break;
+                    if (block.length == 0) {
+                        isError = "B0";
+                        return;
                     }
-                }
-            })
-            .catch(err => isError = fetchCatch(err, this.siteSearch.href));
 
-        if (isError != '') {
-            this.total = isError;
-            return;
+                    for (let book of block) {
+                        let titleParser = book.querySelector("a").title;
+
+                        let diff = tanimoto(this.bTitle, titleParser);
+
+                        if (diff > 0.8) {
+                            this.siteBook = book.querySelector("a").href;
+                            this.setBookLocal();
+                            break;
+                        }
+                    }
+                })
+                .catch(err => isError = fetchCatch(err, this.siteSearch.href));
+
+            if (isError != '') {
+                this.total = isError;
+                return;
+            }
         }
 
-        if (isLucky) {
+        if (this.checkBookSite()) {
             return await fetch(this.siteBook.href)
                 .then(res => fetchStatusHTML(res))
                 .then(data => {
@@ -2251,38 +2298,39 @@ class novelscafeCom extends ParserChapter {
     }
 
     async totalChapters() {
-        let isLucky = false;
-        var isError = '';
-        await fetch(this.siteSearch.href)
-            .then(res => fetchStatusHTML(res))
-            .then(data => {
-                let block = data.querySelectorAll("div.posts.row > div.col-4.col-md-3.col-lg-2.post-column.mt-3");
+        if (this.checkBookUndefined()) {
+            let isError = '';
+            await fetch(this.siteSearch.href)
+                .then(res => fetchStatusHTML(res))
+                .then(data => {
+                    let block = data.querySelectorAll("div.posts.row > div.col-4.col-md-3.col-lg-2.post-column.mt-3");
 
-                if (block.length == 0) {
-                    isError = "B0";
-                    return;
-                }
-
-                for (let book of block) {
-                    let titleParser = book.querySelector("a > div.post-title").textContent;
-
-                    let diff = tanimoto(this.bTitle, titleParser);
-
-                    if (diff > 0.8) {
-                        this.siteBook = book.querySelector("a").href;
-                        isLucky = true;
-                        break;
+                    if (block.length == 0) {
+                        isError = "B0";
+                        return;
                     }
-                }
-            })
-            .catch(err => isError = fetchCatch(err, this.siteSearch.href));
 
-        if (isError != '') {
-            this.total = isError;
-            return;
+                    for (let book of block) {
+                        let titleParser = book.querySelector("a > div.post-title").textContent;
+
+                        let diff = tanimoto(this.bTitle, titleParser);
+
+                        if (diff > 0.8) {
+                            this.siteBook = book.querySelector("a").href;
+                            this.setBookLocal();
+                            break;
+                        }
+                    }
+                })
+                .catch(err => isError = fetchCatch(err, this.siteSearch.href));
+
+            if (isError != '') {
+                this.total = isError;
+                return;
+            }
         }
 
-        if (isLucky) {
+        if (this.checkBookSite()) {
             return await fetch(this.siteBook.href)
                 .then(res => fetchStatusHTML(res))
                 .then(data => {
@@ -2295,83 +2343,6 @@ class novelscafeCom extends ParserChapter {
         this.total = "S0";
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/2fetch/htmlSearchChapter/POST/novelsonlineNet.js
-
-
-
-
-class novelsonlineNet extends ParserChapter {
-    constructor() {
-        super('https://novelsonline.net/');
-    }
-
-    SetSiteSearch() {
-        this.siteSearch = this.site.origin;
-
-        // POST url
-    }
-
-    linkChapter(_cIndex, _cTitle) {
-        window.open(this.siteBook.href + '/chapter-' + _cIndex);
-    }
-
-    async totalChapters() {
-        let url = new URL(this.site.origin + "/sResults.php");
-
-        let isLucky = false;
-        var isError = '';
-        await fetch(url.href, {
-            "headers": {
-                "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-            },
-            "referrer": "https://novelsonline.net/",
-            "body": "q=" + this.bTitle,
-            "method": "POST",
-        })
-            .then(res => fetchStatusHTML(res))
-            .then(data => {
-                let block = data.querySelectorAll("ul > li");
-
-                if (block.length == 0) {
-                    isError = "B0";
-                    return;
-                }
-
-                for (let book of block) {
-                    let titleParser = book.querySelector("a > span.title").textContent;
-
-                    let diff = tanimoto(this.bTitle, titleParser);
-
-                    if (diff > 0.8) {
-                        this.siteBook = book.querySelector("a").href;
-                        isLucky = true;
-                        break;
-                    }
-                }
-            })
-            .catch(err => isError = fetchCatch(err, url.href));
-
-        if (isError != '') {
-            this.total = isError;
-            return;
-        }
-
-        if (isLucky) {
-            return await fetch(this.siteBook.href)
-                .then(res => fetchStatusHTML(res))
-                .then(data => {
-                    this.total = data.querySelector("#collapse-1 > div > div > div.tab-pane.active > ul > li:last-child").textContent.match(/\D*(\d+)/)[1];
-                    return;
-                })
-                .catch(err => this.total = fetchCatch(err, this.siteBook.href));
-        }
-
-        this.total = "S0";
-    }
-}
-
-
-
 ;// CONCATENATED MODULE: ./src/js/parsers/2fetch/search/lightnovelplusCom.js
 
 
@@ -3881,7 +3852,7 @@ class ranobesNet extends ParserSearch {
 // @author      Nay
 // @match       https://m.webnovel.com/book/*/*
 // @grant       GM_xmlhttpRequest
-// @version     0.3.17
+// @version     0.3.18
 // ==/UserScript==
 
 
@@ -4005,7 +3976,7 @@ const SitesAll = [
         new novelfullvipCom(),
         new novelscafeCom(),
         //    POST
-        new novelsonlineNet(),
+//new novelsonlineNet(),
 
         // 2fetch/search
     //new lightnovelplusCom(),
@@ -4227,6 +4198,7 @@ var ChLastLocked = "";
 
     for (let sites of SitesAll) {
         for (let site of sites) {
+            site.bId = WebnovelCom_Crawler_BookId;
             site.bTitle = BookTitle;
             site.SetSiteSearch();
         }

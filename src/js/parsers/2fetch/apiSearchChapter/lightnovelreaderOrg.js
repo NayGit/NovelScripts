@@ -19,38 +19,39 @@ export default class lightnovelreaderOrg extends ParserChapter {
     }
 
     async totalChapters() {
-        this.apiSearch = new URL(this.site.origin + "/search/autocomplete?query=" + this.bTitle);
+        if (this.checkBookUndefined()) {
+            this.apiSearch = new URL(this.site.origin + "/search/autocomplete?query=" + this.bTitle);
 
-        let isLucky = false;
-        var isError = '';
-        await fetch(this.apiSearch.href)
-            .then(res => fetchStatusJSON(res))
-            .then(data => {
-                if (Object.keys(data).length == 0) {
-                    isError = "B0";
-                    return;
-                }
-
-                for (let book of data.results) {
-                    let titleParser = book.original_title;
-
-                    let diff = tanimoto(this.bTitle, titleParser);
-
-                    if (diff > 0.8) {
-                        this.siteBook = book.link;
-                        isLucky = true;
-                        break;
+            let isError = '';
+            await fetch(this.apiSearch.href)
+                .then(res => fetchStatusJSON(res))
+                .then(data => {
+                    if (Object.keys(data).length == 0) {
+                        isError = "B0";
+                        return;
                     }
-                }
-            })
-            .catch(err => isError = fetchCatch(err, this.apiSearch.href));
 
-        if (isError != '') {
-            this.total = isError;
-            return;
+                    for (let book of data.results) {
+                        let titleParser = book.original_title;
+
+                        let diff = tanimoto(this.bTitle, titleParser);
+
+                        if (diff > 0.8) {
+                            this.siteBook = book.link;
+                            this.setBookLocal();
+                            break;
+                        }
+                    }
+                })
+                .catch(err => isError = fetchCatch(err, this.apiSearch.href));
+
+            if (isError != '') {
+                this.total = isError;
+                return;
+            }
         }
 
-        if (isLucky) {
+        if (this.checkBookSite()) {
             return await fetch(this.siteBook.href)
                 .then(res => fetchStatusHTML(res))
                 .then(data => {

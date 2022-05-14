@@ -17,38 +17,39 @@ export default class freewebnovelCom extends ParserChapter {
     }
 
     async totalChapters() {
-        let isLucky = false;
-        var isError = '';
-        await fetch(this.siteSearch.href)
-            .then(res => fetchStatusHTML(res))
-            .then(data => {
-                let block = data.querySelectorAll("div.col-content > div > div.li-row");
+        if (this.checkBookUndefined()) {
+            let isError = '';
+            await fetch(this.siteSearch.href)
+                .then(res => fetchStatusHTML(res))
+                .then(data => {
+                    let block = data.querySelectorAll("div.col-content > div > div.li-row");
 
-                if (block.length == 1 && block[0].querySelectorAll("div.li > div.con").length == 0) {
-                    isError = "B0";
-                    return;
-                }
-
-                for (let book of block) {
-                    let titleParser = book.querySelector("div.txt > h3.tit > a").textContent;
-
-                    let diff = tanimoto(this.bTitle, titleParser);
-
-                    if (diff > 0.8) {
-                        this.siteBook = this.site.origin + book.querySelector("div.txt > h3.tit > a").pathname;
-                        isLucky = true;
-                        break;
+                    if (block.length == 1 && block[0].querySelectorAll("div.li > div.con").length == 0) {
+                        isError = "B0";
+                        return;
                     }
-                }
-            })
-            .catch(err => isError = fetchCatch(err, this.siteSearch.href));
 
-        if (isError != '') {
-            this.total = isError;
-            return;
+                    for (let book of block) {
+                        let titleParser = book.querySelector("div.txt > h3.tit > a").textContent;
+
+                        let diff = tanimoto(this.bTitle, titleParser);
+
+                        if (diff > 0.8) {
+                            this.siteBook = this.site.origin + book.querySelector("div.txt > h3.tit > a").pathname;
+                            this.setBookLocal();
+                            break;
+                        }
+                    }
+                })
+                .catch(err => isError = fetchCatch(err, this.siteSearch.href));
+
+            if (isError != '') {
+                this.total = isError;
+                return;
+            }
         }
 
-        if (isLucky) {
+        if (this.checkBookSite()) {
             return await fetch(this.siteBook.href)
                 .then(res => fetchStatusHTML(res))
                 .then(data => {

@@ -12,38 +12,39 @@ export default class mMylovenovelCom extends ParserBook {
     }
 
     async totalChapters() {
-        let isLucky = false;
-        var isError = '';
-        await fetch(this.siteSearch.href)
-            .then(res => fetchStatusHTML(res))
-            .then(data => {
-                let block = data.querySelectorAll("div.main > ul.list > li");
+        if (this.checkBookUndefined()) {
+            let isError = '';
+            await fetch(this.siteSearch.href)
+                .then(res => fetchStatusHTML(res))
+                .then(data => {
+                    let block = data.querySelectorAll("div.main > ul.list > li");
 
-                if (block.length == 0) {
-                    isError = this.total = "B0";
-                    return;
-                }
-
-                for (let book of block) {
-                    let titleParser = book.querySelector("a > p.bookname").textContent;
-
-                    let diff = tanimoto(this.bTitle, titleParser);
-
-                    if (diff > 0.8) {
-                        this.siteBook = this.site.origin + book.querySelector("a").pathname;
-                        isLucky = true;
+                    if (block.length == 0) {
+                        isError = this.total = "B0";
                         return;
                     }
-                }
-            })
-            .catch(err => isError = fetchCatch(err, this.siteSearch.href));
 
-        if (isError != '') {
-            this.total = isError;
-            return;
+                    for (let book of block) {
+                        let titleParser = book.querySelector("a > p.bookname").textContent;
+
+                        let diff = tanimoto(this.bTitle, titleParser);
+
+                        if (diff > 0.8) {
+                            this.siteBook = this.site.origin + book.querySelector("a").pathname;
+                            this.setBookLocal();
+                            return;
+                        }
+                    }
+                })
+                .catch(err => isError = fetchCatch(err, this.siteSearch.href));
+
+            if (isError != '') {
+                this.total = isError;
+                return;
+            }
         }
 
-        if (isLucky) {
+        if (this.checkBookSite()) {
             return await fetch(this.siteBook.href)
                 .then(res => fetchStatusHTML(res))
                 .then(data => {

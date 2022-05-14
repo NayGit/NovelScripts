@@ -6,7 +6,7 @@
 // @author      Nay
 // @match       https://m.webnovel.com/book/*/*
 // @grant       GM_xmlhttpRequest
-// @version     0.3.17
+// @version     0.3.18
 // ==/UserScript==
 
 'use strict';
@@ -130,7 +130,7 @@ const SitesAll = [
         new novelfullvipCom(),
         new novelscafeCom(),
         //    POST
-        new novelsonlineNet(),
+//new novelsonlineNet(),
 
         // 2fetch/search
     //new lightnovelplusCom(),
@@ -352,6 +352,7 @@ var ChLastLocked = "";
 
     for (let sites of SitesAll) {
         for (let site of sites) {
+            site.bId = BookId;
             site.bTitle = BookTitle;
             site.SetSiteSearch();
         }
