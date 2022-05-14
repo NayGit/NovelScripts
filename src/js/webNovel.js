@@ -62,3 +62,15 @@ export function GetChapterLevel(_bookInfo, _cLevel) {
         }
     }
 }
+
+export function GetChapterName(_bookInfo, _cName) {
+    let cloneBI = JSON.parse(JSON.stringify(_bookInfo));
+
+    for (let volume of cloneBI.data.volumeItems.reverse()) {
+        for (let chapter of volume.chapterItems.reverse()) {
+            if (chapter.chapterName === _cName) {
+                return chapter;
+            }
+        }
+    }
+}

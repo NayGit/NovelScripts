@@ -773,6 +773,18 @@ function GetChapterLevel(_bookInfo, _cLevel) {
         }
     }
 }
+
+function GetChapterName(_bookInfo, _cName) {
+    let cloneBI = JSON.parse(JSON.stringify(_bookInfo));
+
+    for (let volume of cloneBI.data.volumeItems.reverse()) {
+        for (let chapter of volume.chapterItems.reverse()) {
+            if (chapter.chapterName === _cName) {
+                return chapter;
+            }
+        }
+    }
+}
 ;// CONCATENATED MODULE: ./src/js/webnovel/ce/DivPanel.js
 function DivPanel(_id, _class) {
     return Object.assign(document.createElement("div"), {
@@ -1550,7 +1562,7 @@ async function GetText(_bId, _cId, _bTitle, _cTitle) {
 
         if (!BookId) {
             alert("Error: BookId");
-            return;
+            return -1;
         }
     }
 
@@ -1563,7 +1575,7 @@ async function GetText(_bId, _cId, _bTitle, _cTitle) {
     let content = document.querySelector("#content-" + _cId);
 
     if (content.querySelector("pre")) {
-        return;
+        return -1;
     }
 
     content.translate = true;
@@ -1604,6 +1616,8 @@ async function GetText(_bId, _cId, _bTitle, _cTitle) {
         alert("Error: No chapter");
         return -1;
     }
+
+    return ChapterListReverse[0].chapter_title;
 }
 ;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearch/artBook/mWuxiaworldCo.js
 
@@ -3852,7 +3866,7 @@ class ranobesNet extends ParserSearch {
 // @author      Nay
 // @match       https://m.webnovel.com/book/*/*
 // @grant       GM_xmlhttpRequest
-// @version     0.3.18
+// @version     0.4.0
 // ==/UserScript==
 
 
@@ -4152,12 +4166,22 @@ async function CreateDivMain(_statusChapter, _cId = "") {
     let inputGetText = Object.assign(document.createElement("input"), {
         className: "gettext",
         type: "button",
-        value: "GetText"
+        value: GetTextValue
     });
     inputGetText.addEventListener('click', async function () {
         this.disabled = true;
-        await GetText(WebnovelCom_Crawler_BookId, _cId, BookTitle, chapter.chapterName);
-        this.hidden = true;
+        let tmpN = await GetText(WebnovelCom_Crawler_BookId, _cId, BookTitle, chapter.chapterName);
+
+        if (tmpN !== -1 && this.value === "GetText") {
+            GetTextValue = "GetText: " + GetChapterName(BookInfo, tmpN).chapterIndex;
+            for (let gt of document.querySelectorAll("input.gettext")) {
+                gt.value = GetTextValue;
+            }
+        }
+
+        //if (tmpN === -1) {
+        //    this.hidden = true;
+        //}
     });
     divParsingReplaceGetText.appendChild(inputGetText);
 
@@ -4183,6 +4207,8 @@ var WebnovelCom_Crawler_BookId;
 const DivMain = "divMain";
 const StatusChapter = { LOCKED: 'locked', UNLOCKED: 'unlocked', FREE: 'free', PRIVATE: 'private' };
 var ChLastLocked = "";
+
+var GetTextValue = "GetText";
 
 
 (async function () {

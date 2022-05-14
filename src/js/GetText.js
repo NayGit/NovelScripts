@@ -93,7 +93,7 @@ export async function GetText(_bId, _cId, _bTitle, _cTitle) {
 
         if (!BookId) {
             alert("Error: BookId");
-            return;
+            return -1;
         }
     }
 
@@ -106,7 +106,7 @@ export async function GetText(_bId, _cId, _bTitle, _cTitle) {
     let content = document.querySelector("#content-" + _cId);
 
     if (content.querySelector("pre")) {
-        return;
+        return -1;
     }
 
     content.translate = true;
@@ -147,4 +147,6 @@ export async function GetText(_bId, _cId, _bTitle, _cTitle) {
         alert("Error: No chapter");
         return -1;
     }
+
+    return ChapterListReverse[0].chapter_title;
 }
