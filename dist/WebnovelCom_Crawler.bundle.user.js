@@ -1345,7 +1345,7 @@ async function ReplaceText(_bId, _cId) {
             var dict = {};
             let pReplace = document.querySelectorAll("#content-" + _cId + " > p");
 
-            for (let i = 0; i < p2.length; i++) {
+            for (let i in p2) {
                 let p2Array = p2[i].split('');
 
                 if (pReplace[i].classList.contains("_cfcmp")) {
@@ -1354,20 +1354,20 @@ async function ReplaceText(_bId, _cId) {
                 }
                 let contentChArray = (await ArraySortOrder(pReplace[i])).split('');
 
-                for (let prop in contentChArray) {
+                for (let prop in p2Array) {
                     dict[contentChArray[prop]] = p2Array[prop];
                 }
             }
             contentCheck.parentElement.querySelector("div.ChapterTitle_chapter_title_container__Wq5T8").scrollIntoView({ behavior: "smooth" });
 
             let p_cfnp = document.querySelectorAll("#content-" + _cId + " > p._cfnp");
-            for (let i = 0; i < p_cfnp.length; i++) {
-                ReplaceSymbol(p_cfnp[i], dict);
+            for (let p of p_cfnp) {
+                ReplaceSymbol(p, dict);
             }
             
             let p_cfcmp = document.querySelectorAll("#content-" + _cId + " > p._cfcmp");
-            for (let i = 0; i < p_cfcmp.length; i++) {
-                p_cfcmp[i].translate = false;
+            for (let p of p_cfcmp) {
+                p.translate = false;
             }
 
             contentCheck.translate = true;
@@ -3881,7 +3881,7 @@ class ranobesNet extends ParserSearch {
 // @author      Nay
 // @match       https://m.webnovel.com/book/*/*
 // @grant       GM_xmlhttpRequest
-// @version     0.3.15
+// @version     0.3.16
 // ==/UserScript==
 
 
