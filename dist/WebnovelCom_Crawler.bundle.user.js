@@ -1536,13 +1536,6 @@ var BookId;
 var ChapterListReverse = "";
 
 async function GetText(_bId, _cId, _bTitle, _cTitle) {
-    'use strict';
-
-    //if (!document.querySelector("#content-" + _cId + " ~ div > .styles_locked_area__Luqxf")) {
-    //    return;
-    //}
-
-
     BookId = localStorage.getItem("ln_" + _bId);
     if (!BookId) {
         let jsonBooks = await GetBooks(_bTitle);
@@ -1571,13 +1564,7 @@ async function GetText(_bId, _cId, _bTitle, _cTitle) {
         ChapterListReverse = jsonCatalog.data.chapter_list.reverse();
     }
 
-
     let content = document.querySelector("#content-" + _cId);
-
-    if (content.querySelector("pre")) {
-        return -1;
-    }
-
     content.translate = true;
 
     let tmpP = content.querySelectorAll("p");
@@ -1601,7 +1588,7 @@ async function GetText(_bId, _cId, _bTitle, _cTitle) {
             console.warn(jsonChapter);
 
             alert(jsonChapter.error + "\n\nStart App:\n" + _bTitle);
-            return -1;
+            return -99999;
         }
 
         content.style.height = "auto";
@@ -3866,7 +3853,7 @@ class ranobesNet extends ParserSearch {
 // @author      Nay
 // @match       https://m.webnovel.com/book/*/*
 // @grant       GM_xmlhttpRequest
-// @version     0.4.0
+// @version     0.4.1
 // ==/UserScript==
 
 
@@ -4172,16 +4159,17 @@ async function CreateDivMain(_statusChapter, _cId = "") {
         this.disabled = true;
         let tmpN = await GetText(WebnovelCom_Crawler_BookId, _cId, BookTitle, chapter.chapterName);
 
+        if (tmpN === -99999) {
+            this.disabled = false;
+            return;
+        }
+
         if (tmpN !== -1 && this.value === "GetText") {
             GetTextValue = "GetText: " + GetChapterName(BookInfo, tmpN).chapterIndex;
             for (let gt of document.querySelectorAll("input.gettext")) {
                 gt.value = GetTextValue;
             }
         }
-
-        //if (tmpN === -1) {
-        //    this.hidden = true;
-        //}
     });
     divParsingReplaceGetText.appendChild(inputGetText);
 

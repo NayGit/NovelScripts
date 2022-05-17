@@ -6,7 +6,7 @@
 // @author      Nay
 // @match       https://m.webnovel.com/book/*/*
 // @grant       GM_xmlhttpRequest
-// @version     0.4.0
+// @version     0.4.1
 // ==/UserScript==
 
 'use strict';
@@ -312,16 +312,17 @@ async function CreateDivMain(_statusChapter, _cId = "") {
         this.disabled = true;
         let tmpN = await GetText(BookId, _cId, BookTitle, chapter.chapterName);
 
+        if (tmpN === -99999) {
+            this.disabled = false;
+            return;
+        }
+
         if (tmpN !== -1 && this.value === "GetText") {
             GetTextValue = "GetText: " + GetChapterName(BookInfo, tmpN).chapterIndex;
             for (let gt of document.querySelectorAll("input.gettext")) {
                 gt.value = GetTextValue;
             }
         }
-
-        //if (tmpN === -1) {
-        //    this.hidden = true;
-        //}
     });
     divParsingReplaceGetText.appendChild(inputGetText);
 

@@ -67,13 +67,6 @@ var BookId;
 var ChapterListReverse = "";
 
 export async function GetText(_bId, _cId, _bTitle, _cTitle) {
-    'use strict';
-
-    //if (!document.querySelector("#content-" + _cId + " ~ div > .styles_locked_area__Luqxf")) {
-    //    return;
-    //}
-
-
     BookId = localStorage.getItem("ln_" + _bId);
     if (!BookId) {
         let jsonBooks = await GetBooks(_bTitle);
@@ -102,13 +95,7 @@ export async function GetText(_bId, _cId, _bTitle, _cTitle) {
         ChapterListReverse = jsonCatalog.data.chapter_list.reverse();
     }
 
-
     let content = document.querySelector("#content-" + _cId);
-
-    if (content.querySelector("pre")) {
-        return -1;
-    }
-
     content.translate = true;
 
     let tmpP = content.querySelectorAll("p");
@@ -132,7 +119,7 @@ export async function GetText(_bId, _cId, _bTitle, _cTitle) {
             console.warn(jsonChapter);
 
             alert(jsonChapter.error + "\n\nStart App:\n" + _bTitle);
-            return -1;
+            return -99999;
         }
 
         content.style.height = "auto";
