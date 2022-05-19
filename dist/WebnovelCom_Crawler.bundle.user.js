@@ -1000,7 +1000,7 @@ class ParserChapter extends ParserBook {
     }
 }
 
-class artBook extends ParserBook {
+class artBook extends ParserChapter {
     SetSiteSearch() {
         this.siteSearch = this.site.origin + '/search/' + this.bTitle + this.endUrl;
     }
@@ -1606,6 +1606,38 @@ async function GetText(_bId, _cId, _bTitle, _cTitle) {
 
     return ChapterListReverse[0].chapter_title;
 }
+
+
+// ParserBook
+//function getBookLocal() {
+//    let bookId = localStorage.getItem("GetText");
+
+//    if (bookId) {
+//        return JSON.parse(bookId);
+//    }
+//    else {
+//        return {};
+//    }
+//}
+
+//function setBookLocal(_bId, _gId) {
+//    let bookId = this.getBookLocal();
+
+//    bookId[_bId] = _gId;
+//    bookId = JSON.stringify(bookId);
+//    localStorage.setItem("GetText", bookId);
+//}
+
+//function checkBookUndefined() {
+//    let bookId = this.getBookLocal();
+//    if (bookId[this.bId] === undefined) {
+//        return true;
+//    }
+//    else {
+//        BookId = bookId[this.bId];
+//        return false;
+//    }
+//}
 ;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearch/artBook/mWuxiaworldCo.js
 
 
@@ -2141,6 +2173,66 @@ class mMylovenovelCom extends ParserBook {
                 .then(res => fetchStatusHTML(res))
                 .then(data => {
                     this.total = data.querySelector("#info > div.main > div.detail > p.chapter > a").textContent.match(/\D*(\d+)/)[1] * -1;
+                    return;
+                })
+                .catch(err => this.total = fetchCatch(err, this.siteBook.href));
+        }
+
+        this.total = "S0";
+    }
+}
+;// CONCATENATED MODULE: ./src/js/parsers/2fetch/htmlSearch/readnoveldailyCom.js
+
+
+
+
+class readnoveldailyCom extends ParserBook {
+    constructor() {
+        super('https://readnoveldaily.com/');
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/?q=' + this.bTitle;
+    }
+
+    async totalChapters() {
+        if (this.checkBookUndefined()) {
+            let isError = '';
+            await fetch(this.siteSearch.href)
+                .then(res => fetchStatusHTML(res))
+                .then(data => {
+                    let block = data.querySelectorAll("#list-posts div.row.special > div");
+
+                    if (block.length == 0) {
+                        isError = this.total = "B0";
+                        return;
+                    }
+
+                    for (let book of block) {
+                        let titleParser = book.querySelector("h3.title-book > a").textContent;
+
+                        let diff = tanimoto(this.bTitle, titleParser);
+
+                        if (diff > 0.8) {
+                            this.siteBook = book.querySelector("h3.title-book > a").href;
+                            this.setBookLocal();
+                            return;
+                        }
+                    }
+                })
+                .catch(err => isError = fetchCatch(err, this.siteSearch.href));
+
+            if (isError != '') {
+                this.total = isError;
+                return;
+            }
+        }
+
+        if (this.checkBookSite()) {
+            return await fetch(this.siteBook.href)
+                .then(res => fetchStatusHTML(res))
+                .then(data => {
+                    this.total = data.querySelector("div.latest-chapters.list-chapter > ul.list > li:first-child").textContent.match(/\D*(\d+)/)[1] * -1;
                     return;
                 })
                 .catch(err => this.total = fetchCatch(err, this.siteBook.href));
@@ -3853,7 +3945,7 @@ class ranobesNet extends ParserSearch {
 // @author      Nay
 // @match       https://m.webnovel.com/book/*/*
 // @grant       GM_xmlhttpRequest
-// @version     0.4.1
+// @version     0.4.2
 // ==/UserScript==
 
 
@@ -3884,6 +3976,7 @@ class ranobesNet extends ParserSearch {
 
 
 // 2fetch/htmlSearch
+
 
 
 // 2fetch/htmlSearchChapter
@@ -3971,6 +4064,7 @@ const SitesAll = [
 
         // 2fetch/htmlSearch
         new mMylovenovelCom(),
+        new readnoveldailyCom(),
 
         // 2fetch/htmlSearchChapter
         new freewebnovelCom(),
