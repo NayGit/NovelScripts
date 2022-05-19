@@ -43,6 +43,7 @@
 | https://www.readlightnovel.co/   |   |
 | https://www.readlightnovel.me/   |   |
 | https://readlightnovels.net/     |   |
+| https://readnoveldaily.com/      |   |
 | https://readnovelfull.com/       |   |
 | https://readnovels.org/          |   |
 | https://www.readwn.com/          |   |

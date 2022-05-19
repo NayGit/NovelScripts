@@ -6,7 +6,7 @@
 // @author      Nay
 // @match       https://m.webnovel.com/book/*/*
 // @grant       GM_xmlhttpRequest
-// @version     0.4.1
+// @version     0.4.2
 // ==/UserScript==
 
 'use strict';
@@ -38,6 +38,7 @@ import wuxiapubCom from './js/parsers/2fetch/apiSearchChapter/bookWings/wuxiapub
 
 // 2fetch/htmlSearch
 import mMylovenovelCom from './js/parsers/2fetch/htmlSearch/mMylovenovelCom';
+import readnoveldailyCom from './js/parsers/2fetch/htmlSearch/readnoveldailyCom';
 
 // 2fetch/htmlSearchChapter
 import freewebnovelCom from './js/parsers/2fetch/htmlSearchChapter/freewebnovelCom';
@@ -124,6 +125,7 @@ const SitesAll = [
 
         // 2fetch/htmlSearch
         new mMylovenovelCom(),
+        new readnoveldailyCom(),
 
         // 2fetch/htmlSearchChapter
         new freewebnovelCom(),
