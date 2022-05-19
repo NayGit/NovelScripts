@@ -6,7 +6,7 @@
 // @author      Nay
 // @match       https://m.webnovel.com/book/*/*
 // @grant       GM_xmlhttpRequest
-// @version     0.4.3
+// @version     0.4.4
 // ==/UserScript==
 
 'use strict';
@@ -18,7 +18,6 @@ import { DivPanel, InputDivPanelHide, InputBookInfo, H1IdGlava, InputChapterNext
 import { CreateTableSites, CheckTotalAll, ParsingAll } from './js/webnovel/ce/FreeForm';
 
 import { ReplaceText } from './js/ReplaceText';
-import { GetText } from './js/GetText';
 
 // 2fetch/apiSearch
 //    artBook
@@ -189,6 +188,11 @@ const SitesAll = [
     ]
 ];
 
+
+// GetText
+import g_lightnovelplusCom from './js/getText/g_lightnovelplusCom';
+var GetTextAll = new g_lightnovelplusCom();
+
 async function CreateDivMain(_statusChapter, _cId = "") {
     // divMain
     let divMain;
@@ -308,22 +312,26 @@ async function CreateDivMain(_statusChapter, _cId = "") {
     let inputGetText = Object.assign(document.createElement("input"), {
         className: "gettext",
         type: "button",
-        value: GetTextValue
+        value: GetTextAll.lastChapterIndex === -99999 ? "GetText" : "GetText: " + GetTextAll.lastChapterIndex
     });
     inputGetText.addEventListener('click', async function () {
         this.disabled = true;
-        let tmpN = await GetText(BookId, _cId, BookTitle, chapter.chapterName);
+        let tmpN = await GetTextAll.GetText(_cId, chapter.chapterName);
 
-        if (tmpN === -99999) {
-            this.disabled = false;
+        if (tmpN === -1) {
             return;
         }
 
-        if (tmpN !== -1 && this.value === "GetText") {
-            GetTextValue = "GetText: " + GetChapterName(BookInfo, tmpN).chapterIndex;
+        if (GetTextAll.lastChapterIndex === -99999 && GetTextAll.lastChapterTitle !== "") {
+            GetTextAll.lastChapterIndex = GetChapterName(BookInfo, GetTextAll.lastChapterTitle).chapterIndex;
             for (let gt of document.querySelectorAll("input.gettext")) {
-                gt.value = GetTextValue;
+                gt.value = "GetText: " + GetTextAll.lastChapterIndex;
             }
+        }
+
+        if (tmpN === -2) {
+            this.disabled = false;
+            return;
         }
     });
     divParsingReplaceGetText.appendChild(inputGetText);
@@ -351,9 +359,6 @@ const DivMain = "divMain";
 const StatusChapter = { LOCKED: 'locked', UNLOCKED: 'unlocked', FREE: 'free', PRIVATE: 'private' };
 var ChLastLocked = "";
 
-var GetTextValue = "GetText";
-
-
 (async function () {
     'use strict';
     BookInfo = await downloadBookIfno(location);
@@ -372,6 +377,9 @@ var GetTextValue = "GetText";
             site.SetSiteSearch();
         }
     }
+
+    GetTextAll.bId = BookId;
+    GetTextAll.bTitle = BookTitle;
 
     ChLastLocked = GetChapterLevel(BookInfo, 0).chapterIndex;
 
