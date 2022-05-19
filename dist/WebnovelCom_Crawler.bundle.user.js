@@ -866,32 +866,8 @@ function InputChapterNext(_bookInfo, _chN) {
 
     return InputChapterNext;
 }
-;// CONCATENATED MODULE: ./src/js/StringProcent/tanimoto.js
-function tanimoto(s1, s2) {
-    s1 = Array.from(s1.toLowerCase());
-    s2 = Array.from(s2.toLowerCase());
-
-    var a = s1.length;
-    var b = s2.length;
-    var c = 0;
-
-    for (var sym of s1) {
-        var index = s2.indexOf(sym);
-        if (index > -1) {
-            s2.splice(index, 1);
-            c += 1;
-        }
-    }
-    return c / (a + b - c)
-}
-
-//let diff = tanimoto(title, titleParser);
 ;// CONCATENATED MODULE: ./src/js/parser.js
-
-
-
-
-        //console.info(this.constructor.name);
+//console.info(this.constructor.name);
 
 class Parser {
     constructor(_site) {
@@ -997,68 +973,6 @@ class ParserChapter extends ParserBook {
     constructor(_site) {
         super(_site);
         this.endUrl = "";
-    }
-}
-
-class artBook extends ParserChapter {
-    SetSiteSearch() {
-        this.siteSearch = this.site.origin + '/search/' + this.bTitle + this.endUrl;
-    }
-
-    async totalChapters() {
-        if (this.checkBookUndefined()) {
-            let isError = '';
-            await fetch(this.siteSearch.href)
-                .then(res => fetchStatusHTML(res))
-                .then(data => {
-                    let block = data.querySelectorAll("div.result-container_2.result-container > ul.result-list > li.list-item");
-
-                    if (block.length == 0) {
-                        isError = "B0";
-                        return;
-                    }
-
-                    for (let book of block) {
-                        let titleParser = book.querySelector("a.list-img > img.item-img").alt;
-
-                        let diff = tanimoto(this.bTitle, titleParser);
-
-                        if (diff > 0.8) {
-                            this.siteBook = this.site.origin + book.querySelector("a.list-img").pathname;
-                            this.setBookLocal();
-                            break;
-                        }
-                    }
-                })
-                .catch(err => isError = fetchCatch(err, this.siteSearch.href));
-
-            if (isError != '') {
-                this.total = isError;
-                return;
-            }
-        }
-
-        if (this.checkBookSite()) {
-            return await fetch(this.siteBook.href)
-                .then(res => fetchStatusHTML(res))
-                .then(data => {
-                    let allCH = data.querySelector("#detail > div.chapter-wrapper > ul").getElementsByTagName("a");
-                    for (let i = allCH.length - 1; i >= 0; i--) {
-                        if (allCH[i].style.color === 'gray')
-                            continue;
-                        else {
-                            this.total = allCH[i].textContent.match(/\D*(\d+)/)[1] * -1;
-                            return;
-                        }
-                    }
-
-                    this.total = data.querySelector("#detail > div.chapter-wrapper > div > a").textContent.match(/\D*(\d+)/)[1] * -1;
-                    return;
-                })
-                .catch(err => this.total = fetchCatch(err, this.siteBook.href));
-        }
-
-        this.total = "S0";
     }
 }
 ;// CONCATENATED MODULE: ./src/js/webnovel/ce/FreeForm.js
@@ -1466,6 +1380,26 @@ async function ReplaceText(_bId, _cId) {
         return -1;
     }
 }
+;// CONCATENATED MODULE: ./src/js/StringProcent/tanimoto.js
+function tanimoto(s1, s2) {
+    s1 = Array.from(s1.toLowerCase());
+    s2 = Array.from(s2.toLowerCase());
+
+    var a = s1.length;
+    var b = s2.length;
+    var c = 0;
+
+    for (var sym of s1) {
+        var index = s2.indexOf(sym);
+        if (index > -1) {
+            s2.splice(index, 1);
+            c += 1;
+        }
+    }
+    return c / (a + b - c)
+}
+
+//let diff = tanimoto(title, titleParser);
 ;// CONCATENATED MODULE: ./src/js/GetText.js
 
 
@@ -1641,37 +1575,285 @@ async function GetText(_bId, _cId, _bTitle, _cTitle) {
 ;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearch/artBook/mWuxiaworldCo.js
 
 
-class mWuxiaworldCo extends artBook {
+
+
+class mWuxiaworldCo extends ParserBook {
     constructor() {
         super('https://m.wuxiaworld.co/');
         this.endUrl = '/1';
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/search/' + this.bTitle + this.endUrl;
+    }
+
+    async totalChapters() {
+        if (this.checkBookUndefined()) {
+            let isError = '';
+            await fetch(this.siteSearch.href)
+                .then(res => fetchStatusHTML(res))
+                .then(data => {
+                    let block = data.querySelectorAll("div.result-container_2.result-container > ul.result-list > li.list-item");
+
+                    if (block.length == 0) {
+                        isError = "B0";
+                        return;
+                    }
+
+                    for (let book of block) {
+                        let titleParser = book.querySelector("a.list-img > img.item-img").alt;
+
+                        let diff = tanimoto(this.bTitle, titleParser);
+
+                        if (diff > 0.8) {
+                            this.siteBook = this.site.origin + book.querySelector("a.list-img").pathname;
+                            this.setBookLocal();
+                            break;
+                        }
+                    }
+                })
+                .catch(err => isError = fetchCatch(err, this.siteSearch.href));
+
+            if (isError != '') {
+                this.total = isError;
+                return;
+            }
+        }
+
+        if (this.checkBookSite()) {
+            return await fetch(this.siteBook.href)
+                .then(res => fetchStatusHTML(res))
+                .then(data => {
+                    let allCH = data.querySelector("#detail > div.chapter-wrapper > ul").getElementsByTagName("a");
+                    for (let i = allCH.length - 1; i >= 0; i--) {
+                        if (allCH[i].style.color === 'gray')
+                            continue;
+                        else {
+                            this.total = allCH[i].textContent.match(/\D*(\d+)/)[1] * -1;
+                            return;
+                        }
+                    }
+
+                    this.total = data.querySelector("#detail > div.chapter-wrapper > div > a").textContent.match(/\D*(\d+)/)[1] * -1;
+                    return;
+                })
+                .catch(err => this.total = fetchCatch(err, this.siteBook.href));
+        }
+
+        this.total = "S0";
     }
 }
 ;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearch/artBook/novelupdatesCc.js
 
 
-class novelupdatesCc extends artBook {
+
+
+class novelupdatesCc extends ParserBook {
     constructor() {
         super('https://www.novelupdates.cc/');
         this.endUrl = '/1';
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/search/' + this.bTitle + this.endUrl;
+    }
+
+    async totalChapters() {
+        if (this.checkBookUndefined()) {
+            let isError = '';
+            await fetch(this.siteSearch.href)
+                .then(res => fetchStatusHTML(res))
+                .then(data => {
+                    let block = data.querySelectorAll("div.result-container_2.result-container > ul.result-list > li.list-item");
+
+                    if (block.length == 0) {
+                        isError = "B0";
+                        return;
+                    }
+
+                    for (let book of block) {
+                        let titleParser = book.querySelector("a.list-img > img.item-img").alt;
+
+                        let diff = tanimoto(this.bTitle, titleParser);
+
+                        if (diff > 0.8) {
+                            this.siteBook = this.site.origin + book.querySelector("a.list-img").pathname;
+                            this.setBookLocal();
+                            break;
+                        }
+                    }
+                })
+                .catch(err => isError = fetchCatch(err, this.siteSearch.href));
+
+            if (isError != '') {
+                this.total = isError;
+                return;
+            }
+        }
+
+        if (this.checkBookSite()) {
+            return await fetch(this.siteBook.href)
+                .then(res => fetchStatusHTML(res))
+                .then(data => {
+                    let allCH = data.querySelector("#detail > div.chapter-wrapper > ul").getElementsByTagName("a");
+                    for (let i = allCH.length - 1; i >= 0; i--) {
+                        if (allCH[i].style.color === 'gray')
+                            continue;
+                        else {
+                            this.total = allCH[i].textContent.match(/\D*(\d+)/)[1] * -1;
+                            return;
+                        }
+                    }
+
+                    this.total = data.querySelector("#detail > div.chapter-wrapper > div > a").textContent.match(/\D*(\d+)/)[1] * -1;
+                    return;
+                })
+                .catch(err => this.total = fetchCatch(err, this.siteBook.href));
+        }
+
+        this.total = "S0";
     }
 }
 ;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearch/artBook/readlightnovelCc.js
 
 
-class readlightnovelCc extends artBook {
+
+
+class readlightnovelCc extends ParserBook {
     constructor() {
         super('https://www.readlightnovel.cc/');
         this.endUrl = '/1';
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/search/' + this.bTitle + this.endUrl;
+    }
+
+    async totalChapters() {
+        if (this.checkBookUndefined()) {
+            let isError = '';
+            await fetch(this.siteSearch.href)
+                .then(res => fetchStatusHTML(res))
+                .then(data => {
+                    let block = data.querySelectorAll("div.result-container_2.result-container > ul.result-list > li.list-item");
+
+                    if (block.length == 0) {
+                        isError = "B0";
+                        return;
+                    }
+
+                    for (let book of block) {
+                        let titleParser = book.querySelector("a.list-img > img.item-img").alt;
+
+                        let diff = tanimoto(this.bTitle, titleParser);
+
+                        if (diff > 0.8) {
+                            this.siteBook = this.site.origin + book.querySelector("a.list-img").pathname;
+                            this.setBookLocal();
+                            break;
+                        }
+                    }
+                })
+                .catch(err => isError = fetchCatch(err, this.siteSearch.href));
+
+            if (isError != '') {
+                this.total = isError;
+                return;
+            }
+        }
+
+        if (this.checkBookSite()) {
+            return await fetch(this.siteBook.href)
+                .then(res => fetchStatusHTML(res))
+                .then(data => {
+                    let allCH = data.querySelector("#detail > div.chapter-wrapper > ul").getElementsByTagName("a");
+                    for (let i = allCH.length - 1; i >= 0; i--) {
+                        if (allCH[i].style.color === 'gray')
+                            continue;
+                        else {
+                            this.total = allCH[i].textContent.match(/\D*(\d+)/)[1] * -1;
+                            return;
+                        }
+                    }
+
+                    this.total = data.querySelector("#detail > div.chapter-wrapper > div > a").textContent.match(/\D*(\d+)/)[1] * -1;
+                    return;
+                })
+                .catch(err => this.total = fetchCatch(err, this.siteBook.href));
+        }
+
+        this.total = "S0";
     }
 }
 ;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearch/artBook/readlightnovelCo.js
 
 
-class readlightnovelCo extends artBook {
+
+
+class readlightnovelCo extends ParserBook {
     constructor() {
         super('https://www.readlightnovel.co');
         this.endUrl = '/1';
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/search/' + this.bTitle + this.endUrl;
+    }
+
+    async totalChapters() {
+        if (this.checkBookUndefined()) {
+            let isError = '';
+            await fetch(this.siteSearch.href)
+                .then(res => fetchStatusHTML(res))
+                .then(data => {
+                    let block = data.querySelectorAll("div.result-container_2.result-container > ul.result-list > li.list-item");
+
+                    if (block.length == 0) {
+                        isError = "B0";
+                        return;
+                    }
+
+                    for (let book of block) {
+                        let titleParser = book.querySelector("a.list-img > img.item-img").alt;
+
+                        let diff = tanimoto(this.bTitle, titleParser);
+
+                        if (diff > 0.8) {
+                            this.siteBook = this.site.origin + book.querySelector("a.list-img").pathname;
+                            this.setBookLocal();
+                            break;
+                        }
+                    }
+                })
+                .catch(err => isError = fetchCatch(err, this.siteSearch.href));
+
+            if (isError != '') {
+                this.total = isError;
+                return;
+            }
+        }
+
+        if (this.checkBookSite()) {
+            return await fetch(this.siteBook.href)
+                .then(res => fetchStatusHTML(res))
+                .then(data => {
+                    let allCH = data.querySelector("#detail > div.chapter-wrapper > ul").getElementsByTagName("a");
+                    for (let i = allCH.length - 1; i >= 0; i--) {
+                        if (allCH[i].style.color === 'gray')
+                            continue;
+                        else {
+                            this.total = allCH[i].textContent.match(/\D*(\d+)/)[1] * -1;
+                            return;
+                        }
+                    }
+
+                    this.total = data.querySelector("#detail > div.chapter-wrapper > div > a").textContent.match(/\D*(\d+)/)[1] * -1;
+                    return;
+                })
+                .catch(err => this.total = fetchCatch(err, this.siteBook.href));
+        }
+
+        this.total = "S0";
     }
 }
 ;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearchChapter/lightnovelreaderOrg.js
@@ -3945,7 +4127,7 @@ class ranobesNet extends ParserSearch {
 // @author      Nay
 // @match       https://m.webnovel.com/book/*/*
 // @grant       GM_xmlhttpRequest
-// @version     0.4.2
+// @version     0.4.3
 // ==/UserScript==
 
 
