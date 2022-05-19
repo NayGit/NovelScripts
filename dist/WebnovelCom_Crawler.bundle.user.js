@@ -742,7 +742,7 @@ function glavaWebNovel(loc) {
 }
 
 async function downloadBookIfno(_loc) {
-    let url = _loc.origin + '/go/pcm/chapter/get-chapter-list?bookId=' + bookWebNovel(_loc) + '&_csrfToken=' + getCookie("_csrfToken");;
+    let url = _loc.origin + '/go/pcm/book/get-book-detail?_csrfToken=' + getCookie("_csrfToken") + '&bookId=' + bookWebNovel(_loc);
 
     return await fetch(url)
         .then(res => fetchStatusJSON(res))
@@ -750,37 +750,79 @@ async function downloadBookIfno(_loc) {
             return data;
         })
         .catch(err => fetchCatch(err, url));
+
+    return new Promise((resolve, reject) => {
+        GM_xmlhttpRequest({
+            method: 'GET',
+            url: "https://idruid.webnovel.com/app/api/book/get-chapters?bookId=" + bookWebNovel(_loc) + "&maxUpdateTime=0&maxIndex=0&sign=",
+            anonymous: true,
+            type: 'json',
+            headers: { 'User-Agent': 'Mozilla/mobile QDHWReaderAndroid/5.9.3/643/2000002/000000005bfaef39ffffffffd99fa8a4' },
+            onload: function (data) {
+                resolve(JSON.parse(data.response));
+
+            },
+            onerror: function (error) {
+                reject(error);
+            }
+        });
+    });
 }
 
-function GetChapterId(_bookInfo, _cId) {
-    for (let volume of _bookInfo.data.volumeItems) {
-        for (let chapter of volume.chapterItems) {
-            if (chapter.chapterId === _cId) {
-                return chapter;
+async function downloadBookChapters(_loc) {
+    return new Promise((resolve, reject) => {
+        GM_xmlhttpRequest({
+            method: 'GET',
+            url: "https://idruid.webnovel.com/app/api/book/get-chapters?bookId=" + bookWebNovel(_loc) + "&maxUpdateTime=0&maxIndex=0&sign=",
+            anonymous: true,
+            type: 'json',
+            headers: { 'User-Agent': 'Mozilla/mobile QDHWReaderAndroid/5.9.3/643/2000002/000000005bfaef39ffffffffd99fa8a4' },
+            onload: function (data) {
+                resolve(JSON.parse(data.response));
+
+            },
+            onerror: function (error) {
+                reject(error);
             }
+        });
+    });
+}
+
+function GetChapterId(_bookChapters, _cId) {
+    for (let chapter of _bookChapters.Data.Chapters) {
+        if (chapter.Id === _cId * 1) {
+            console.info(1);
+            return chapter;
         }
     }
 }
 
-function GetChapterLevel(_bookInfo, _cLevel) {
-    let cloneBI = JSON.parse(JSON.stringify(_bookInfo));
+function GetChapterName(_bookChapters, _cName) {
+    let cloneBI = JSON.parse(JSON.stringify(_bookChapters));
 
-    for (let volume of cloneBI.data.volumeItems.reverse()) {
-        for (let chapter of volume.chapterItems.reverse()) {
-            if (chapter.chapterLevel === _cLevel) {
-                return chapter;
-            }
+    for (let chapter of cloneBI.Data.Chapters.reverse()) {
+        if (chapter.Name === _cName) {
+            return chapter;
         }
     }
 }
 
-function GetChapterName(_bookInfo, _cName) {
-    let cloneBI = JSON.parse(JSON.stringify(_bookInfo));
+function GetChapterLast(_bookChapters) {
+    if (_bookChapters.Data.PrivilegeInfo > 0) {
+        return _bookChapters.Data.PrivilegeInfo[_bookChapters.Data.PrivilegeInfo.length - 1];
+    }
+    else {
+        return _bookChapters.Data.Chapters[_bookChapters.Data.Chapters.length - 1];
+    }
+}
 
-    for (let volume of cloneBI.data.volumeItems.reverse()) {
-        for (let chapter of volume.chapterItems.reverse()) {
-            if (chapter.chapterName === _cName) {
-                return chapter;
+function GetIndexLastChapterLock(_bookChapters) {
+    if (_bookChapters.Data.PrivilegeInfo.length > 0) {
+        let cloneBI = JSON.parse(JSON.stringify(_bookChapters));
+
+        for (let chapter of cloneBI.Data.Chapters.reverse()) {
+            if (chapter.Id === _bookChapters.Data.PrivilegeInfo[0].Id) {
+                return chapter.Index * 1 - 1;
             }
         }
     }
@@ -843,7 +885,7 @@ function H1IdGlava(_chStart, _chLastLocked, _chStop) {
     });
 }
 
-function InputChapterNext(_bookInfo, _chN) {
+function InputChapterNext(_bookInfo, _bookChapters, _chN) {
     let InputChapterNext = Object.assign(document.createElement("input"), {
         id: "InputChapterNext",
         className: "iMain",
@@ -854,12 +896,10 @@ function InputChapterNext(_bookInfo, _chN) {
     InputChapterNext.addEventListener('click', function () {
         let tmpV = Math.abs(this.value);
 
-        for (let volume of _bookInfo.data.volumeItems) {
-            for (let chapter of volume.chapterItems) {
-                if (chapter.chapterIndex === tmpV) {
-                    location.replace(location.origin + '/book/' + _bookInfo.data.bookInfo.bookId + '/' + chapter.chapterId);
-                    return;
-                }
+        for (let chapter of _bookChapters.Data.Chapters) {
+            if (chapter.Index === tmpV) {
+                location.replace(location.origin + '/book/' + _bookInfo.data.bookInfo.bookId + '/' + chapter.Id);
+                return;
             }
         }
     });
@@ -983,7 +1023,7 @@ var eventCheck = "event_check";
 var FreeForm_event = new Event(eventCheck);
 var clH = "hTrue";
 
-function CreateTableSites(_sites, _bookInfo) {
+function CreateTableSites(_sites, _bookChapters) {
     let tbl = document.createElement('table');
     tbl.id = "crawlerId";
     tbl.classList.add(clH);
@@ -1071,8 +1111,8 @@ function CreateTableSites(_sites, _bookInfo) {
 
                 let cId = document.querySelector("#crawlerId").getAttribute("cId");
 
-                let ch = GetChapterId(_bookInfo, cId);
-                let chIndex = ch.chapterIndex * 1;
+                let ch = GetChapterId(_bookChapters, cId);
+                let chIndex = ch.Index * 1;
 
                 this.value = _sites[i][j].total;
                 if (Math.abs(this.value) > (chIndex * 1)) {
@@ -1105,9 +1145,9 @@ function CreateTableSites(_sites, _bookInfo) {
                 tdRead.addEventListener('click', function () {
                     let cId = document.querySelector("#crawlerId").getAttribute("cId");
 
-                    let ch = GetChapterId(_bookInfo, cId);
+                    let ch = GetChapterId(_bookChapters, cId);
 
-                    _sites[i][j].linkChapter(ch.chapterIndex, ch.chapterName);
+                    _sites[i][j].linkChapter(ch.Index, ch.Name);
                     document.querySelector("#InputChapterNext").value = _sites[i][j].total;
                 });
             }
@@ -1400,178 +1440,6 @@ function tanimoto(s1, s2) {
 }
 
 //let diff = tanimoto(title, titleParser);
-;// CONCATENATED MODULE: ./src/js/GetText.js
-
-
-async function GetBooks(_title) {
-    return new Promise((resolve, reject) => {
-        GM_xmlhttpRequest({
-            method: 'POST',
-            url: "https://open.lightnovelplus.com/book/search",
-            anonymous: true,
-            type: 'json',
-            headers: { 'User-Agent': 'okhttp/4.9.1' },
-            data: JSON.stringify({ "packageName": "com.lightnovelplus.webnovel", "marketChannel": "none", "page_num": "1", "sysVer": "5.1.1", "osType": "2", "keyword": _title, "language": "en", "ver": "2.2.0", "product": "1" }),
-            onload: function (data) {
-                let json = JSON.parse(data.responseText);
-                resolve(json);
-
-            },
-            onerror: function (error) {
-                reject(error);
-            }
-        });
-    });
-}
-
-async function GetCatalog(_bId) {
-    return new Promise((resolve, reject) => {
-        GM_xmlhttpRequest({
-            method: 'POST',
-            url: "https://open.lightnovelplus.com/chapter/catalog",
-            anonymous: true,
-            type: 'json',
-            headers: { 'User-Agent': 'okhttp/4.9.1' },
-            data: JSON.stringify({ "sysVer": "5.1.1", "book_id": _bId, "packageName": "com.lightnovelplus.webnovel", "osType": "2", "marketChannel": "none", "language": "en", "ver": "2.2.0", "product": "1" }),
-            onload: function (data) {
-                let json = JSON.parse(data.responseText);
-                resolve(json);
-            },
-            onerror: function (error) {
-                reject(error);
-            }
-        });
-    });
-}
-
-async function GetChapter(_bId, _chId) {
-    return new Promise((resolve, reject) => {
-        GM_xmlhttpRequest({
-            method: 'GET',
-            url: "https://img.suv666.com/20170612/nof/" + _bId + "/" + md5(_bId + "-" + _chId).toLowerCase() + ".json",
-            anonymous: true,
-            type: 'json',
-            headers: { 'User-Agent': 'okhttp/4.9.1' },
-            onload: function (data) {
-                let json = JSON.parse(data.responseText);
-                resolve(json);
-
-            },
-            onerror: function (error) {
-                reject(error);
-            }
-        });
-    });
-}
-
-function md5(d) { return rstr2hex(binl2rstr(binl_md5(rstr2binl(d), 8 * d.length))) } function rstr2hex(d) { for (var _, m = "0123456789ABCDEF", f = "", r = 0; r < d.length; r++)_ = d.charCodeAt(r), f += m.charAt(_ >>> 4 & 15) + m.charAt(15 & _); return f } function rstr2binl(d) { for (var _ = Array(d.length >> 2), m = 0; m < _.length; m++)_[m] = 0; for (m = 0; m < 8 * d.length; m += 8)_[m >> 5] |= (255 & d.charCodeAt(m / 8)) << m % 32; return _ } function binl2rstr(d) { for (var _ = "", m = 0; m < 32 * d.length; m += 8)_ += String.fromCharCode(d[m >> 5] >>> m % 32 & 255); return _ } function binl_md5(d, _) { d[_ >> 5] |= 128 << _ % 32, d[14 + (_ + 64 >>> 9 << 4)] = _; for (var m = 1732584193, f = -271733879, r = -1732584194, i = 271733878, n = 0; n < d.length; n += 16) { var h = m, t = f, g = r, e = i; f = md5_ii(f = md5_ii(f = md5_ii(f = md5_ii(f = md5_hh(f = md5_hh(f = md5_hh(f = md5_hh(f = md5_gg(f = md5_gg(f = md5_gg(f = md5_gg(f = md5_ff(f = md5_ff(f = md5_ff(f = md5_ff(f, r = md5_ff(r, i = md5_ff(i, m = md5_ff(m, f, r, i, d[n + 0], 7, -680876936), f, r, d[n + 1], 12, -389564586), m, f, d[n + 2], 17, 606105819), i, m, d[n + 3], 22, -1044525330), r = md5_ff(r, i = md5_ff(i, m = md5_ff(m, f, r, i, d[n + 4], 7, -176418897), f, r, d[n + 5], 12, 1200080426), m, f, d[n + 6], 17, -1473231341), i, m, d[n + 7], 22, -45705983), r = md5_ff(r, i = md5_ff(i, m = md5_ff(m, f, r, i, d[n + 8], 7, 1770035416), f, r, d[n + 9], 12, -1958414417), m, f, d[n + 10], 17, -42063), i, m, d[n + 11], 22, -1990404162), r = md5_ff(r, i = md5_ff(i, m = md5_ff(m, f, r, i, d[n + 12], 7, 1804603682), f, r, d[n + 13], 12, -40341101), m, f, d[n + 14], 17, -1502002290), i, m, d[n + 15], 22, 1236535329), r = md5_gg(r, i = md5_gg(i, m = md5_gg(m, f, r, i, d[n + 1], 5, -165796510), f, r, d[n + 6], 9, -1069501632), m, f, d[n + 11], 14, 643717713), i, m, d[n + 0], 20, -373897302), r = md5_gg(r, i = md5_gg(i, m = md5_gg(m, f, r, i, d[n + 5], 5, -701558691), f, r, d[n + 10], 9, 38016083), m, f, d[n + 15], 14, -660478335), i, m, d[n + 4], 20, -405537848), r = md5_gg(r, i = md5_gg(i, m = md5_gg(m, f, r, i, d[n + 9], 5, 568446438), f, r, d[n + 14], 9, -1019803690), m, f, d[n + 3], 14, -187363961), i, m, d[n + 8], 20, 1163531501), r = md5_gg(r, i = md5_gg(i, m = md5_gg(m, f, r, i, d[n + 13], 5, -1444681467), f, r, d[n + 2], 9, -51403784), m, f, d[n + 7], 14, 1735328473), i, m, d[n + 12], 20, -1926607734), r = md5_hh(r, i = md5_hh(i, m = md5_hh(m, f, r, i, d[n + 5], 4, -378558), f, r, d[n + 8], 11, -2022574463), m, f, d[n + 11], 16, 1839030562), i, m, d[n + 14], 23, -35309556), r = md5_hh(r, i = md5_hh(i, m = md5_hh(m, f, r, i, d[n + 1], 4, -1530992060), f, r, d[n + 4], 11, 1272893353), m, f, d[n + 7], 16, -155497632), i, m, d[n + 10], 23, -1094730640), r = md5_hh(r, i = md5_hh(i, m = md5_hh(m, f, r, i, d[n + 13], 4, 681279174), f, r, d[n + 0], 11, -358537222), m, f, d[n + 3], 16, -722521979), i, m, d[n + 6], 23, 76029189), r = md5_hh(r, i = md5_hh(i, m = md5_hh(m, f, r, i, d[n + 9], 4, -640364487), f, r, d[n + 12], 11, -421815835), m, f, d[n + 15], 16, 530742520), i, m, d[n + 2], 23, -995338651), r = md5_ii(r, i = md5_ii(i, m = md5_ii(m, f, r, i, d[n + 0], 6, -198630844), f, r, d[n + 7], 10, 1126891415), m, f, d[n + 14], 15, -1416354905), i, m, d[n + 5], 21, -57434055), r = md5_ii(r, i = md5_ii(i, m = md5_ii(m, f, r, i, d[n + 12], 6, 1700485571), f, r, d[n + 3], 10, -1894986606), m, f, d[n + 10], 15, -1051523), i, m, d[n + 1], 21, -2054922799), r = md5_ii(r, i = md5_ii(i, m = md5_ii(m, f, r, i, d[n + 8], 6, 1873313359), f, r, d[n + 15], 10, -30611744), m, f, d[n + 6], 15, -1560198380), i, m, d[n + 13], 21, 1309151649), r = md5_ii(r, i = md5_ii(i, m = md5_ii(m, f, r, i, d[n + 4], 6, -145523070), f, r, d[n + 11], 10, -1120210379), m, f, d[n + 2], 15, 718787259), i, m, d[n + 9], 21, -343485551), m = safe_add(m, h), f = safe_add(f, t), r = safe_add(r, g), i = safe_add(i, e) } return Array(m, f, r, i) } function md5_cmn(d, _, m, f, r, i) { return safe_add(bit_rol(safe_add(safe_add(_, d), safe_add(f, i)), r), m) } function md5_ff(d, _, m, f, r, i, n) { return md5_cmn(_ & m | ~_ & f, d, _, r, i, n) } function md5_gg(d, _, m, f, r, i, n) { return md5_cmn(_ & f | m & ~f, d, _, r, i, n) } function md5_hh(d, _, m, f, r, i, n) { return md5_cmn(_ ^ m ^ f, d, _, r, i, n) } function md5_ii(d, _, m, f, r, i, n) { return md5_cmn(m ^ (_ | ~f), d, _, r, i, n) } function safe_add(d, _) { var m = (65535 & d) + (65535 & _); return (d >> 16) + (_ >> 16) + (m >> 16) << 16 | 65535 & m } function bit_rol(d, _) { return d << _ | d >>> 32 - _ }
-
-var BookId;
-var ChapterListReverse = "";
-
-async function GetText(_bId, _cId, _bTitle, _cTitle) {
-    BookId = localStorage.getItem("ln_" + _bId);
-    if (!BookId) {
-        let jsonBooks = await GetBooks(_bTitle);
-
-        for (let book of jsonBooks.data.list) {
-
-            let titleParser = book.name;
-
-            let diff = tanimoto(_bTitle, titleParser);
-
-            if (diff > 0.9) {
-                BookId = book.book_id;
-                localStorage.setItem("ln_" + _bId, BookId);
-                break;
-            }
-        }
-
-        if (!BookId) {
-            alert("Error: BookId");
-            return -1;
-        }
-    }
-
-    if (ChapterListReverse === "") {
-        let jsonCatalog = await GetCatalog(BookId);
-        ChapterListReverse = jsonCatalog.data.chapter_list.reverse();
-    }
-
-    let content = document.querySelector("#content-" + _cId);
-    content.translate = true;
-
-    let tmpP = content.querySelectorAll("p");
-    for (let i = 0, p; p = tmpP[i]; i++) {
-        if (i === 0) {
-            continue;
-        }
-        p.parentNode.removeChild(p);
-    }
-
-    let jsonChapter = "";
-    for (let catalog of ChapterListReverse) {
-        if (catalog.chapter_title === _cTitle) {
-            jsonChapter = await GetChapter(catalog.book_id, catalog.chapter_id);
-            break;
-        }
-    }
-
-    if (jsonChapter !== "") {
-        if ('error' in jsonChapter) {
-            console.warn(jsonChapter);
-
-            alert(jsonChapter.error + "\n\nStart App:\n" + _bTitle);
-            return -99999;
-        }
-
-        content.style.height = "auto";
-        content.style.position = "inherit";
-
-        let pre = document.createElement('pre');
-        pre.innerHTML = jsonChapter.data.content;
-
-        content.appendChild(pre);
-    }
-    else {
-        alert("Error: No chapter");
-        return -1;
-    }
-
-    return ChapterListReverse[0].chapter_title;
-}
-
-
-// ParserBook
-//function getBookLocal() {
-//    let bookId = localStorage.getItem("GetText");
-
-//    if (bookId) {
-//        return JSON.parse(bookId);
-//    }
-//    else {
-//        return {};
-//    }
-//}
-
-//function setBookLocal(_bId, _gId) {
-//    let bookId = this.getBookLocal();
-
-//    bookId[_bId] = _gId;
-//    bookId = JSON.stringify(bookId);
-//    localStorage.setItem("GetText", bookId);
-//}
-
-//function checkBookUndefined() {
-//    let bookId = this.getBookLocal();
-//    if (bookId[this.bId] === undefined) {
-//        return true;
-//    }
-//    else {
-//        BookId = bookId[this.bId];
-//        return false;
-//    }
-//}
 ;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearch/artBook/mWuxiaworldCo.js
 
 
@@ -4118,6 +3986,200 @@ class ranobesNet extends ParserSearch {
         this.siteSearch = this.site.origin + "/index.php?do=search&subaction=search&search_start=0&full_search=0&result_from=1&story=" + this.bTitle;
     }
 }
+;// CONCATENATED MODULE: ./src/js/class/GetTextClass.js
+class GetText {
+    constructor(_site) {
+        this.site = new URL(_site);
+        this.bTitle = "";
+        this.bId = "";
+        this.sBookId = 0;
+    }
+
+    async GetText(_cId, _cTitle) {
+        alert("GetText???");
+    }
+
+    getBookLocal() {
+        let bookId = localStorage.getItem(this.constructor.name);
+
+        if (bookId) {
+            return JSON.parse(bookId);
+        }
+        else {
+            return {};
+        }
+    }
+
+    setBookLocal() {
+        let bookId = this.getBookLocal();
+
+        bookId[this.bId] = this.sBookId;
+        bookId = JSON.stringify(bookId);
+        localStorage.setItem(this.constructor.name, bookId);
+    }
+
+    checkBookUndefined() {
+        let bookId = this.getBookLocal();
+        if (bookId[this.bId] === undefined) {
+            return true;
+        }
+        else {
+            this.sBookId = bookId[this.bId];
+            return false;
+        }
+    }
+
+    checkBookZero() {
+        return this.sBookId === 0;
+    }
+}
+;// CONCATENATED MODULE: ./src/js/getText/g_lightnovelplusCom.js
+
+
+
+class g_lightnovelplusCom extends GetText {
+    constructor() {
+        super('https://lightnovelplus.com/');
+        this.appName = "com.lightnovelplus.webnovel";
+        this.appVersion = "2.2.0";
+        this.chapterListReverse = "";
+        this.lastChapterTitle = "";
+        this.lastChapterIndex = -99999;
+    }
+
+    async GetBooks() {
+        return new Promise((resolve, reject) => {
+            GM_xmlhttpRequest({
+                method: 'POST',
+                url: "https://open." + this.site.hostname + "/book/search",
+                anonymous: true,
+                type: 'json',
+                headers: { 'User-Agent': 'okhttp/4.9.1' },
+                data: JSON.stringify({ "packageName": this.appName, "marketChannel": "none", "page_num": "1", "sysVer": "5.1.1", "osType": "2", "keyword": this.bTitle, "language": "en", "ver": this.appVersion, "product": "1" }),
+                onload: function (data) {
+                    let json = JSON.parse(data.responseText);
+                    resolve(json);
+
+                },
+                onerror: function (error) {
+                    reject(error);
+                }
+            });
+        });
+    }
+
+    async GetCatalog() {
+        return new Promise((resolve, reject) => {
+            GM_xmlhttpRequest({
+                method: 'POST',
+                url: "https://open." + this.site.hostname + "/chapter/catalog",
+                anonymous: true,
+                type: 'json',
+                headers: { 'User-Agent': 'okhttp/4.9.1' },
+                data: JSON.stringify({ "sysVer": "5.1.1", "book_id": this.sBookId, "packageName": this.appName, "osType": "2", "marketChannel": "none", "language": "en", "ver": this.appVersion, "product": "1" }),
+                onload: function (data) {
+                    let json = JSON.parse(data.responseText);
+                    resolve(json);
+                },
+                onerror: function (error) {
+                    reject(error);
+                }
+            });
+        });
+    }
+
+    async GetChapter(_chId) {
+        return new Promise((resolve, reject) => {
+            GM_xmlhttpRequest({
+                method: 'GET',
+                url: "https://img.suv666.com/20170612/nof/" + this.sBookId + "/" + md5(this.sBookId + "-" + _chId).toLowerCase() + ".json",
+                anonymous: true,
+                type: 'json',
+                headers: { 'User-Agent': 'okhttp/4.9.1' },
+                onload: function (data) {
+                    let json = JSON.parse(data.responseText);
+                    resolve(json);
+
+                },
+                onerror: function (error) {
+                    reject(error);
+                }
+            });
+        });
+    }
+
+    async GetText(_cId, _cTitle) {
+        if (this.checkBookUndefined()) {
+            let jsonBooks = await this.GetBooks();
+
+            for (let book of jsonBooks.data.list) {
+
+                let titleParser = book.name;
+
+                let diff = tanimoto(this.bTitle, titleParser);
+
+                if (diff > 0.9) {
+                    this.sBookId = book.book_id;
+                    this.setBookLocal();
+                    break;
+                }
+            }
+
+            if (this.checkBookZero()) {
+                alert("Error: BookId");
+                return -1;
+            }
+        }
+
+        if (this.chapterListReverse === "") {
+            let jsonCatalog = await this.GetCatalog();
+            this.chapterListReverse = jsonCatalog.data.chapter_list.reverse();
+            this.lastChapterTitle = this.chapterListReverse[0].chapter_title;
+        }
+
+        let content = document.querySelector("#content-" + _cId);
+        content.translate = true;
+        content.style.height = "auto";
+        content.style.position = "inherit";
+
+        let tmpP = content.querySelectorAll("p");
+        for (let i = 0, p; p = tmpP[i]; i++) {
+            if (i === 0) {
+                continue;
+            }
+            p.parentNode.removeChild(p);
+        }
+
+        let jsonChapter = "";
+        for (let catalog of this.chapterListReverse) {
+            if (catalog.chapter_title === _cTitle) {
+                jsonChapter = await this.GetChapter(catalog.chapter_id);
+                break;
+            }
+        }
+
+        if (jsonChapter !== "") {
+            if ('error' in jsonChapter) {
+                console.warn(jsonChapter);
+
+                alert(jsonChapter.error + "\n\nStart App:\n" + this.bTitle);
+                return -2;
+            }
+
+            let pre = document.createElement('pre');
+            pre.innerHTML = jsonChapter.data.content;
+            content.appendChild(pre);
+        }
+        else {
+            alert("Error: No chapter");
+            return 0;
+        }
+
+        return 1;
+    }
+}
+
+function md5(d) { return rstr2hex(binl2rstr(binl_md5(rstr2binl(d), 8 * d.length))) } function rstr2hex(d) { for (var _, m = "0123456789ABCDEF", f = "", r = 0; r < d.length; r++)_ = d.charCodeAt(r), f += m.charAt(_ >>> 4 & 15) + m.charAt(15 & _); return f } function rstr2binl(d) { for (var _ = Array(d.length >> 2), m = 0; m < _.length; m++)_[m] = 0; for (m = 0; m < 8 * d.length; m += 8)_[m >> 5] |= (255 & d.charCodeAt(m / 8)) << m % 32; return _ } function binl2rstr(d) { for (var _ = "", m = 0; m < 32 * d.length; m += 8)_ += String.fromCharCode(d[m >> 5] >>> m % 32 & 255); return _ } function binl_md5(d, _) { d[_ >> 5] |= 128 << _ % 32, d[14 + (_ + 64 >>> 9 << 4)] = _; for (var m = 1732584193, f = -271733879, r = -1732584194, i = 271733878, n = 0; n < d.length; n += 16) { var h = m, t = f, g = r, e = i; f = md5_ii(f = md5_ii(f = md5_ii(f = md5_ii(f = md5_hh(f = md5_hh(f = md5_hh(f = md5_hh(f = md5_gg(f = md5_gg(f = md5_gg(f = md5_gg(f = md5_ff(f = md5_ff(f = md5_ff(f = md5_ff(f, r = md5_ff(r, i = md5_ff(i, m = md5_ff(m, f, r, i, d[n + 0], 7, -680876936), f, r, d[n + 1], 12, -389564586), m, f, d[n + 2], 17, 606105819), i, m, d[n + 3], 22, -1044525330), r = md5_ff(r, i = md5_ff(i, m = md5_ff(m, f, r, i, d[n + 4], 7, -176418897), f, r, d[n + 5], 12, 1200080426), m, f, d[n + 6], 17, -1473231341), i, m, d[n + 7], 22, -45705983), r = md5_ff(r, i = md5_ff(i, m = md5_ff(m, f, r, i, d[n + 8], 7, 1770035416), f, r, d[n + 9], 12, -1958414417), m, f, d[n + 10], 17, -42063), i, m, d[n + 11], 22, -1990404162), r = md5_ff(r, i = md5_ff(i, m = md5_ff(m, f, r, i, d[n + 12], 7, 1804603682), f, r, d[n + 13], 12, -40341101), m, f, d[n + 14], 17, -1502002290), i, m, d[n + 15], 22, 1236535329), r = md5_gg(r, i = md5_gg(i, m = md5_gg(m, f, r, i, d[n + 1], 5, -165796510), f, r, d[n + 6], 9, -1069501632), m, f, d[n + 11], 14, 643717713), i, m, d[n + 0], 20, -373897302), r = md5_gg(r, i = md5_gg(i, m = md5_gg(m, f, r, i, d[n + 5], 5, -701558691), f, r, d[n + 10], 9, 38016083), m, f, d[n + 15], 14, -660478335), i, m, d[n + 4], 20, -405537848), r = md5_gg(r, i = md5_gg(i, m = md5_gg(m, f, r, i, d[n + 9], 5, 568446438), f, r, d[n + 14], 9, -1019803690), m, f, d[n + 3], 14, -187363961), i, m, d[n + 8], 20, 1163531501), r = md5_gg(r, i = md5_gg(i, m = md5_gg(m, f, r, i, d[n + 13], 5, -1444681467), f, r, d[n + 2], 9, -51403784), m, f, d[n + 7], 14, 1735328473), i, m, d[n + 12], 20, -1926607734), r = md5_hh(r, i = md5_hh(i, m = md5_hh(m, f, r, i, d[n + 5], 4, -378558), f, r, d[n + 8], 11, -2022574463), m, f, d[n + 11], 16, 1839030562), i, m, d[n + 14], 23, -35309556), r = md5_hh(r, i = md5_hh(i, m = md5_hh(m, f, r, i, d[n + 1], 4, -1530992060), f, r, d[n + 4], 11, 1272893353), m, f, d[n + 7], 16, -155497632), i, m, d[n + 10], 23, -1094730640), r = md5_hh(r, i = md5_hh(i, m = md5_hh(m, f, r, i, d[n + 13], 4, 681279174), f, r, d[n + 0], 11, -358537222), m, f, d[n + 3], 16, -722521979), i, m, d[n + 6], 23, 76029189), r = md5_hh(r, i = md5_hh(i, m = md5_hh(m, f, r, i, d[n + 9], 4, -640364487), f, r, d[n + 12], 11, -421815835), m, f, d[n + 15], 16, 530742520), i, m, d[n + 2], 23, -995338651), r = md5_ii(r, i = md5_ii(i, m = md5_ii(m, f, r, i, d[n + 0], 6, -198630844), f, r, d[n + 7], 10, 1126891415), m, f, d[n + 14], 15, -1416354905), i, m, d[n + 5], 21, -57434055), r = md5_ii(r, i = md5_ii(i, m = md5_ii(m, f, r, i, d[n + 12], 6, 1700485571), f, r, d[n + 3], 10, -1894986606), m, f, d[n + 10], 15, -1051523), i, m, d[n + 1], 21, -2054922799), r = md5_ii(r, i = md5_ii(i, m = md5_ii(m, f, r, i, d[n + 8], 6, 1873313359), f, r, d[n + 15], 10, -30611744), m, f, d[n + 6], 15, -1560198380), i, m, d[n + 13], 21, 1309151649), r = md5_ii(r, i = md5_ii(i, m = md5_ii(m, f, r, i, d[n + 4], 6, -145523070), f, r, d[n + 11], 10, -1120210379), m, f, d[n + 2], 15, 718787259), i, m, d[n + 9], 21, -343485551), m = safe_add(m, h), f = safe_add(f, t), r = safe_add(r, g), i = safe_add(i, e) } return Array(m, f, r, i) } function md5_cmn(d, _, m, f, r, i) { return safe_add(bit_rol(safe_add(safe_add(_, d), safe_add(f, i)), r), m) } function md5_ff(d, _, m, f, r, i, n) { return md5_cmn(_ & m | ~_ & f, d, _, r, i, n) } function md5_gg(d, _, m, f, r, i, n) { return md5_cmn(_ & f | m & ~f, d, _, r, i, n) } function md5_hh(d, _, m, f, r, i, n) { return md5_cmn(_ ^ m ^ f, d, _, r, i, n) } function md5_ii(d, _, m, f, r, i, n) { return md5_cmn(m ^ (_ | ~f), d, _, r, i, n) } function safe_add(d, _) { var m = (65535 & d) + (65535 & _); return (d >> 16) + (_ >> 16) + (m >> 16) << 16 | 65535 & m } function bit_rol(d, _) { return d << _ | d >>> 32 - _ }
 ;// CONCATENATED MODULE: ./src/WebnovelCom_Crawler.js
 ﻿// ==UserScript==
 // @name        WebnovelCom - Crawler
@@ -4127,9 +4189,8 @@ class ranobesNet extends ParserSearch {
 // @author      Nay
 // @match       https://m.webnovel.com/book/*/*
 // @grant       GM_xmlhttpRequest
-// @version     0.4.3
+// @version     0.4.5
 // ==/UserScript==
-
 
 
 
@@ -4310,6 +4371,11 @@ const SitesAll = [
     ]
 ];
 
+
+// GetText
+
+var GetTextAll = new g_lightnovelplusCom();
+
 async function CreateDivMain(_statusChapter, _cId = "") {
     // divMain
     let divMain;
@@ -4317,29 +4383,9 @@ async function CreateDivMain(_statusChapter, _cId = "") {
         divMain = DivPanel(DivMain + "_" + _statusChapter, _statusChapter);
 
         _cId = glavaWebNovel(location);
-
-        if (GetChapterId(BookInfo, _cId).chapterLevel === 0) {
-            let tmpChId = "";
-            for (let volume of BookInfo.data.volumeItems) {
-                for (let chapter of volume.chapterItems) {
-                    if (chapter.chapterLevel > 0) {
-                        tmpChId = chapter.chapterId;
-                        break;
-                    }
-                }
-
-                if (tmpChId !== "") {
-                    break
-                }
-            }
-
-            if (tmpChId !== "") {
-                _cId = tmpChId;
-            }
-            else {
-                return divMain;
-            }
-
+        
+        if (GetChapterId(BookChapters, _cId).Index <= ChIndexLastLocked) {
+            _cId = BookChapters.Data.PrivilegeInfo[0].Id;
         }
     }
     else {
@@ -4352,19 +4398,20 @@ async function CreateDivMain(_statusChapter, _cId = "") {
     });
 
     // InputBookInfo
-    divHomeNextChapter.appendChild(InputBookInfo(WebnovelCom_Crawler_BookId));
+    divHomeNextChapter.appendChild(InputBookInfo(BookId));
 
 
     // chapter
-    let chapter = GetChapterId(BookInfo, _cId);
+    let chapter = GetChapterId(BookChapters, _cId);
 
+    console.info(chapter);
 
     // InputChapterNext
-    divHomeNextChapter.appendChild(InputChapterNext(BookInfo, chapter.chapterIndex));
+    divHomeNextChapter.appendChild(InputChapterNext(BookInfo, BookChapters, chapter.Index));
 
 
     // H1IdGlava
-    divHomeNextChapter.appendChild(H1IdGlava(chapter.chapterIndex, ChLastLocked, BookInfo.data.lastChapterItem.chapterIndex));
+    divHomeNextChapter.appendChild(H1IdGlava(chapter.Index, ChIndexLastLocked, ChLast.Index));
 
 
     // add HomeNextChapter
@@ -4419,7 +4466,7 @@ async function CreateDivMain(_statusChapter, _cId = "") {
     });
     inputReplace.addEventListener('click', async function () {
         this.disabled = true;
-        await ReplaceText(WebnovelCom_Crawler_BookId, _cId);
+        await ReplaceText(BookId, _cId);
         this.hidden = true;
     });
     divParsingReplaceGetText.appendChild(inputReplace);
@@ -4429,22 +4476,26 @@ async function CreateDivMain(_statusChapter, _cId = "") {
     let inputGetText = Object.assign(document.createElement("input"), {
         className: "gettext",
         type: "button",
-        value: GetTextValue
+        value: GetTextAll.lastChapterIndex === -99999 ? "GetText" : "GetText: " + GetTextAll.lastChapterIndex
     });
     inputGetText.addEventListener('click', async function () {
         this.disabled = true;
-        let tmpN = await GetText(WebnovelCom_Crawler_BookId, _cId, BookTitle, chapter.chapterName);
+        let tmpN = await GetTextAll.GetText(_cId, chapter.Name);
 
-        if (tmpN === -99999) {
-            this.disabled = false;
+        if (tmpN === -1) {
             return;
         }
 
-        if (tmpN !== -1 && this.value === "GetText") {
-            GetTextValue = "GetText: " + GetChapterName(BookInfo, tmpN).chapterIndex;
+        if (GetTextAll.lastChapterIndex === -99999 && GetTextAll.lastChapterTitle !== "") {
+            GetTextAll.lastChapterIndex = GetChapterName(BookChapters, GetTextAll.lastChapterTitle).Index;
             for (let gt of document.querySelectorAll("input.gettext")) {
-                gt.value = GetTextValue;
+                gt.value = "GetText: " + GetTextAll.lastChapterIndex;
             }
+        }
+
+        if (tmpN === -2) {
+            this.disabled = false;
+            return;
         }
     });
     divParsingReplaceGetText.appendChild(inputGetText);
@@ -4456,7 +4507,7 @@ async function CreateDivMain(_statusChapter, _cId = "") {
 
     // tableCrawler
     if (document.querySelector("#crawlerId") === null) {
-        let tableCrawler = CreateTableSites(SitesAll, BookInfo);
+        let tableCrawler = CreateTableSites(SitesAll, BookChapters);
         tableCrawler.setAttribute("cId", _cId);
         divMain.appendChild(tableCrawler);
     }
@@ -4466,14 +4517,14 @@ async function CreateDivMain(_statusChapter, _cId = "") {
 
 var BookInfo;
 var BookTitle;
-var WebnovelCom_Crawler_BookId;
+var BookId;
+
+var BookChapters;
 
 const DivMain = "divMain";
 const StatusChapter = { LOCKED: 'locked', UNLOCKED: 'unlocked', FREE: 'free', PRIVATE: 'private' };
-var ChLastLocked = "";
-
-var GetTextValue = "GetText";
-
+var ChLast = "";
+var ChIndexLastLocked = "";
 
 (async function () {
     'use strict';
@@ -4483,18 +4534,24 @@ var GetTextValue = "GetText";
     BookTitle = BookInfo.data.bookInfo.bookName;
     console.info(BookTitle);
 
-    WebnovelCom_Crawler_BookId = BookInfo.data.bookInfo.bookId;
-    console.info(WebnovelCom_Crawler_BookId);
+    BookId = BookInfo.data.bookInfo.bookId;
+    console.info(BookId);
 
     for (let sites of SitesAll) {
         for (let site of sites) {
-            site.bId = WebnovelCom_Crawler_BookId;
+            site.bId = BookId;
             site.bTitle = BookTitle;
             site.SetSiteSearch();
         }
     }
 
-    ChLastLocked = GetChapterLevel(BookInfo, 0).chapterIndex;
+    GetTextAll.bId = BookId;
+    GetTextAll.bTitle = BookTitle;
+
+    BookChapters = await downloadBookChapters(location);
+
+    ChLast = GetChapterLast(BookChapters);
+    ChIndexLastLocked = GetIndexLastChapterLock(BookChapters);
 
     while (true) {
         let contents = document.querySelectorAll("div.pr > div > div.styles_content__3tuD4");
