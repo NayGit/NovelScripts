@@ -5,7 +5,7 @@ var eventCheck = "event_check";
 var event = new Event(eventCheck);
 var clH = "hTrue";
 
-export function CreateTableSites(_sites, _bookInfo) {
+export function CreateTableSites(_sites, _bookChapters) {
     let tbl = document.createElement('table');
     tbl.id = "crawlerId";
     tbl.classList.add(clH);
@@ -93,8 +93,8 @@ export function CreateTableSites(_sites, _bookInfo) {
 
                 let cId = document.querySelector("#crawlerId").getAttribute("cId");
 
-                let ch = GetChapterId(_bookInfo, cId);
-                let chIndex = ch.chapterIndex * 1;
+                let ch = GetChapterId(_bookChapters, cId);
+                let chIndex = ch.Index * 1;
 
                 this.value = _sites[i][j].total;
                 if (Math.abs(this.value) > (chIndex * 1)) {
@@ -127,9 +127,9 @@ export function CreateTableSites(_sites, _bookInfo) {
                 tdRead.addEventListener('click', function () {
                     let cId = document.querySelector("#crawlerId").getAttribute("cId");
 
-                    let ch = GetChapterId(_bookInfo, cId);
+                    let ch = GetChapterId(_bookChapters, cId);
 
-                    _sites[i][j].linkChapter(ch.chapterIndex, ch.chapterName);
+                    _sites[i][j].linkChapter(ch.Index, ch.Name);
                     document.querySelector("#InputChapterNext").value = _sites[i][j].total;
                 });
             }

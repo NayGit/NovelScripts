@@ -67,10 +67,11 @@ async function GetChapterFetch(_url, _cId) {
                 for (let c of pOrig) {
                     pTmp.push(c.innerText);
                 }
+
                 return pTmp;
             }
             else {
-                return "Error";
+                return [];
             }
         })
         .catch(err => fetchCatch(err, this.siteSearch.href));
@@ -177,7 +178,7 @@ export async function ReplaceText(_bId, _cId) {
             for (let p of p_cfnp) {
                 ReplaceSymbol(p, dict);
             }
-            
+
             let p_cfcmp = document.querySelectorAll("#content-" + _cId + " > p._cfcmp");
             for (let p of p_cfcmp) {
                 p.translate = false;
@@ -225,7 +226,7 @@ export async function ReplaceText(_bId, _cId) {
         }
     }
     else {
-        alert("Chapter: LOCKED")
+        alert("Chapter: Error")
         return -1;
     }
 }

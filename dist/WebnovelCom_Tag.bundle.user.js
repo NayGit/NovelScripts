@@ -575,7 +575,7 @@ function glavaWebNovel(loc) {
 }
 
 async function downloadBookIfno(_loc) {
-    let url = _loc.origin + '/go/pcm/chapter/get-chapter-list?bookId=' + bookWebNovel(_loc) + '&_csrfToken=' + getCookie("_csrfToken");;
+    let url = _loc.origin + '/go/pcm/book/get-book-detail?_csrfToken=' + getCookie("_csrfToken") + '&bookId=' + bookWebNovel(_loc);
 
     return await fetch(url)
         .then(res => fetchStatusJSON(res))
@@ -585,38 +585,65 @@ async function downloadBookIfno(_loc) {
         .catch(err => fetchCatch(err, url));
 }
 
-function GetChapterId(_bookInfo, _cId) {
-    for (let volume of _bookInfo.data.volumeItems) {
-        for (let chapter of volume.chapterItems) {
-            if (chapter.chapterId === _cId) {
-                return chapter;
+async function downloadBookChapters(_loc) {
+    return new Promise((resolve, reject) => {
+        GM_xmlhttpRequest({
+            method: 'GET',
+            url: "https://idruid.webnovel.com/app/api/book/get-chapters?bookId=" + bookWebNovel(_loc) + "&maxUpdateTime=0&maxIndex=0&sign=",
+            anonymous: true,
+            type: 'json',
+            headers: { 'User-Agent': 'Mozilla/mobile QDHWReaderAndroid/5.9.3/643/2000002/000000005bfaef39ffffffffd99fa8a4' },
+            onload: function (data) {
+                resolve(JSON.parse(data.response));
+
+            },
+            onerror: function (error) {
+                reject(error);
             }
+        });
+    });
+}
+
+function GetChapterId(_bookChapters, _cId) {
+    for (let chapter of _bookChapters.Data.Chapters) {
+        if (chapter.Id === _cId * 1) {
+            console.info(1);
+            return chapter;
         }
     }
 }
 
-function GetChapterLevel(_bookInfo, _cLevel) {
-    let cloneBI = JSON.parse(JSON.stringify(_bookInfo));
+function GetChapterName(_bookChapters, _cName) {
+    let cloneBI = JSON.parse(JSON.stringify(_bookChapters));
 
-    for (let volume of cloneBI.data.volumeItems.reverse()) {
-        for (let chapter of volume.chapterItems.reverse()) {
-            if (chapter.chapterLevel === _cLevel) {
-                return chapter;
-            }
+    for (let chapter of cloneBI.Data.Chapters.reverse()) {
+        if (chapter.Name === _cName) {
+            return chapter;
         }
     }
 }
 
-function GetChapterName(_bookInfo, _cName) {
-    let cloneBI = JSON.parse(JSON.stringify(_bookInfo));
+function GetChapterLast(_bookChapters) {
+    if (_bookChapters.Data.PrivilegeInfo > 0) {
+        return _bookChapters.Data.PrivilegeInfo[_bookChapters.Data.PrivilegeInfo.length - 1];
+    }
+    else {
+        return _bookChapters.Data.Chapters[_bookChapters.Data.Chapters.length - 1];
+    }
+}
 
-    for (let volume of cloneBI.data.volumeItems.reverse()) {
-        for (let chapter of volume.chapterItems.reverse()) {
-            if (chapter.chapterName === _cName) {
-                return chapter;
+function GetIndexLastChapterLock(_bookChapters) {
+    if (_bookChapters.Data.PrivilegeInfo.length > 0) {
+        let cloneBI = JSON.parse(JSON.stringify(_bookChapters));
+
+        for (let chapter of cloneBI.Data.Chapters.reverse()) {
+            if (chapter.Id === _bookChapters.Data.PrivilegeInfo[0].Id) {
+                return chapter.Index * 1 - 1;
             }
         }
     }
+
+    return _bookChapters.Data.Chapters[_bookChapters.Data.Chapters.length - 1].Index;
 }
 ;// CONCATENATED MODULE: ./src/js/domain.js
 

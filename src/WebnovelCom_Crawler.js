@@ -6,14 +6,14 @@
 // @author      Nay
 // @match       https://m.webnovel.com/book/*/*
 // @grant       GM_xmlhttpRequest
-// @version     0.4.4
+// @version     0.5.0
 // ==/UserScript==
 
 'use strict';
 
 import './css/webnovel.css'
 
-import { downloadBookIfno, glavaWebNovel, GetChapterId, GetChapterLevel, GetChapterName } from './js/webNovel';
+import { downloadBookIfno, downloadBookChapters, glavaWebNovel, GetChapterId, GetChapterName, GetChapterLast, GetIndexLastChapterLock } from './js/webNovel';
 import { DivPanel, InputDivPanelHide, InputBookInfo, H1IdGlava, InputChapterNext } from './js/webnovel/ce/DivPanel';
 import { CreateTableSites, CheckTotalAll, ParsingAll } from './js/webnovel/ce/FreeForm';
 
@@ -200,29 +200,9 @@ async function CreateDivMain(_statusChapter, _cId = "") {
         divMain = DivPanel(DivMain + "_" + _statusChapter, _statusChapter);
 
         _cId = glavaWebNovel(location);
-
-        if (GetChapterId(BookInfo, _cId).chapterLevel === 0) {
-            let tmpChId = "";
-            for (let volume of BookInfo.data.volumeItems) {
-                for (let chapter of volume.chapterItems) {
-                    if (chapter.chapterLevel > 0) {
-                        tmpChId = chapter.chapterId;
-                        break;
-                    }
-                }
-
-                if (tmpChId !== "") {
-                    break
-                }
-            }
-
-            if (tmpChId !== "") {
-                _cId = tmpChId;
-            }
-            else {
-                return divMain;
-            }
-
+        
+        if (GetChapterId(BookChapters, _cId).Index <= ChIndexLastLocked) {
+            _cId = BookChapters.Data.PrivilegeInfo[0].Id;
         }
     }
     else {
@@ -239,15 +219,16 @@ async function CreateDivMain(_statusChapter, _cId = "") {
 
 
     // chapter
-    let chapter = GetChapterId(BookInfo, _cId);
+    let chapter = GetChapterId(BookChapters, _cId);
 
+    console.info(chapter);
 
     // InputChapterNext
-    divHomeNextChapter.appendChild(InputChapterNext(BookInfo, chapter.chapterIndex));
+    divHomeNextChapter.appendChild(InputChapterNext(BookInfo, BookChapters, chapter.Index));
 
 
     // H1IdGlava
-    divHomeNextChapter.appendChild(H1IdGlava(chapter.chapterIndex, ChLastLocked, BookInfo.data.lastChapterItem.chapterIndex));
+    divHomeNextChapter.appendChild(H1IdGlava(chapter.Index, ChIndexLastLocked, ChLast.Index));
 
 
     // add HomeNextChapter
@@ -316,14 +297,14 @@ async function CreateDivMain(_statusChapter, _cId = "") {
     });
     inputGetText.addEventListener('click', async function () {
         this.disabled = true;
-        let tmpN = await GetTextAll.GetText(_cId, chapter.chapterName);
+        let tmpN = await GetTextAll.GetText(_cId, chapter.Name);
 
         if (tmpN === -1) {
             return;
         }
 
         if (GetTextAll.lastChapterIndex === -99999 && GetTextAll.lastChapterTitle !== "") {
-            GetTextAll.lastChapterIndex = GetChapterName(BookInfo, GetTextAll.lastChapterTitle).chapterIndex;
+            GetTextAll.lastChapterIndex = GetChapterName(BookChapters, GetTextAll.lastChapterTitle).Index;
             for (let gt of document.querySelectorAll("input.gettext")) {
                 gt.value = "GetText: " + GetTextAll.lastChapterIndex;
             }
@@ -343,7 +324,7 @@ async function CreateDivMain(_statusChapter, _cId = "") {
 
     // tableCrawler
     if (document.querySelector("#crawlerId") === null) {
-        let tableCrawler = CreateTableSites(SitesAll, BookInfo);
+        let tableCrawler = CreateTableSites(SitesAll, BookChapters);
         tableCrawler.setAttribute("cId", _cId);
         divMain.appendChild(tableCrawler);
     }
@@ -355,9 +336,12 @@ var BookInfo;
 var BookTitle;
 var BookId;
 
+var BookChapters;
+
 const DivMain = "divMain";
 const StatusChapter = { LOCKED: 'locked', UNLOCKED: 'unlocked', FREE: 'free', PRIVATE: 'private' };
-var ChLastLocked = "";
+var ChLast = "";
+var ChIndexLastLocked = "";
 
 (async function () {
     'use strict';
@@ -381,7 +365,10 @@ var ChLastLocked = "";
     GetTextAll.bId = BookId;
     GetTextAll.bTitle = BookTitle;
 
-    ChLastLocked = GetChapterLevel(BookInfo, 0).chapterIndex;
+    BookChapters = await downloadBookChapters(location);
+
+    ChLast = GetChapterLast(BookChapters);
+    ChIndexLastLocked = GetIndexLastChapterLock(BookChapters);
 
     while (true) {
         let contents = document.querySelectorAll("div.pr > div > div.styles_content__3tuD4");

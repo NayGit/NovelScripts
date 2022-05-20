@@ -19,7 +19,7 @@ export default class g_lightnovelplusCom extends GetText {
                 anonymous: true,
                 type: 'json',
                 headers: { 'User-Agent': 'okhttp/4.9.1' },
-                data: JSON.stringify({ "packageName": this.appName, "marketChannel": "none", "page_num": "1", "sysVer": "5.1.1", "osType": "2", "keyword": _title, "language": "en", "ver": this.appVersion, "product": "1" }),
+                data: JSON.stringify({ "packageName": this.appName, "marketChannel": "none", "page_num": "1", "sysVer": "5.1.1", "osType": "2", "keyword": this.bTitle, "language": "en", "ver": this.appVersion, "product": "1" }),
                 onload: function (data) {
                     let json = JSON.parse(data.responseText);
                     resolve(json);
@@ -84,7 +84,7 @@ export default class g_lightnovelplusCom extends GetText {
 
                 if (diff > 0.9) {
                     this.sBookId = book.book_id;
-                    setBookLocal();
+                    this.setBookLocal();
                     break;
                 }
             }

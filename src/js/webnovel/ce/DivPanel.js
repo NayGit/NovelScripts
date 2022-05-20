@@ -55,7 +55,7 @@ export function H1IdGlava(_chStart, _chLastLocked, _chStop) {
     });
 }
 
-export function InputChapterNext(_bookInfo, _chN) {
+export function InputChapterNext(_bookInfo, _bookChapters, _chN) {
     let InputChapterNext = Object.assign(document.createElement("input"), {
         id: "InputChapterNext",
         className: "iMain",
@@ -66,12 +66,10 @@ export function InputChapterNext(_bookInfo, _chN) {
     InputChapterNext.addEventListener('click', function () {
         let tmpV = Math.abs(this.value);
 
-        for (let volume of _bookInfo.data.volumeItems) {
-            for (let chapter of volume.chapterItems) {
-                if (chapter.chapterIndex === tmpV) {
-                    location.replace(location.origin + '/book/' + _bookInfo.data.bookInfo.bookId + '/' + chapter.chapterId);
-                    return;
-                }
+        for (let chapter of _bookChapters.Data.Chapters) {
+            if (chapter.Index === tmpV) {
+                location.replace(location.origin + '/book/' + _bookInfo.data.bookInfo.bookId + '/' + chapter.Id);
+                return;
             }
         }
     });

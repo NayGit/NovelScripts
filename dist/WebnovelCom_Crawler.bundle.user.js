@@ -750,23 +750,6 @@ async function downloadBookIfno(_loc) {
             return data;
         })
         .catch(err => fetchCatch(err, url));
-
-    return new Promise((resolve, reject) => {
-        GM_xmlhttpRequest({
-            method: 'GET',
-            url: "https://idruid.webnovel.com/app/api/book/get-chapters?bookId=" + bookWebNovel(_loc) + "&maxUpdateTime=0&maxIndex=0&sign=",
-            anonymous: true,
-            type: 'json',
-            headers: { 'User-Agent': 'Mozilla/mobile QDHWReaderAndroid/5.9.3/643/2000002/000000005bfaef39ffffffffd99fa8a4' },
-            onload: function (data) {
-                resolve(JSON.parse(data.response));
-
-            },
-            onerror: function (error) {
-                reject(error);
-            }
-        });
-    });
 }
 
 async function downloadBookChapters(_loc) {
@@ -826,6 +809,8 @@ function GetIndexLastChapterLock(_bookChapters) {
             }
         }
     }
+
+    return _bookChapters.Data.Chapters[_bookChapters.Data.Chapters.length - 1].Index;
 }
 ;// CONCATENATED MODULE: ./src/js/webnovel/ce/DivPanel.js
 function DivPanel(_id, _class) {
@@ -1258,10 +1243,11 @@ async function GetChapterFetch(_url, _cId) {
                 for (let c of pOrig) {
                     pTmp.push(c.innerText);
                 }
+
                 return pTmp;
             }
             else {
-                return "Error";
+                return [];
             }
         })
         .catch(err => fetchCatch(err, this.siteSearch.href));
@@ -1368,7 +1354,7 @@ async function ReplaceText(_bId, _cId) {
             for (let p of p_cfnp) {
                 ReplaceSymbol(p, dict);
             }
-            
+
             let p_cfcmp = document.querySelectorAll("#content-" + _cId + " > p._cfcmp");
             for (let p of p_cfcmp) {
                 p.translate = false;
@@ -1416,7 +1402,7 @@ async function ReplaceText(_bId, _cId) {
         }
     }
     else {
-        alert("Chapter: LOCKED")
+        alert("Chapter: Error")
         return -1;
     }
 }
@@ -4189,7 +4175,7 @@ function md5(d) { return rstr2hex(binl2rstr(binl_md5(rstr2binl(d), 8 * d.length)
 // @author      Nay
 // @match       https://m.webnovel.com/book/*/*
 // @grant       GM_xmlhttpRequest
-// @version     0.4.5
+// @version     0.5.0
 // ==/UserScript==
 
 
