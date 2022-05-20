@@ -1,11 +1,12 @@
 import { ParserSearch, ParserBook, ParserChapter } from '../../parser';
-import { GetChapterId } from '../../webNovel';
+import { GetChapterId, GetChapterIndex } from '../../webNovel';
+import { CreateTableReadReplace, ReadLocalTotal } from './CreateTableRead'
 
 var eventCheck = "event_check";
 var event = new Event(eventCheck);
 var clH = "hTrue";
 
-export function CreateTableSites(_sites, _bookChapters) {
+export function CreateTableSites(_sites, _bookChapters, _bId) {
     let tbl = document.createElement('table');
     tbl.id = "crawlerId";
     tbl.classList.add(clH);
@@ -84,7 +85,7 @@ export function CreateTableSites(_sites, _bookChapters) {
             });
             inputButton.addEventListener('click', function () {
                 _sites[i][j].linkBook();
-                document.querySelector("#InputChapterNext").value = _sites[i][j].total;
+                CreateTableReadReplace(_bookChapters, _bId, Math.abs(_sites[i][j].total));
             });
             inputButton.addEventListener(eventCheck, function () {
                 if (this.value === "???" && _sites[i][j].total === 0) {
@@ -95,6 +96,15 @@ export function CreateTableSites(_sites, _bookChapters) {
 
                 let ch = GetChapterId(_bookChapters, cId);
                 let chIndex = ch.Index * 1;
+
+                let tmpR = ReadLocalTotal(_bId);
+                if (tmpR !== undefined) {
+                    if (chIndex < tmpR) {
+                        chIndex = tmpR;
+                    }
+                }
+
+                console.info(chIndex);
 
                 this.value = _sites[i][j].total;
                 if (Math.abs(this.value) > (chIndex * 1)) {
@@ -128,9 +138,17 @@ export function CreateTableSites(_sites, _bookChapters) {
                     let cId = document.querySelector("#crawlerId").getAttribute("cId");
 
                     let ch = GetChapterId(_bookChapters, cId);
+                    console.info(ch);
+
+                    let tmpR = ReadLocalTotal(_bId);
+                    if (tmpR !== undefined) {
+                        if (ch.Index < tmpR) {
+                            ch = GetChapterIndex(_bookChapters, tmpR + 1);
+                        }
+                    }
 
                     _sites[i][j].linkChapter(ch.Index, ch.Name);
-                    document.querySelector("#InputChapterNext").value = _sites[i][j].total;
+                    CreateTableReadReplace(_bookChapters, _bId, Math.abs(_sites[i][j].total));
                 });
             }
 

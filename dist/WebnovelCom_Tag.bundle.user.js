@@ -604,10 +604,17 @@ async function downloadBookChapters(_loc) {
     });
 }
 
+function GetChapterIndex(_bookChapters, _index) {
+    for (let chapter of _bookChapters.Data.Chapters) {
+        if (chapter.Index === _index * 1) {
+            return chapter;
+        }
+    }
+}
+
 function GetChapterId(_bookChapters, _cId) {
     for (let chapter of _bookChapters.Data.Chapters) {
         if (chapter.Id === _cId * 1) {
-            console.info(1);
             return chapter;
         }
     }

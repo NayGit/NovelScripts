@@ -89,3 +89,13 @@ input.tcDown {
 table.hTrue tr.tcHidden {
     display: none;
 }
+
+#divTable {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+#divTable table {
+    margin: 3px auto;
+}

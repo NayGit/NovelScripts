@@ -24,7 +24,7 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 var ___CSS_LOADER_URL_REPLACEMENT_0___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default()(___CSS_LOADER_URL_IMPORT_0___);
 var ___CSS_LOADER_URL_REPLACEMENT_1___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default()(___CSS_LOADER_URL_IMPORT_1___);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "/* https://icomoon.io/ --> IcoMoon - Free */\r\n/* to base64 */\r\n/* https://transfonter.org/ */\r\n@font-face {\r\n    font-family: 'icomoon';\r\n    src:\r\n        url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ") format('woff2'),\r\n        url(" + ___CSS_LOADER_URL_REPLACEMENT_1___ + ") format('woff');\r\n    font-weight: normal;\r\n    font-style: normal;\r\n    font-display: swap;\r\n}\r\n\r\ntd.search:before, td.read:before, td.parsing:before, .eye:before, .eye-hidden:before {\r\n    font-family: icomoon;\r\n    margin: 0px 5px;\r\n}\r\n\r\ntd.search:before {\r\n    content: \"\\e986\";\r\n}\r\n\r\ntd.read:before {\r\n    content: \"\\e926\";\r\n}\r\n\r\ntd.parsing:before {\r\n    content: \"\\e982\";\r\n}\r\n\r\n.eye:before {\r\n    content: \"\\e9ce\";\r\n}\r\n\r\n.eye-hidden:before {\r\n    content: \"\\e9d1\";\r\n}\r\n\r\n.eye, .eye-hidden {\r\n    text-align: center;\r\n}\r\n\r\ndiv.locked > div > input, div.unlocked > div > input, div.free > div > input, div.private > div > input {\r\n    background: black;\r\n    color: darkgray;\r\n}\r\n\r\ndiv.locked input.replace, div.free input.replace, div.private input.replace {\r\n    display: none;\r\n}\r\n\r\ndiv.free input.gettext, div.private input.gettext {\r\n    display: none;\r\n}\r\n\r\ndiv.HomeNextChapter, div.ParsingReplaceGetText {\r\n    width: 100%;\r\n    margin-bottom: 5px;\r\n    display: flex;\r\n    justify-content: space-between;\r\n}\r\n\r\ndiv.ParsingReplaceGetText {\r\n    justify-content: space-around;\r\n}\r\n\r\nh1.idGlava {\r\n    background: darkgray;\r\n    color: black;\r\n    /*background: lightgray;*/\r\n}\r\n\r\ninput.tcError, input.tcUp, input.tcDown {\r\n    width: 100%;\r\n}\r\n\r\ninput.tcError {\r\n    background: red;\r\n}\r\n\r\ninput.tcUp {\r\n    background: lime;\r\n}\r\n\r\ninput.tcDown {\r\n    background: orange;\r\n}\r\n\r\ntable.hTrue tr.tcHidden {\r\n    display: none;\r\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "/* https://icomoon.io/ --> IcoMoon - Free */\r\n/* to base64 */\r\n/* https://transfonter.org/ */\r\n@font-face {\r\n    font-family: 'icomoon';\r\n    src:\r\n        url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ") format('woff2'),\r\n        url(" + ___CSS_LOADER_URL_REPLACEMENT_1___ + ") format('woff');\r\n    font-weight: normal;\r\n    font-style: normal;\r\n    font-display: swap;\r\n}\r\n\r\ntd.search:before, td.read:before, td.parsing:before, .eye:before, .eye-hidden:before {\r\n    font-family: icomoon;\r\n    margin: 0px 5px;\r\n}\r\n\r\ntd.search:before {\r\n    content: \"\\e986\";\r\n}\r\n\r\ntd.read:before {\r\n    content: \"\\e926\";\r\n}\r\n\r\ntd.parsing:before {\r\n    content: \"\\e982\";\r\n}\r\n\r\n.eye:before {\r\n    content: \"\\e9ce\";\r\n}\r\n\r\n.eye-hidden:before {\r\n    content: \"\\e9d1\";\r\n}\r\n\r\n.eye, .eye-hidden {\r\n    text-align: center;\r\n}\r\n\r\ndiv.locked > div > input, div.unlocked > div > input, div.free > div > input, div.private > div > input {\r\n    background: black;\r\n    color: darkgray;\r\n}\r\n\r\ndiv.locked input.replace, div.free input.replace, div.private input.replace {\r\n    display: none;\r\n}\r\n\r\ndiv.free input.gettext, div.private input.gettext {\r\n    display: none;\r\n}\r\n\r\ndiv.HomeNextChapter, div.ParsingReplaceGetText {\r\n    width: 100%;\r\n    margin-bottom: 5px;\r\n    display: flex;\r\n    justify-content: space-between;\r\n}\r\n\r\ndiv.ParsingReplaceGetText {\r\n    justify-content: space-around;\r\n}\r\n\r\nh1.idGlava {\r\n    background: darkgray;\r\n    color: black;\r\n    /*background: lightgray;*/\r\n}\r\n\r\ninput.tcError, input.tcUp, input.tcDown {\r\n    width: 100%;\r\n}\r\n\r\ninput.tcError {\r\n    background: red;\r\n}\r\n\r\ninput.tcUp {\r\n    background: lime;\r\n}\r\n\r\ninput.tcDown {\r\n    background: orange;\r\n}\r\n\r\ntable.hTrue tr.tcHidden {\r\n    display: none;\r\n}\r\n\r\n#divTable {\r\n    display: flex;\r\n    align-items: center;\r\n    flex-direction: column;\r\n}\r\n\r\n#divTable table {\r\n    margin: 3px auto;\r\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -771,10 +771,17 @@ async function downloadBookChapters(_loc) {
     });
 }
 
+function GetChapterIndex(_bookChapters, _index) {
+    for (let chapter of _bookChapters.Data.Chapters) {
+        if (chapter.Index === _index * 1) {
+            return chapter;
+        }
+    }
+}
+
 function GetChapterId(_bookChapters, _cId) {
     for (let chapter of _bookChapters.Data.Chapters) {
         if (chapter.Id === _cId * 1) {
-            console.info(1);
             return chapter;
         }
     }
@@ -868,28 +875,6 @@ function H1IdGlava(_chStart, _chLastLocked, _chStop) {
         className: "idGlava",
         textContent: tmpText    
     });
-}
-
-function InputChapterNext(_bookInfo, _bookChapters, _chN) {
-    let InputChapterNext = Object.assign(document.createElement("input"), {
-        id: "InputChapterNext",
-        className: "iMain",
-        type: "button",
-        value: _chN
-    });
-
-    InputChapterNext.addEventListener('click', function () {
-        let tmpV = Math.abs(this.value);
-
-        for (let chapter of _bookChapters.Data.Chapters) {
-            if (chapter.Index === tmpV) {
-                location.replace(location.origin + '/book/' + _bookInfo.data.bookInfo.bookId + '/' + chapter.Id);
-                return;
-            }
-        }
-    });
-
-    return InputChapterNext;
 }
 ;// CONCATENATED MODULE: ./src/js/parser.js
 //console.info(this.constructor.name);
@@ -1000,15 +985,135 @@ class ParserChapter extends ParserBook {
         this.endUrl = "";
     }
 }
-;// CONCATENATED MODULE: ./src/js/webnovel/ce/FreeForm.js
+;// CONCATENATED MODULE: ./src/js/webnovel/ce/CreateTableRead.js
+
+
+
+function CreateTableRead(_bookChapter, _bId) {
+    let tbl = document.createElement('table');
+    tbl.id = "crawlerRead";
+    tbl.style.fontSize = "16px";
+    tbl.style.border = '1px solid black';
+
+    let bookId = getReadLocal();
+    if (bookId[_bId] === undefined) {
+        let tB = tbl.createTBody();
+    }
+    else {
+        let ch = GetChapterIndex(_bookChapter, bookId[_bId]);
+
+        let tH = tbl.createTHead();
+        let trH = tH.insertRow();
+        trH.style.fontWeight = "bold";
+        trH.style.fontStyle = "italic";
+
+
+        let tdIndex = trH.insertCell();
+        tdIndex.textContent = bookId[_bId];
+
+        let tdName = trH.insertCell();
+        tdName.textContent = ch.Name;
+
+        let tdButton = trH.insertCell();
+        tdButton.textContent = "Clear";
+        tdButton.addEventListener('click', function () {
+            clearReadLocal(_bookChapter, _bId);
+        });
+
+
+        let tB = tbl.createTBody();
+    }
+
+    return tbl;
+}
+
+function CreateTableReadReplace(_bookChapter, _bId, _index) {
+    let body = document.querySelector("#crawlerRead tbody");
+    while (body.rows[0]) {
+        body.deleteRow(0);
+    }
+
+    for (let i = _index - 2; i <= _index + 2; i++) {
+        let ch = GetChapterIndex(_bookChapter, i);
+        if (ch !== undefined) {
+            let tr = body.insertRow();
+            if (_index === i) {
+                tr.style.fontWeight = "bold";
+            }
+
+            let tdIndex = tr.insertCell();
+            tdIndex.textContent = ch.Index;
+
+            let tdName = tr.insertCell();
+            tdName.textContent = ch.Name;
+
+            let tdButton = tr.insertCell();
+            tdButton.textContent = "Save";
+            tdButton.addEventListener('click', function () {
+                setReadLocal(_bookChapter, _bId, ch.Index);
+            });
+        }
+    }
+}
+
+function getReadLocal() {
+    let bookId = localStorage.getItem("WebNovelRead");
+
+    if (bookId) {
+        return JSON.parse(bookId);
+    }
+    else {
+        return {};
+    }
+}
+
+async function setReadLocal(_bookChapter, _bId, _index) {
+    let bookId = getReadLocal();
+
+    bookId[_bId] = _index;
+    bookId = JSON.stringify(bookId);
+    localStorage.setItem("WebNovelRead", bookId);
+
+    //let tbl = document.querySelector("#crawlerRead")
+    //tbl.replaceWith(CreateTableRead(_bookChapter, _bId));
+    //document.querySelector("#crawlerRead").remove();
+    document.querySelector("#crawlerRead").hidden = true;
+    document.querySelector("#divTable").prepend(CreateTableRead(_bookChapter, _bId));
+
+    CheckTotalAll();
+}
+
+async function clearReadLocal(_bookChapter, _bId) {
+    let bookId = getReadLocal();
+
+    delete bookId[_bId];
+    bookId = JSON.stringify(bookId);
+    localStorage.setItem("WebNovelRead", bookId);
+
+    //let tbl = document.querySelector("#crawlerRead")
+    //tbl.replaceWith(CreateTableRead(_bookChapter, _bId));
+    //document.querySelector("#crawlerRead").remove();
+    document.querySelector("#crawlerRead").hidden = true;
+    document.querySelector("#divTable").prepend(CreateTableRead(_bookChapter, _bId));
+
+    CheckTotalAll();
+}
+
+function ReadLocalTotal(_bId) {
+    let bookId = getReadLocal();
+
+    return bookId[_bId];
+}
+;// CONCATENATED MODULE: ./src/js/webnovel/ce/CreateTableSites.js
+
 
 
 
 var eventCheck = "event_check";
-var FreeForm_event = new Event(eventCheck);
+var CreateTableSites_event = new Event(eventCheck);
 var clH = "hTrue";
 
-function CreateTableSites(_sites, _bookChapters) {
+function CreateTableSites(_sites, _bookChapters, _bId) {
     let tbl = document.createElement('table');
     tbl.id = "crawlerId";
     tbl.classList.add(clH);
@@ -1087,7 +1192,7 @@ function CreateTableSites(_sites, _bookChapters) {
             });
             inputButton.addEventListener('click', function () {
                 _sites[i][j].linkBook();
-                document.querySelector("#InputChapterNext").value = _sites[i][j].total;
+                CreateTableReadReplace(_bookChapters, _bId, Math.abs(_sites[i][j].total));
             });
             inputButton.addEventListener(eventCheck, function () {
                 if (this.value === "???" && _sites[i][j].total === 0) {
@@ -1098,6 +1203,15 @@ function CreateTableSites(_sites, _bookChapters) {
 
                 let ch = GetChapterId(_bookChapters, cId);
                 let chIndex = ch.Index * 1;
+
+                let tmpR = ReadLocalTotal(_bId);
+                if (tmpR !== undefined) {
+                    if (chIndex < tmpR) {
+                        chIndex = tmpR;
+                    }
+                }
+
+                console.info(chIndex);
 
                 this.value = _sites[i][j].total;
                 if (Math.abs(this.value) > (chIndex * 1)) {
@@ -1131,9 +1245,17 @@ function CreateTableSites(_sites, _bookChapters) {
                     let cId = document.querySelector("#crawlerId").getAttribute("cId");
 
                     let ch = GetChapterId(_bookChapters, cId);
+                    console.info(ch);
+
+                    let tmpR = ReadLocalTotal(_bId);
+                    if (tmpR !== undefined) {
+                        if (ch.Index < tmpR) {
+                            ch = GetChapterIndex(_bookChapters, tmpR + 1);
+                        }
+                    }
 
                     _sites[i][j].linkChapter(ch.Index, ch.Name);
-                    document.querySelector("#InputChapterNext").value = _sites[i][j].total;
+                    CreateTableReadReplace(_bookChapters, _bId, Math.abs(_sites[i][j].total));
                 });
             }
 
@@ -1146,7 +1268,7 @@ function CreateTableSites(_sites, _bookChapters) {
                 await _sites[i][j].totalChapters();
 
                 let iB = this.parentElement.querySelector("td.total > input");
-                iB.dispatchEvent(FreeForm_event);
+                iB.dispatchEvent(CreateTableSites_event);
             });
 
 
@@ -1163,7 +1285,7 @@ function CreateTableSites(_sites, _bookChapters) {
 function CheckTotalAll() {
     let tmpTotal = document.querySelectorAll("#crawlerId > tbody > tr > td.total > input");
     for (let i of tmpTotal) {
-        i.dispatchEvent(FreeForm_event);
+        i.dispatchEvent(CreateTableSites_event);
     }
 }
 
@@ -4175,8 +4297,9 @@ function md5(d) { return rstr2hex(binl2rstr(binl_md5(rstr2binl(d), 8 * d.length)
 // @author      Nay
 // @match       https://m.webnovel.com/book/*/*
 // @grant       GM_xmlhttpRequest
-// @version     0.5.0
+// @version     0.5.1
 // ==/UserScript==
+
 
 
 
@@ -4390,11 +4513,6 @@ async function CreateDivMain(_statusChapter, _cId = "") {
     // chapter
     let chapter = GetChapterId(BookChapters, _cId);
 
-    console.info(chapter);
-
-    // InputChapterNext
-    divHomeNextChapter.appendChild(InputChapterNext(BookInfo, BookChapters, chapter.Index));
-
 
     // H1IdGlava
     divHomeNextChapter.appendChild(H1IdGlava(chapter.Index, ChIndexLastLocked, ChLast.Index));
@@ -4425,21 +4543,22 @@ async function CreateDivMain(_statusChapter, _cId = "") {
         value: "Parsing"
     });
     inputParsing.addEventListener('click', async function () {
-        let crawlerTable = document.querySelector("#crawlerId");
-        if (crawlerTable !== null) {
+        let divTable = document.querySelector("#divTable");
+        if (divTable !== null) {
             if (_statusChapter === StatusChapter.PRIVATE) {
-                document.querySelector("#" + DivMain + "_" + _statusChapter).appendChild(crawlerTable);
+                document.querySelector("#" + DivMain + "_" + _statusChapter).appendChild(divTable);
             }
             else {
-                document.querySelector("#" + DivMain + "_" + _cId).appendChild(crawlerTable);
+                document.querySelector("#" + DivMain + "_" + _cId).appendChild(divTable);
             }
+
+            let crawlerTable = document.querySelector("#crawlerId");
             crawlerTable.setAttribute("cId", _cId);
             crawlerTable.hidden = false;
 
             //ParsingAll();
+            CheckTotalAll();
         }
-
-        CheckTotalAll();
     });
     divParsingReplaceGetText.appendChild(inputParsing);
 
@@ -4491,11 +4610,24 @@ async function CreateDivMain(_statusChapter, _cId = "") {
     divMain.appendChild(divParsingReplaceGetText);
 
 
-    // tableCrawler
-    if (document.querySelector("#crawlerId") === null) {
-        let tableCrawler = CreateTableSites(SitesAll, BookChapters);
+
+    // divTable
+    if (document.querySelector("#divTable") === null) {
+        let divTable = Object.assign(document.createElement("div"), {
+            id: "divTable",
+        });
+
+
+        divTable.appendChild(CreateTableRead(BookChapters, BookId));
+
+
+        // tableCrawler
+        let tableCrawler = CreateTableSites(SitesAll, BookChapters, BookId);
         tableCrawler.setAttribute("cId", _cId);
-        divMain.appendChild(tableCrawler);
+        divTable.appendChild(tableCrawler);
+
+
+        divMain.appendChild(divTable);
     }
 
     return divMain;

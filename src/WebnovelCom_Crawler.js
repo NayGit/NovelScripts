@@ -6,16 +6,17 @@
 // @author      Nay
 // @match       https://m.webnovel.com/book/*/*
 // @grant       GM_xmlhttpRequest
-// @version     0.5.0
+// @version     0.5.1
 // ==/UserScript==
 
 'use strict';
 
 import './css/webnovel.css'
 
-import { downloadBookIfno, downloadBookChapters, glavaWebNovel, GetChapterId, GetChapterName, GetChapterLast, GetIndexLastChapterLock } from './js/webNovel';
-import { DivPanel, InputDivPanelHide, InputBookInfo, H1IdGlava, InputChapterNext } from './js/webnovel/ce/DivPanel';
-import { CreateTableSites, CheckTotalAll, ParsingAll } from './js/webnovel/ce/FreeForm';
+import { downloadBookIfno, downloadBookChapters, glavaWebNovel, GetChapterId, GetChapterName, GetChapterLast, GetIndexLastChapterLock, GetChapterIndex } from './js/webNovel';
+import { DivPanel, InputDivPanelHide, InputBookInfo, H1IdGlava } from './js/webnovel/ce/DivPanel';
+import { CreateTableSites, CheckTotalAll, ParsingAll } from './js/webnovel/ce/CreateTableSites';
+import { CreateTableRead } from './js/webnovel/ce/CreateTableRead';
 
 import { ReplaceText } from './js/ReplaceText';
 
@@ -221,11 +222,6 @@ async function CreateDivMain(_statusChapter, _cId = "") {
     // chapter
     let chapter = GetChapterId(BookChapters, _cId);
 
-    console.info(chapter);
-
-    // InputChapterNext
-    divHomeNextChapter.appendChild(InputChapterNext(BookInfo, BookChapters, chapter.Index));
-
 
     // H1IdGlava
     divHomeNextChapter.appendChild(H1IdGlava(chapter.Index, ChIndexLastLocked, ChLast.Index));
@@ -256,21 +252,22 @@ async function CreateDivMain(_statusChapter, _cId = "") {
         value: "Parsing"
     });
     inputParsing.addEventListener('click', async function () {
-        let crawlerTable = document.querySelector("#crawlerId");
-        if (crawlerTable !== null) {
+        let divTable = document.querySelector("#divTable");
+        if (divTable !== null) {
             if (_statusChapter === StatusChapter.PRIVATE) {
-                document.querySelector("#" + DivMain + "_" + _statusChapter).appendChild(crawlerTable);
+                document.querySelector("#" + DivMain + "_" + _statusChapter).appendChild(divTable);
             }
             else {
-                document.querySelector("#" + DivMain + "_" + _cId).appendChild(crawlerTable);
+                document.querySelector("#" + DivMain + "_" + _cId).appendChild(divTable);
             }
+
+            let crawlerTable = document.querySelector("#crawlerId");
             crawlerTable.setAttribute("cId", _cId);
             crawlerTable.hidden = false;
 
             //ParsingAll();
+            CheckTotalAll();
         }
-
-        CheckTotalAll();
     });
     divParsingReplaceGetText.appendChild(inputParsing);
 
@@ -322,11 +319,24 @@ async function CreateDivMain(_statusChapter, _cId = "") {
     divMain.appendChild(divParsingReplaceGetText);
 
 
-    // tableCrawler
-    if (document.querySelector("#crawlerId") === null) {
-        let tableCrawler = CreateTableSites(SitesAll, BookChapters);
+
+    // divTable
+    if (document.querySelector("#divTable") === null) {
+        let divTable = Object.assign(document.createElement("div"), {
+            id: "divTable",
+        });
+
+
+        divTable.appendChild(CreateTableRead(BookChapters, BookId));
+
+
+        // tableCrawler
+        let tableCrawler = CreateTableSites(SitesAll, BookChapters, BookId);
         tableCrawler.setAttribute("cId", _cId);
-        divMain.appendChild(tableCrawler);
+        divTable.appendChild(tableCrawler);
+
+
+        divMain.appendChild(divTable);
     }
 
     return divMain;
