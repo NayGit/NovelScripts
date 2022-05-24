@@ -6,7 +6,7 @@
 // @author      Nay
 // @match       https://m.webnovel.com/book/*/*
 // @grant       GM_xmlhttpRequest
-// @version     0.5.1
+// @version     0.5.2
 // ==/UserScript==
 
 'use strict';

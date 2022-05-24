@@ -1375,6 +1375,13 @@ async function GetChapterFetch(_url, _cId) {
         .catch(err => fetchCatch(err, this.siteSearch.href));
 }
 
+function RemoveTag(_parrent) {
+    let y = _parrent.querySelectorAll("y.sy-0");
+    for (let sy of y) {
+        sy.remove();
+    }
+}
+
 async function ArraySortOrder(_parrent) {
     let pCopy = _parrent;
     while (true) {
@@ -1390,6 +1397,8 @@ async function ArraySortOrder(_parrent) {
             }
         }
     }
+
+    RemoveTag(pCopy);
 
     let str = "";
     [].slice.call(pCopy.children).sort(function (a, b) {
@@ -1457,23 +1466,36 @@ async function ReplaceText(_bId, _cId) {
             var dict = {};
             let pReplace = document.querySelectorAll("#content-" + _cId + " > p");
 
+            let j = 0;
             for (let i in p2) {
-                let p2Array = p2[i].split('');
+                if (p2[i].trim() === "" && p2[i].trim() !== pReplace[j].textContent.trim()) {
+                    continue;
+                }
+
+                let p2Array = p2[i].trim().split('');
 
                 if (pReplace[i].classList.contains("_cfcmp")) {
                     pReplace[i].scrollIntoView({ behavior: "smooth" });
                     await new Promise(r => setTimeout(r, 750));
                 }
-                let contentChArray = (await ArraySortOrder(pReplace[i])).split('');
+                let contentChArray = (await ArraySortOrder(pReplace[j])).trim().split('');
 
-                for (let prop in p2Array) {
-                    dict[contentChArray[prop]] = p2Array[prop];
+                if (p2Array.lenght === contentChArray.lenght) {
+                    for (let prop in p2Array) {
+                        if (dict[contentChArray[prop]] === undefined) {
+                            dict[contentChArray[prop]] = p2Array[prop];
+                        }
+                    }
                 }
+
+                j++;
             }
             contentCheck.parentElement.querySelector("div.ChapterTitle_chapter_title_container__Wq5T8").scrollIntoView({ behavior: "smooth" });
 
             let p_cfnp = document.querySelectorAll("#content-" + _cId + " > p._cfnp");
             for (let p of p_cfnp) {
+                RemoveTag(p);
+
                 ReplaceSymbol(p, dict);
             }
 
@@ -4297,7 +4319,7 @@ function md5(d) { return rstr2hex(binl2rstr(binl_md5(rstr2binl(d), 8 * d.length)
 // @author      Nay
 // @match       https://m.webnovel.com/book/*/*
 // @grant       GM_xmlhttpRequest
-// @version     0.5.1
+// @version     0.5.2
 // ==/UserScript==
 
 
