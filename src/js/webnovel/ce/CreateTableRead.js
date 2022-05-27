@@ -12,22 +12,25 @@ export function CreateTableRead(_bookChapter, _bId) {
         let tB = tbl.createTBody();
     }
     else {
-        let ch = GetChapterIndex(_bookChapter, bookId[_bId]);
+        let ch = GetChapterIndex(_bookChapter, bookId[_bId].index);
 
         let tH = tbl.createTHead();
         let trH = tH.insertRow();
-        trH.style.fontWeight = "bold";
-        trH.style.fontStyle = "italic";
 
+        let tdType = trH.insertCell();
+        tdType.textContent = bookId[_bId].type;
 
         let tdIndex = trH.insertCell();
-        tdIndex.textContent = bookId[_bId];
+        tdIndex.textContent = bookId[_bId].index;
+        tdIndex.style.fontWeight = "bold";
 
         let tdName = trH.insertCell();
         tdName.textContent = ch.Name;
 
         let tdButton = trH.insertCell();
         tdButton.textContent = "Clear";
+        tdButton.style.fontWeight = "bold";
+        tdButton.style.fontStyle = "italic";
         tdButton.addEventListener('click', function () {
             clearReadLocal(_bookChapter, _bId);
         });
@@ -53,6 +56,9 @@ export function CreateTableReadReplace(_bookChapter, _bId, _index) {
                 tr.style.fontWeight = "bold";
             }
 
+            let tdType = tr.insertCell();
+            tdType.textContent = "";
+
             let tdIndex = tr.insertCell();
             tdIndex.textContent = ch.Index;
 
@@ -62,7 +68,7 @@ export function CreateTableReadReplace(_bookChapter, _bId, _index) {
             let tdButton = tr.insertCell();
             tdButton.textContent = "Save";
             tdButton.addEventListener('click', function () {
-                setReadLocal(_bookChapter, _bId, ch.Index);
+                setReadLocal(_bookChapter, _bId, ch.Index, "Parsing");
             });
         }
     }
@@ -79,26 +85,14 @@ function getReadLocal() {
     }
 }
 
-async function setReadLocal(_bookChapter, _bId, _index) {
+export async function setReadLocal(_bookChapter, _bId, _index, _type) {
     let bookId = getReadLocal();
 
-    bookId[_bId] = _index;
-    bookId = JSON.stringify(bookId);
-    localStorage.setItem("WebNovelRead", bookId);
-
-    //let tbl = document.querySelector("#crawlerRead")
-    //tbl.replaceWith(CreateTableRead(_bookChapter, _bId));
-    //document.querySelector("#crawlerRead").remove();
-    document.querySelector("#crawlerRead").hidden = true;
-    document.querySelector("#divTable").prepend(CreateTableRead(_bookChapter, _bId));
-
-    CheckTotalAll();
-}
-
-export function setReadLocalReplace(_bookChapter, _bId, _index) {
-    let bookId = getReadLocal();
-
-    bookId[_bId] = _index;
+    bookId[_bId] = {
+        type: _type,
+        index: _index
+    };
+    //bookId[_bId] = _index;
     bookId = JSON.stringify(bookId);
     localStorage.setItem("WebNovelRead", bookId);
 
@@ -130,5 +124,9 @@ async function clearReadLocal(_bookChapter, _bId) {
 export function ReadLocalTotal(_bId) {
     let bookId = getReadLocal();
 
-    return bookId[_bId];
+    if (bookId[_bId] === undefined) {
+        return bookId[_bId]
+    }
+
+    return bookId[_bId].index;
 }

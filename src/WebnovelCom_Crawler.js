@@ -8,7 +8,7 @@
 // @match       https://m.webnovel.com/book/*/*
 // @match       https://passport.webnovel.com/emaillogin.html*
 // @grant       GM_xmlhttpRequest
-// @version     0.6.1
+// @version     0.6.2
 // ==/UserScript==
 
 'use strict';
@@ -19,7 +19,7 @@ import { downloadBookIfno, downloadBookChapters, glavaWebNovel, GetChapterId, Ge
 import { CreateLogin } from './js/webnovel/ce/Login'
 import { DivPanel, InputDivPanelHide, InputBookInfo, H1IdGlava } from './js/webnovel/ce/DivPanel';
 import { CreateTableSites, CheckTotalAll, ParsingAll } from './js/webnovel/ce/CreateTableSites';
-import { CreateTableRead, setReadLocalReplace } from './js/webnovel/ce/CreateTableRead';
+import { CreateTableRead, setReadLocal } from './js/webnovel/ce/CreateTableRead';
 
 import { ReplaceText } from './js/ReplaceText';
 
@@ -286,7 +286,13 @@ async function CreateDivMain(_statusChapter, _cId = "") {
         await ReplaceText(BookId, _cId);
         this.hidden = true;
 
-        setReadLocalReplace(BookChapters, BookId, chapter.Index);
+        let nick = document.querySelector("dialog header > div > i > img");
+        if (nick) {
+            setReadLocal(BookChapters, BookId, chapter.Index, nick.alt);
+        }
+        else {
+            setReadLocal(BookChapters, BookId, chapter.Index, "");
+        }
     });
     divParsingReplaceGetText.appendChild(inputReplace);
 
