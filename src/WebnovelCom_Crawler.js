@@ -8,7 +8,7 @@
 // @match       https://m.webnovel.com/book/*/*
 // @match       https://passport.webnovel.com/emaillogin.html*
 // @grant       GM_xmlhttpRequest
-// @version     0.6.0
+// @version     0.6.1
 // ==/UserScript==
 
 'use strict';
@@ -359,9 +359,9 @@ var ChLast = "";
 var ChIndexLastLocked = "";
 
 (async function () {
-    if (location.href === 'https://m.webnovel.com/') {
+    if (location.origin === 'https://m.webnovel.com' && location.pathname === "/") {
         let lpR = localStorage.getItem("WebNovel_LP_r");
-        if (lpR !== undefined) {
+        if (lpR !== null) {
             localStorage.removeItem("WebNovel_LP_r");
             document.location.replace("https://passport.webnovel.com/emaillogin.html?returnurl=" + lpR);
         }
