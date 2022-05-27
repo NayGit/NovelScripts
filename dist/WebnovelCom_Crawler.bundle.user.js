@@ -819,6 +819,122 @@ function GetIndexLastChapterLock(_bookChapters) {
 
     return _bookChapters.Data.Chapters[_bookChapters.Data.Chapters.length - 1].Index;
 }
+;// CONCATENATED MODULE: ./src/js/webnovel/ce/Login.js
+function CreateLogin() {
+    let tmpF = document.querySelector("#step1");
+
+
+    let divLogin = Object.assign(document.createElement("div"), {
+        id: "divLogin",
+    });
+
+
+    let select = Object.assign(document.createElement("select"), {
+        id: "sLogin",
+        size: 0
+    });
+    select.addEventListener("change", function () {
+        setLP(this.options[this.selectedIndex].text);
+    });
+    divLogin.appendChild(select);
+
+
+    let bAdd = Object.assign(document.createElement("input"), {
+        type: "button",
+        value: "Add"
+    });
+    bAdd.addEventListener("click", function () {
+        setLoginLocal(document.querySelector("#email").value, document.querySelector("input._int.loginPass").value);
+    });
+    divLogin.appendChild(bAdd);
+
+
+    let bRemove = Object.assign(document.createElement("input"), {
+        type: "button",
+        value: "Remove"
+    });
+    bRemove.addEventListener("click", function () {
+        let tmpS = document.querySelector("#sLogin");
+        delLoginLocal(tmpS.options[tmpS.options.selectedIndex].text);
+        //tmpS.remove(tmpS.options.selectedIndex);
+    });
+    divLogin.appendChild(bRemove);
+
+
+    tmpF.before(divLogin);
+
+
+    UpdateSelect();
+
+
+    let tmpP = document.querySelector("input._int.loginPass");
+    tmpP.type = "text";
+}
+
+function UpdateSelect() {
+    let lp = getLoginLocal();
+
+    let tmpS = document.querySelector("#sLogin");
+    while (tmpS.options.length > 0) {
+        tmpS.remove(0);
+    } 
+
+    for (let tmpLP in lp) {
+        tmpS.add(new Option(tmpLP, tmpLP));
+    }
+
+    tmpS.size = tmpS.options.length;
+
+    for (let l in lp) {
+        setLP(l);
+        break;
+    }
+}
+
+function setLP(_l) {
+    let tmpL = document.querySelector("#email");
+    tmpL.value = _l;
+
+    let tmpP = document.querySelector("input._int.loginPass");
+    tmpP.value = getPass(_l);
+}
+
+function getLoginLocal() {
+    let lp = localStorage.getItem("WebNovel_LP");
+
+    if (lp) {
+        return JSON.parse(lp);
+    }
+    else {
+        return {};
+    }
+}
+
+function setLoginLocal(_l, _p) {
+    let lp = getLoginLocal();
+
+    lp[_l] = _p;
+    lp = JSON.stringify(lp);
+    localStorage.setItem("WebNovel_LP", lp);
+
+    UpdateSelect();
+
+    setLP(_l);
+}
+
+function delLoginLocal(_l) {
+    let lp = getLoginLocal();
+
+    delete lp[_l];
+    lp = JSON.stringify(lp);
+    localStorage.setItem("WebNovel_LP", lp);
+
+    UpdateSelect();
+}
+
+function getPass(_l) {
+    return getLoginLocal()[_l];
+}
 ;// CONCATENATED MODULE: ./src/js/webnovel/ce/DivPanel.js
 function DivPanel(_id, _class) {
     return Object.assign(document.createElement("div"), {
@@ -870,6 +986,25 @@ function H1IdGlava(_chStart, _chLastLocked, _chStop) {
     else {
         tmpText = _chStart + " / " + _chLastLocked + " / " + _chStop;
     }
+
+    let tmpH1 = Object.assign(document.createElement("h1"), {
+        className: "idGlava",
+        textContent: tmpText    
+    });
+    tmpH1.addEventListener("click", async function () {
+        document.querySelector("#qd-report-root > div > dialog").open = true;
+
+
+        await new Promise(r => setTimeout(r, 500));
+        document.querySelector("#qd-report-root > div > dialog > div.pa.l0.w100\\%.t0.styles_header__2mIzb > header > div > i > img").click();
+
+        await new Promise(r => setTimeout(r, 1000));
+
+        localStorage.setItem("WebNovel_LP_r", location.href);
+        document.querySelector("button.g_id_signout").click();
+    });
+
+    return tmpH1;
 
     return Object.assign(document.createElement("h1"), {
         className: "idGlava",
@@ -1068,6 +1203,22 @@ function getReadLocal() {
 }
 
 async function setReadLocal(_bookChapter, _bId, _index) {
+    let bookId = getReadLocal();
+
+    bookId[_bId] = _index;
+    bookId = JSON.stringify(bookId);
+    localStorage.setItem("WebNovelRead", bookId);
+
+    //let tbl = document.querySelector("#crawlerRead")
+    //tbl.replaceWith(CreateTableRead(_bookChapter, _bId));
+    //document.querySelector("#crawlerRead").remove();
+    document.querySelector("#crawlerRead").hidden = true;
+    document.querySelector("#divTable").prepend(CreateTableRead(_bookChapter, _bId));
+
+    CheckTotalAll();
+}
+
+function setReadLocalReplace(_bookChapter, _bId, _index) {
     let bookId = getReadLocal();
 
     bookId[_bId] = _index;
@@ -4317,10 +4468,13 @@ function md5(d) { return rstr2hex(binl2rstr(binl_md5(rstr2binl(d), 8 * d.length)
 // @icon        https://github.com/NayGit/NovelScripts/raw/master/icon.png
 // @supportURL  https://github.com/NayGit/NovelScripts/issues
 // @author      Nay
+// @match       https://m.webnovel.com/
 // @match       https://m.webnovel.com/book/*/*
+// @match       https://passport.webnovel.com/emaillogin.html*
 // @grant       GM_xmlhttpRequest
-// @version     0.5.2
+// @version     0.6.0
 // ==/UserScript==
+
 
 
 
@@ -4595,6 +4749,8 @@ async function CreateDivMain(_statusChapter, _cId = "") {
         this.disabled = true;
         await ReplaceText(BookId, _cId);
         this.hidden = true;
+
+        setReadLocalReplace(BookChapters, BookId, chapter.Index);
     });
     divParsingReplaceGetText.appendChild(inputReplace);
 
@@ -4667,7 +4823,23 @@ var ChLast = "";
 var ChIndexLastLocked = "";
 
 (async function () {
-    'use strict';
+    if (location.href === 'https://m.webnovel.com/') {
+        let lpR = localStorage.getItem("WebNovel_LP_r");
+        if (lpR !== undefined) {
+            localStorage.removeItem("WebNovel_LP_r");
+            document.location.replace("https://passport.webnovel.com/emaillogin.html?returnurl=" + lpR);
+        }
+
+        return;
+    }
+    else if (location.href.indexOf('passport.webnovel.com/emaillogin.html') != -1) {
+        await new Promise(r => setTimeout(r, 2500));
+
+        CreateLogin();
+
+        return;
+    }
+
     BookInfo = await downloadBookIfno(location);
     console.info(BookInfo);
 

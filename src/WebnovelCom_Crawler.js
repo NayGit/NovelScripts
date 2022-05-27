@@ -4,9 +4,11 @@
 // @icon        https://github.com/NayGit/NovelScripts/raw/master/icon.png
 // @supportURL  https://github.com/NayGit/NovelScripts/issues
 // @author      Nay
+// @match       https://m.webnovel.com/
 // @match       https://m.webnovel.com/book/*/*
+// @match       https://passport.webnovel.com/emaillogin.html*
 // @grant       GM_xmlhttpRequest
-// @version     0.5.2
+// @version     0.6.0
 // ==/UserScript==
 
 'use strict';
@@ -14,9 +16,10 @@
 import './css/webnovel.css'
 
 import { downloadBookIfno, downloadBookChapters, glavaWebNovel, GetChapterId, GetChapterName, GetChapterLast, GetIndexLastChapterLock, GetChapterIndex } from './js/webNovel';
+import { CreateLogin } from './js/webnovel/ce/Login'
 import { DivPanel, InputDivPanelHide, InputBookInfo, H1IdGlava } from './js/webnovel/ce/DivPanel';
 import { CreateTableSites, CheckTotalAll, ParsingAll } from './js/webnovel/ce/CreateTableSites';
-import { CreateTableRead } from './js/webnovel/ce/CreateTableRead';
+import { CreateTableRead, setReadLocalReplace } from './js/webnovel/ce/CreateTableRead';
 
 import { ReplaceText } from './js/ReplaceText';
 
@@ -282,6 +285,8 @@ async function CreateDivMain(_statusChapter, _cId = "") {
         this.disabled = true;
         await ReplaceText(BookId, _cId);
         this.hidden = true;
+
+        setReadLocalReplace(BookChapters, BookId, chapter.Index);
     });
     divParsingReplaceGetText.appendChild(inputReplace);
 
@@ -354,7 +359,23 @@ var ChLast = "";
 var ChIndexLastLocked = "";
 
 (async function () {
-    'use strict';
+    if (location.href === 'https://m.webnovel.com/') {
+        let lpR = localStorage.getItem("WebNovel_LP_r");
+        if (lpR !== undefined) {
+            localStorage.removeItem("WebNovel_LP_r");
+            document.location.replace("https://passport.webnovel.com/emaillogin.html?returnurl=" + lpR);
+        }
+
+        return;
+    }
+    else if (location.href.indexOf('passport.webnovel.com/emaillogin.html') != -1) {
+        await new Promise(r => setTimeout(r, 2500));
+
+        CreateLogin();
+
+        return;
+    }
+
     BookInfo = await downloadBookIfno(location);
     console.info(BookInfo);
 

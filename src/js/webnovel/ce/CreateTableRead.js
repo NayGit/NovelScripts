@@ -95,6 +95,22 @@ async function setReadLocal(_bookChapter, _bId, _index) {
     CheckTotalAll();
 }
 
+export function setReadLocalReplace(_bookChapter, _bId, _index) {
+    let bookId = getReadLocal();
+
+    bookId[_bId] = _index;
+    bookId = JSON.stringify(bookId);
+    localStorage.setItem("WebNovelRead", bookId);
+
+    //let tbl = document.querySelector("#crawlerRead")
+    //tbl.replaceWith(CreateTableRead(_bookChapter, _bId));
+    //document.querySelector("#crawlerRead").remove();
+    document.querySelector("#crawlerRead").hidden = true;
+    document.querySelector("#divTable").prepend(CreateTableRead(_bookChapter, _bId));
+
+    CheckTotalAll();
+}
+
 async function clearReadLocal(_bookChapter, _bId) {
     let bookId = getReadLocal();
 

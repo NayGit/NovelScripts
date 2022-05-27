@@ -49,6 +49,25 @@ export function H1IdGlava(_chStart, _chLastLocked, _chStop) {
         tmpText = _chStart + " / " + _chLastLocked + " / " + _chStop;
     }
 
+    let tmpH1 = Object.assign(document.createElement("h1"), {
+        className: "idGlava",
+        textContent: tmpText    
+    });
+    tmpH1.addEventListener("click", async function () {
+        document.querySelector("#qd-report-root > div > dialog").open = true;
+
+
+        await new Promise(r => setTimeout(r, 500));
+        document.querySelector("#qd-report-root > div > dialog > div.pa.l0.w100\\%.t0.styles_header__2mIzb > header > div > i > img").click();
+
+        await new Promise(r => setTimeout(r, 1000));
+
+        localStorage.setItem("WebNovel_LP_r", location.href);
+        document.querySelector("button.g_id_signout").click();
+    });
+
+    return tmpH1;
+
     return Object.assign(document.createElement("h1"), {
         className: "idGlava",
         textContent: tmpText    
