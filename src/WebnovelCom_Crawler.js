@@ -8,20 +8,19 @@
 // @match       https://m.webnovel.com/book/*/*
 // @match       https://passport.webnovel.com/emaillogin.html*
 // @grant       GM_xmlhttpRequest
-// @version     0.6.2
+// @version     0.6.3
 // ==/UserScript==
 
 'use strict';
 
 import './css/webnovel.css'
 
-import { downloadBookIfno, downloadBookChapters, glavaWebNovel, GetChapterId, GetChapterName, GetChapterLast, GetIndexLastChapterLock, GetChapterIndex } from './js/webNovel';
-import { CreateLogin } from './js/webnovel/ce/Login'
-import { DivPanel, InputDivPanelHide, InputBookInfo, H1IdGlava } from './js/webnovel/ce/DivPanel';
-import { CreateTableSites, CheckTotalAll, ParsingAll } from './js/webnovel/ce/CreateTableSites';
-import { CreateTableRead, setReadLocal } from './js/webnovel/ce/CreateTableRead';
+import { DivMainId, StatusChapter, LS_Login_R } from './js/variable/crawler'
 
-import { ReplaceText } from './js/ReplaceText';
+import { downloadBookIfno, downloadBookChapters, GetChapterLast, GetIndexLastChapterLock } from './js/webNovel';
+import { CreateLogin } from './js/webnovel/ce/Login'
+import { CreateDivMain } from './js/webnovel/ce/CreateDivMain';
+
 
 // 2fetch/apiSearch
 //    artBook
@@ -103,7 +102,7 @@ import fastnovelNet from './js/parsers/search/fastnovelNet';
 import novelgateNet from './js/parsers/search/novelgateNet';
 import ranobesNet from './js/parsers/search/ranobesNet';
 
-const SitesAll = [
+const SitesParser = [
     [
         new lightnovelplusCom(),
     ],
@@ -195,180 +194,19 @@ const SitesAll = [
 
 // GetText
 import g_lightnovelplusCom from './js/getText/g_lightnovelplusCom';
-var GetTextAll = new g_lightnovelplusCom();
 
-async function CreateDivMain(_statusChapter, _cId = "") {
-    // divMain
-    let divMain;
-    if (_statusChapter === StatusChapter.PRIVATE) {
-        divMain = DivPanel(DivMain + "_" + _statusChapter, _statusChapter);
+const SitesGetText = [
+    [
+        new g_lightnovelplusCom(),
+    ]
+];
 
-        _cId = glavaWebNovel(location);
-        
-        if (GetChapterId(BookChapters, _cId).Index <= ChIndexLastLocked) {
-            _cId = BookChapters.Data.PrivilegeInfo[0].Id;
-        }
-    }
-    else {
-        divMain = DivPanel(DivMain + "_" + _cId, _statusChapter);
-    }
-
-    // divHomeNextChapter
-    let divHomeNextChapter = Object.assign(document.createElement("div"), {
-        className: "HomeNextChapter",
-    });
-
-    // InputBookInfo
-    divHomeNextChapter.appendChild(InputBookInfo(BookId));
-
-
-    // chapter
-    let chapter = GetChapterId(BookChapters, _cId);
-
-
-    // H1IdGlava
-    divHomeNextChapter.appendChild(H1IdGlava(chapter.Index, ChIndexLastLocked, ChLast.Index));
-
-
-    // add HomeNextChapter
-    divMain.appendChild(divHomeNextChapter);
-
-
-    //// Check "The End"
-    //if (_cId === BookInfo.data.lastChapterItem.chapterId) {
-    //    let tmpH1 = document.createElement("h1");
-    //    tmpH1.textContent = "The End";
-    //    divMain.appendChild(tmpH1);
-    //    return divMain;
-    //}
-
-
-    // divHomeNextChapter
-    let divParsingReplaceGetText = Object.assign(document.createElement("div"), {
-        className: "ParsingReplaceGetText",
-    });
-
-
-    // inputParsing
-    let inputParsing = Object.assign(document.createElement("input"), {
-        type: "button",
-        value: "Parsing"
-    });
-    inputParsing.addEventListener('click', async function () {
-        let divTable = document.querySelector("#divTable");
-        if (divTable !== null) {
-            if (_statusChapter === StatusChapter.PRIVATE) {
-                document.querySelector("#" + DivMain + "_" + _statusChapter).appendChild(divTable);
-            }
-            else {
-                document.querySelector("#" + DivMain + "_" + _cId).appendChild(divTable);
-            }
-
-            let crawlerTable = document.querySelector("#crawlerId");
-            crawlerTable.setAttribute("cId", _cId);
-            crawlerTable.hidden = false;
-
-            //ParsingAll();
-            CheckTotalAll();
-        }
-    });
-    divParsingReplaceGetText.appendChild(inputParsing);
-
-
-    // inputReplace
-    let inputReplace = Object.assign(document.createElement("input"), {
-        className: "replace",
-        type: "button",
-        value: "Replace"
-    });
-    inputReplace.addEventListener('click', async function () {
-        this.disabled = true;
-        await ReplaceText(BookId, _cId);
-        this.hidden = true;
-
-        let nick = document.querySelector("dialog header > div > i > img");
-        if (nick) {
-            setReadLocal(BookChapters, BookId, chapter.Index, nick.alt);
-        }
-        else {
-            setReadLocal(BookChapters, BookId, chapter.Index, "");
-        }
-    });
-    divParsingReplaceGetText.appendChild(inputReplace);
-
-
-    // inputGetText
-    let inputGetText = Object.assign(document.createElement("input"), {
-        className: "gettext",
-        type: "button",
-        value: GetTextAll.lastChapterIndex === -99999 ? "GetText" : "GetText: " + GetTextAll.lastChapterIndex
-    });
-    inputGetText.addEventListener('click', async function () {
-        this.disabled = true;
-        let tmpN = await GetTextAll.GetText(_cId, chapter.Name);
-
-        if (tmpN === -1) {
-            return;
-        }
-
-        if (GetTextAll.lastChapterIndex === -99999 && GetTextAll.lastChapterTitle !== "") {
-            GetTextAll.lastChapterIndex = GetChapterName(BookChapters, GetTextAll.lastChapterTitle).Index;
-            for (let gt of document.querySelectorAll("input.gettext")) {
-                gt.value = "GetText: " + GetTextAll.lastChapterIndex;
-            }
-        }
-
-        if (tmpN === -2) {
-            this.disabled = false;
-            return;
-        }
-    });
-    divParsingReplaceGetText.appendChild(inputGetText);
-
-
-    // add ParsingReplaceGetText
-    divMain.appendChild(divParsingReplaceGetText);
-
-
-
-    // divTable
-    if (document.querySelector("#divTable") === null) {
-        let divTable = Object.assign(document.createElement("div"), {
-            id: "divTable",
-        });
-
-
-        divTable.appendChild(CreateTableRead(BookChapters, BookId));
-
-
-        // tableCrawler
-        let tableCrawler = CreateTableSites(SitesAll, BookChapters, BookId);
-        tableCrawler.setAttribute("cId", _cId);
-        divTable.appendChild(tableCrawler);
-
-
-        divMain.appendChild(divTable);
-    }
-
-    return divMain;
-}
-
-var BookInfo;
-var BookTitle;
-var BookId;
-
-var BookChapters;
-
-const DivMain = "divMain";
-const StatusChapter = { LOCKED: 'locked', UNLOCKED: 'unlocked', FREE: 'free', PRIVATE: 'private' };
-var ChLast = "";
-var ChIndexLastLocked = "";
 
 (async function () {
     if (location.origin === 'https://m.webnovel.com' && location.pathname === "/") {
-        let lpR = localStorage.getItem("WebNovel_LP_r");
+        let lpR = localStorage.getItem(LS_Login_R);
         if (lpR !== null) {
-            localStorage.removeItem("WebNovel_LP_r");
+            localStorage.removeItem(LS_Login_R);
             document.location.replace("https://passport.webnovel.com/emaillogin.html?returnurl=" + lpR);
         }
 
@@ -382,16 +220,16 @@ var ChIndexLastLocked = "";
         return;
     }
 
-    BookInfo = await downloadBookIfno(location);
+    let BookInfo = await downloadBookIfno(location);
     console.info(BookInfo);
 
-    BookTitle = BookInfo.data.bookInfo.bookName;
+    let BookTitle = BookInfo.data.bookInfo.bookName;
     console.info(BookTitle);
 
-    BookId = BookInfo.data.bookInfo.bookId;
+    let BookId = BookInfo.data.bookInfo.bookId;
     console.info(BookId);
 
-    for (let sites of SitesAll) {
+    for (let sites of SitesParser) {
         for (let site of sites) {
             site.bId = BookId;
             site.bTitle = BookTitle;
@@ -399,29 +237,33 @@ var ChIndexLastLocked = "";
         }
     }
 
-    GetTextAll.bId = BookId;
-    GetTextAll.bTitle = BookTitle;
+    for (let sites of SitesGetText) {
+        for (let site of sites) {
+            site.bId = BookId;
+            site.bTitle = BookTitle;
+        }
+    }
 
-    BookChapters = await downloadBookChapters(location);
+    let BookChapters = await downloadBookChapters(location);
 
-    ChLast = GetChapterLast(BookChapters);
-    ChIndexLastLocked = GetIndexLastChapterLock(BookChapters);
+    let ChLast = GetChapterLast(BookChapters);
+    let ChIndexLastLocked = GetIndexLastChapterLock(BookChapters);
 
     while (true) {
         let contents = document.querySelectorAll("div.pr > div > div.styles_content__3tuD4");
         for (let c of contents) {
             let chapterId = c.id.match(/^content-(\d+)$/);
-            if (chapterId && c.parentElement.querySelector("#" + DivMain + "_" + chapterId[1]) === null) {
+            if (chapterId && c.parentElement.querySelector(DivMainId + "_" + chapterId[1]) === null) {
                 c.translate = false;
 
-                let divMain = await CreateDivMain(StatusChapter.LOCKED, chapterId[1]);
+                let divMain = await CreateDivMain(SitesParser, SitesGetText, BookChapters, BookId, ChLast, ChIndexLastLocked, StatusChapter.LOCKED, chapterId[1]);
 
                 let contentTitle = c.parentElement.querySelector("div.ChapterTitle_chapter_title_container__Wq5T8");
                 contentTitle.after(divMain);
             }
-            else {
-                console.warn("Copy");
-            }
+            //else {
+            //    console.warn("Copy");
+            //}
         }
 
         let contentsUnlocked = document.querySelectorAll("div.pr > div > div.styles_content__3tuD4:not(.styles_locked_content__16dUX)");
@@ -443,8 +285,8 @@ var ChIndexLastLocked = "";
         }
 
         let contentsPrivate = document.querySelector("div.pr > div > div.styles_last_chapter_footer__SPOMm");
-        if (contentsPrivate !== null && contentsPrivate.querySelector("#" + DivMain + "_" + StatusChapter.PRIVATE) === null) {
-            let divMain = await CreateDivMain(StatusChapter.PRIVATE);
+        if (contentsPrivate !== null && contentsPrivate.querySelector(DivMainId + "_" + StatusChapter.PRIVATE) === null) {
+            let divMain = await CreateDivMain(SitesParser, SitesGetText, BookChapters, BookId, ChLast, ChIndexLastLocked, StatusChapter.PRIVATE);
             contentsPrivate.prepend(divMain);
         }
 
@@ -459,7 +301,7 @@ var ChIndexLastLocked = "";
         console.log('webnovel.com');
 
         if (Loc.href.indexOf('webnovel.com/book/') != -1 && Loc.pathname.split('/').length == 4) {
-            var d = DivPanel();
+            //var d = DivPanel();
 
             if (Loc.href.endsWith('/catalog')) {
                 console.log('*/book/*/catalog');

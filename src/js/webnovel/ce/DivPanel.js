@@ -1,3 +1,6 @@
+import { LS_Login_R } from '../../variable/crawler'
+
+
 export function DivPanel(_id, _class) {
     return Object.assign(document.createElement("div"), {
         id: _id,
@@ -62,7 +65,7 @@ export function H1IdGlava(_chStart, _chLastLocked, _chStop) {
 
         await new Promise(r => setTimeout(r, 1000));
 
-        localStorage.setItem("WebNovel_LP_r", location.href);
+        localStorage.setItem(LS_Login_R, location.href);
         document.querySelector("button.g_id_signout").click();
     });
 
