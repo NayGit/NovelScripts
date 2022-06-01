@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "Domain/*": [ "./src/js/Domain/*" ],
+
+      "Crawler/*": [ "./src/js/Crawler/*" ],
+      "CrawlerClass/*": [ "./src/js/Crawler/class/*" ],
+      "CrawlerHtml/*": [ "./src/js/Crawler/html/*" ],
+      "CrawlerVariable/*": [ "./src/js/Crawler/variable/*" ],
+
+      "Tag/*": [ "./src/js/Tag/*" ]
+    }
+  },
+  "exclude": [ "node_modules" ]
+}

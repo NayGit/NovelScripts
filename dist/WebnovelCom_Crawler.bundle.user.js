@@ -2,7 +2,7 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 286:
+/***/ 184:
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
@@ -595,9 +595,9 @@ var insertStyleElement_default = /*#__PURE__*/__webpack_require__.n(insertStyleE
 // EXTERNAL MODULE: ./node_modules/style-loader/dist/runtime/styleTagTransform.js
 var styleTagTransform = __webpack_require__(589);
 var styleTagTransform_default = /*#__PURE__*/__webpack_require__.n(styleTagTransform);
-// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js!./src/css/webnovel.css
-var webnovel = __webpack_require__(286);
-;// CONCATENATED MODULE: ./src/css/webnovel.css
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js!./src/css/crawler.css
+var crawler = __webpack_require__(184);
+;// CONCATENATED MODULE: ./src/css/crawler.css
 
       
       
@@ -619,23 +619,36 @@ options.setAttributes = (setAttributesWithoutAttributes_default());
 options.domAPI = (styleDomAPI_default());
 options.insertStyleElement = (insertStyleElement_default());
 
-var update = injectStylesIntoStyleTag_default()(webnovel/* default */.Z, options);
+var update = injectStylesIntoStyleTag_default()(crawler/* default */.Z, options);
 
 
 
 
-       /* harmony default export */ const css_webnovel = (webnovel/* default */.Z && webnovel/* default.locals */.Z.locals ? webnovel/* default.locals */.Z.locals : undefined);
+       /* harmony default export */ const css_crawler = (crawler/* default */.Z && crawler/* default.locals */.Z.locals ? crawler/* default.locals */.Z.locals : undefined);
 
-;// CONCATENATED MODULE: ./src/js/domain.js
+;// CONCATENATED MODULE: ./src/js/Crawler/variable/Variable.js
+// DivMain
+const DivMain = "divMain";
+const DivMainId = "#" + DivMain;
 
+const StatusChapter = { LOCKED: 'locked', UNLOCKED: 'unlocked', FREE: 'free', PRIVATE: 'private' };
 
+// 
+const LS_Login_R = "WebNovel_Login_R";
+
+// Login
+const SelectLogin = "sLogin";
+const SelectLoginId = "#" + SelectLogin;
+
+const LS_Login_LP = "WebNovel_Login_LP";
+;// CONCATENATED MODULE: ./src/js/Domain/FetchResult.js
 async function ResponseToHTML(response) {
-        let bodyText = await response.text();
+    let bodyText = await response.text();
 
-        let parser = new DOMParser();
-        let bodyHtml = parser.parseFromString(bodyText, 'text/html');
+    let parser = new DOMParser();
+    let bodyHtml = parser.parseFromString(bodyText, 'text/html');
 
-        return bodyHtml;
+    return bodyHtml;
 }
 
 function fetchStatusHTML(response) {
@@ -667,48 +680,7 @@ function fetchCatch(_error, _site) {
     console.warn(_error);
     return "Err";
 }
-
-function ReplaceName(name) {
-    return name.toLowerCase().replaceAll(' ', '-').replaceAll(/"/g, 'quot').replaceAll(/[.?!)(,:'\[\]]/g, '');
-}
-
-function copytext(el) {
-    /*
-        var $tmp = $("<textarea>");
-        $("body").append($tmp);
-        $tmp.val($(el).text()).select();
-        document.execCommand("copy");
-        $tmp.remove();
-    */
-}
-
-function copyHtml(el) {
-    //document.ondragstart =
-    //    document.onselectstart =
-    //    document.oncontextmenu =
-    //    document.body.oncontextmenu =
-    //    document.body.onkeydown =
-    //    () => true;
-
-    console.log("asdasdasda" + el);
-    var tmp = document.createElement("textarea");
-    tmp.id = "copyTextarea";
-    tmp.value = el;
-    document.getElementsByTagName("body")[0].append(tmp);
-
-    var copyTextarea = document.getElementById("copyTextarea");
-    copyTextarea.focus();
-    copyTextarea.select();
-
-    try {
-        var successful = document.execCommand('copy');
-        var msg = successful ? 'successful' : 'unsuccessful';
-        console.log('Copying text command was ' + msg);
-    } catch (err) {
-        console.log('Oops, unable to copy');
-    }
-}
-;// CONCATENATED MODULE: ./src/js/webNovel.js
+;// CONCATENATED MODULE: ./src/js/Domain/webNovel.js
 
 
 // ���������� ���� � ��������� name. ��� undefined, ���� ������ �� �������
@@ -819,18 +791,19 @@ function GetIndexLastChapterLock(_bookChapters) {
 
     return _bookChapters.Data.Chapters[_bookChapters.Data.Chapters.length - 1].Index;
 }
-;// CONCATENATED MODULE: ./src/js/webnovel/ce/Login.js
+;// CONCATENATED MODULE: ./src/js/Crawler/html/Login.js
+
+
 function CreateLogin() {
-    let tmpF = document.querySelector("#step1");
-
-
+    // divLogin
     let divLogin = Object.assign(document.createElement("div"), {
         id: "divLogin",
     });
 
 
+    // SelectLogin
     let select = Object.assign(document.createElement("select"), {
-        id: "sLogin",
+        id: SelectLogin,
         size: 0
     });
     select.addEventListener("change", function () {
@@ -839,6 +812,7 @@ function CreateLogin() {
     divLogin.appendChild(select);
 
 
+    // Add
     let bAdd = Object.assign(document.createElement("input"), {
         type: "button",
         value: "Add"
@@ -849,18 +823,19 @@ function CreateLogin() {
     divLogin.appendChild(bAdd);
 
 
+    // Remove
     let bRemove = Object.assign(document.createElement("input"), {
         type: "button",
         value: "Remove"
     });
     bRemove.addEventListener("click", function () {
-        let tmpS = document.querySelector("#sLogin");
+        let tmpS = document.querySelector(SelectLoginId);
         delLoginLocal(tmpS.options[tmpS.options.selectedIndex].text);
-        //tmpS.remove(tmpS.options.selectedIndex);
     });
     divLogin.appendChild(bRemove);
 
 
+    let tmpF = document.querySelector("#step1");
     tmpF.before(divLogin);
 
 
@@ -874,7 +849,7 @@ function CreateLogin() {
 function UpdateSelect() {
     let lp = getLoginLocal();
 
-    let tmpS = document.querySelector("#sLogin");
+    let tmpS = document.querySelector(SelectLoginId);
     while (tmpS.options.length > 0) {
         tmpS.remove(0);
     } 
@@ -900,7 +875,7 @@ function setLP(_l) {
 }
 
 function getLoginLocal() {
-    let lp = localStorage.getItem("WebNovel_LP");
+    let lp = localStorage.getItem(LS_Login_LP);
 
     if (lp) {
         return JSON.parse(lp);
@@ -915,7 +890,7 @@ function setLoginLocal(_l, _p) {
 
     lp[_l] = _p;
     lp = JSON.stringify(lp);
-    localStorage.setItem("WebNovel_LP", lp);
+    localStorage.setItem(LS_Login_LP, lp);
 
     UpdateSelect();
 
@@ -927,7 +902,7 @@ function delLoginLocal(_l) {
 
     delete lp[_l];
     lp = JSON.stringify(lp);
-    localStorage.setItem("WebNovel_LP", lp);
+    localStorage.setItem(LS_Login_LP, lp);
 
     UpdateSelect();
 }
@@ -935,7 +910,10 @@ function delLoginLocal(_l) {
 function getPass(_l) {
     return getLoginLocal()[_l];
 }
-;// CONCATENATED MODULE: ./src/js/webnovel/ce/DivPanel.js
+;// CONCATENATED MODULE: ./src/js/Crawler/html/book/DivPanel.js
+
+
+
 function DivPanel(_id, _class) {
     return Object.assign(document.createElement("div"), {
         id: _id,
@@ -1000,7 +978,7 @@ function H1IdGlava(_chStart, _chLastLocked, _chStop) {
 
         await new Promise(r => setTimeout(r, 1000));
 
-        localStorage.setItem("WebNovel_LP_r", location.href);
+        localStorage.setItem(LS_Login_R, location.href);
         document.querySelector("button.g_id_signout").click();
     });
 
@@ -1011,7 +989,7 @@ function H1IdGlava(_chStart, _chLastLocked, _chStop) {
         textContent: tmpText    
     });
 }
-;// CONCATENATED MODULE: ./src/js/parser.js
+;// CONCATENATED MODULE: ./src/js/Crawler/class/ParserClass.js
 //console.info(this.constructor.name);
 
 class Parser {
@@ -1120,7 +1098,7 @@ class ParserChapter extends ParserBook {
         this.endUrl = "";
     }
 }
-;// CONCATENATED MODULE: ./src/js/webnovel/ce/CreateTableRead.js
+;// CONCATENATED MODULE: ./src/js/Crawler/html/book/CreateTableRead.js
 
 
 
@@ -1253,7 +1231,7 @@ function ReadLocalTotal(_bId) {
 
     return bookId[_bId].index;
 }
-;// CONCATENATED MODULE: ./src/js/webnovel/ce/CreateTableSites.js
+;// CONCATENATED MODULE: ./src/js/Crawler/html/book/CreateTableSites.js
 
 
 
@@ -1444,7 +1422,7 @@ function ParsingAll() {
         p.click();
     }
 }
-;// CONCATENATED MODULE: ./src/js/ReplaceText.js
+;// CONCATENATED MODULE: ./src/js/Crawler/ReplaceText.js
 
 
 
@@ -1699,7 +1677,178 @@ async function ReplaceText(_bId, _cId) {
         return -1;
     }
 }
-;// CONCATENATED MODULE: ./src/js/StringProcent/tanimoto.js
+;// CONCATENATED MODULE: ./src/js/Crawler/html/book/CreateDivMain.js
+
+
+
+
+
+
+
+
+
+
+
+async function CreateDivMain(_sitesParser, _sitesGetText, _bookChapters, _bookId, _chLast, _chIndexLastLocked, _statusChapter, _cId = "") {
+    // divMain
+    let divMain;
+
+
+    if (_statusChapter === StatusChapter.PRIVATE) {
+        divMain = DivPanel(DivMain + "_" + _statusChapter, _statusChapter);
+
+        _cId = glavaWebNovel(location);
+
+        if (GetChapterId(_bookChapters, _cId).Index <= _chIndexLastLocked) {
+            _cId = _bookChapters.Data.PrivilegeInfo[0].Id;
+        }
+    }
+    else {
+        divMain = DivPanel(DivMain + "_" + _cId, _statusChapter);
+    }
+
+
+    // divHomeNextChapter
+    let divHomeNextChapter = Object.assign(document.createElement("div"), {
+        className: "HomeNextChapter",
+    });
+
+
+    // InputBookInfo
+    divHomeNextChapter.appendChild(InputBookInfo(_bookId));
+
+
+    // chapter
+    let chapter = GetChapterId(_bookChapters, _cId);
+
+
+    // H1IdGlava
+    divHomeNextChapter.appendChild(H1IdGlava(chapter.Index, _chIndexLastLocked, _chLast.Index));
+
+
+    // add HomeNextChapter
+    divMain.appendChild(divHomeNextChapter);
+
+
+    //// Check "The End"
+    //if (_cId === BookInfo.data.lastChapterItem.chapterId) {
+    //    let tmpH1 = document.createElement("h1");
+    //    tmpH1.textContent = "The End";
+    //    divMain.appendChild(tmpH1);
+    //    return divMain;
+    //}
+
+
+    // divHomeNextChapter
+    let divParsingReplaceGetText = Object.assign(document.createElement("div"), {
+        className: "ParsingReplaceGetText",
+    });
+
+
+    // inputParsing
+    let inputParsing = Object.assign(document.createElement("input"), {
+        type: "button",
+        value: "Parsing"
+    });
+    inputParsing.addEventListener('click', async function () {
+        let divTable = document.querySelector("#divTable");
+        if (divTable !== null) {
+            if (_statusChapter === StatusChapter.PRIVATE) {
+                document.querySelector(DivMainId + "_" + _statusChapter).appendChild(divTable);
+            }
+            else {
+                document.querySelector(DivMainId + "_" + _cId).appendChild(divTable);
+            }
+
+            let crawlerTable = document.querySelector("#crawlerId");
+            crawlerTable.setAttribute("cId", _cId);
+            crawlerTable.hidden = false;
+
+            //ParsingAll();
+            CheckTotalAll();
+        }
+    });
+    divParsingReplaceGetText.appendChild(inputParsing);
+
+
+    // inputReplace
+    let inputReplace = Object.assign(document.createElement("input"), {
+        className: "replace",
+        type: "button",
+        value: "Replace"
+    });
+    inputReplace.addEventListener('click', async function () {
+        this.disabled = true;
+        await ReplaceText(_bookId, _cId);
+        this.hidden = true;
+
+        let nick = document.querySelector("dialog header > div > i > img");
+        if (nick) {
+            setReadLocal(_bookChapters, _bookId, chapter.Index, nick.alt);
+        }
+        else {
+            setReadLocal(_bookChapters, _bookId, chapter.Index, "");
+        }
+    });
+    divParsingReplaceGetText.appendChild(inputReplace);
+
+
+    // inputGetText
+    let inputGetText = Object.assign(document.createElement("input"), {
+        className: "gettext",
+        type: "button",
+        value: _sitesGetText[0][0].lastChapterIndex === -99999 ? "GetText" : "GetText: " + _sitesGetText[0][0].lastChapterIndex
+    });
+    inputGetText.addEventListener('click', async function () {
+        this.disabled = true;
+        let tmpN = await _sitesGetText[0][0].GetText(_cId, chapter.Name);
+
+        if (tmpN === -1) {
+            return;
+        }
+
+        if (_sitesGetText[0][0].lastChapterIndex === -99999 && _sitesGetText[0][0].lastChapterTitle !== "") {
+            _sitesGetText[0][0].lastChapterIndex = GetChapterName(_bookChapters, _sitesGetText[0][0].lastChapterTitle).Index;
+            for (let gt of document.querySelectorAll("input.gettext")) {
+                gt.value = "GetText: " + _sitesGetText[0][0].lastChapterIndex;
+            }
+        }
+
+        if (tmpN === -2) {
+            this.disabled = false;
+            return;
+        }
+    });
+    divParsingReplaceGetText.appendChild(inputGetText);
+
+
+    // add ParsingReplaceGetText
+    divMain.appendChild(divParsingReplaceGetText);
+
+
+
+    // divTable
+    if (document.querySelector("#divTable") === null) {
+        let divTable = Object.assign(document.createElement("div"), {
+            id: "divTable",
+        });
+
+
+        divTable.appendChild(CreateTableRead(_bookChapters, _bookId));
+
+
+        // tableCrawler
+        let tableCrawler = CreateTableSites(_sitesParser, _bookChapters, _bookId);
+        tableCrawler.setAttribute("cId", _cId);
+        divTable.appendChild(tableCrawler);
+
+
+        divMain.appendChild(divTable);
+    }
+
+    return divMain;
+}
+;// CONCATENATED MODULE: ./src/js/Domain/StringProcent/tanimoto.js
 function tanimoto(s1, s2) {
     s1 = Array.from(s1.toLowerCase());
     s2 = Array.from(s2.toLowerCase());
@@ -1719,7 +1868,8 @@ function tanimoto(s1, s2) {
 }
 
 //let diff = tanimoto(title, titleParser);
-;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearch/artBook/mWuxiaworldCo.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/2fetch/apiSearch/artBook/mWuxiaworldCo.js
+
 
 
 
@@ -1790,7 +1940,8 @@ class mWuxiaworldCo extends ParserBook {
         this.total = "S0";
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearch/artBook/novelupdatesCc.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/2fetch/apiSearch/artBook/novelupdatesCc.js
+
 
 
 
@@ -1861,7 +2012,8 @@ class novelupdatesCc extends ParserBook {
         this.total = "S0";
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearch/artBook/readlightnovelCc.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/2fetch/apiSearch/artBook/readlightnovelCc.js
+
 
 
 
@@ -1932,7 +2084,8 @@ class readlightnovelCc extends ParserBook {
         this.total = "S0";
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearch/artBook/readlightnovelCo.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/2fetch/apiSearch/artBook/readlightnovelCo.js
+
 
 
 
@@ -2003,7 +2156,8 @@ class readlightnovelCo extends ParserBook {
         this.total = "S0";
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearchChapter/lightnovelreaderOrg.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/2fetch/apiSearchChapter/lightnovelreaderOrg.js
+
 
 
 
@@ -2070,7 +2224,8 @@ class lightnovelreaderOrg extends ParserChapter {
         this.total = "S0";
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearchChapter/bookWings/ltnovelCom.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/2fetch/apiSearchChapter/bookWings/ltnovelCom.js
+
 
 
 
@@ -2146,7 +2301,8 @@ class ltnovelCom extends ParserChapter {
         this.total = "S0";
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearchChapter/bookWings/novelmtCom.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/2fetch/apiSearchChapter/bookWings/novelmtCom.js
+
 
 
 
@@ -2222,7 +2378,8 @@ class novelmtCom extends ParserChapter {
         this.total = "S0";
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearchChapter/bookWings/readwnCom.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/2fetch/apiSearchChapter/bookWings/readwnCom.js
+
 
 
 
@@ -2298,7 +2455,8 @@ class readwnCom extends ParserChapter {
         this.total = "S0";
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearchChapter/bookWings/wuxiahereCom.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/2fetch/apiSearchChapter/bookWings/wuxiahereCom.js
+
 
 
 
@@ -2374,7 +2532,8 @@ class wuxiahereCom extends ParserChapter {
         this.total = "S0";
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/2fetch/apiSearchChapter/bookWings/wuxiapubCom.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/2fetch/apiSearchChapter/bookWings/wuxiapubCom.js
+
 
 
 
@@ -2450,7 +2609,8 @@ class wuxiapubCom extends ParserChapter {
         this.total = "S0";
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/2fetch/htmlSearch/mMylovenovelCom.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/2fetch/htmlSearch/mMylovenovelCom.js
+
 
 
 
@@ -2510,7 +2670,8 @@ class mMylovenovelCom extends ParserBook {
         this.total = "S0";
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/2fetch/htmlSearch/readnoveldailyCom.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/2fetch/htmlSearch/readnoveldailyCom.js
+
 
 
 
@@ -2570,7 +2731,8 @@ class readnoveldailyCom extends ParserBook {
         this.total = "S0";
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/2fetch/htmlSearchChapter/freewebnovelCom.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/2fetch/htmlSearchChapter/freewebnovelCom.js
+
 
 
 
@@ -2635,7 +2797,8 @@ class freewebnovelCom extends ParserChapter {
         this.total = "S0";
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/2fetch/htmlSearchChapter/novelfullvipCom.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/2fetch/htmlSearchChapter/novelfullvipCom.js
+
 
 
 
@@ -2700,7 +2863,49 @@ class novelfullvipCom extends ParserChapter {
         this.total = "S0";
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/2fetch/htmlSearchChapter/novelscafeCom.js
+;// CONCATENATED MODULE: ./src/js/Domain/domain.js
+function ReplaceName(name) {
+    return name.toLowerCase().replaceAll(' ', '-').replaceAll(/"/g, 'quot').replaceAll(/[.?!)(,:'\[\]]/g, '');
+}
+
+function copytext(el) {
+    /*
+        var $tmp = $("<textarea>");
+        $("body").append($tmp);
+        $tmp.val($(el).text()).select();
+        document.execCommand("copy");
+        $tmp.remove();
+    */
+}
+
+function copyHtml(el) {
+    //document.ondragstart =
+    //    document.onselectstart =
+    //    document.oncontextmenu =
+    //    document.body.oncontextmenu =
+    //    document.body.onkeydown =
+    //    () => true;
+
+    console.log("asdasdasda" + el);
+    var tmp = document.createElement("textarea");
+    tmp.id = "copyTextarea";
+    tmp.value = el;
+    document.getElementsByTagName("body")[0].append(tmp);
+
+    var copyTextarea = document.getElementById("copyTextarea");
+    copyTextarea.focus();
+    copyTextarea.select();
+
+    try {
+        var successful = document.execCommand('copy');
+        var msg = successful ? 'successful' : 'unsuccessful';
+        console.log('Copying text command was ' + msg);
+    } catch (err) {
+        console.log('Oops, unable to copy');
+    }
+}
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/2fetch/htmlSearchChapter/novelscafeCom.js
+
 
 
 
@@ -2765,7 +2970,8 @@ class novelscafeCom extends ParserChapter {
         this.total = "S0";
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/2fetch/search/lightnovelplusCom.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/2fetch/search/lightnovelplusCom.js
+
 
 
 
@@ -2854,7 +3060,8 @@ class lightnovelplusCom extends ParserSearch {
         return;
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/apiSearch/lightnovelsMe.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/apiSearch/lightnovelsMe.js
+
 
 
 
@@ -2900,7 +3107,8 @@ class lightnovelsMe extends ParserBook {
             .catch(err => this.total = fetchCatch(err, this.apiSearch.href));
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/apiSearchChapter/octopiiCo.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/apiSearchChapter/octopiiCo.js
+
 
 
 
@@ -2956,7 +3164,8 @@ class octopiiCo extends ParserChapter {
             .catch(err => this.total = fetchCatch(err, this.apiSearch.href));
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/apiSearchChapter/webnovelonlineCom.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/apiSearchChapter/webnovelonlineCom.js
+
 
 
 
@@ -3006,7 +3215,8 @@ class webnovelonlineCom extends ParserChapter {
             .catch(err => this.total = fetchCatch(err, this.apiSearch.href));
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/htmlSearch/lightnovelWorld.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearch/lightnovelWorld.js
+
 
 
 
@@ -3050,7 +3260,8 @@ class lightnovelWorld extends ParserBook {
             .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/htmlSearch/novelhallCom.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearch/novelhallCom.js
+
 
 
 
@@ -3093,7 +3304,8 @@ class novelhallCom extends ParserBook {
             .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/htmlSearch/pandanovelCom.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearch/pandanovelCom.js
+
 
 
 
@@ -3152,7 +3364,8 @@ class pandanovelCom extends ParserBook {
         this.total = "S0";
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/htmlSearch/readlightnovelsNet.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearch/readlightnovelsNet.js
+
 
 
 
@@ -3196,7 +3409,8 @@ class readlightnovelsNet extends ParserBook {
             .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/madentertainment/madnovelCom.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearchChapter/madentertainment/madnovelCom.js
+
 
 
 
@@ -3243,7 +3457,8 @@ class madnovelCom extends ParserChapter {
             .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/madentertainment/novelbuddyCom.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearchChapter/madentertainment/novelbuddyCom.js
+
 
 
 
@@ -3290,7 +3505,8 @@ class novelbuddyCom extends ParserChapter {
             .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/madentertainment/novelforestCom.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearchChapter/madentertainment/novelforestCom.js
+
 
 
 
@@ -3337,7 +3553,8 @@ class novelforestCom extends ParserChapter {
             .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/madentertainment/novelfullMe.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearchChapter/madentertainment/novelfullMe.js
+
 
 
 
@@ -3384,7 +3601,8 @@ class novelfullMe extends ParserChapter {
             .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/truyenNovel/novel/novelfullplusCom.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearchChapter/truyenNovel/novel/novelfullplusCom.js
+
 
 
 
@@ -3431,7 +3649,8 @@ class novelfullplusCom extends ParserChapter {
             .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/truyenNovel/novel/novelpokiCom.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearchChapter/truyenNovel/novel/novelpokiCom.js
+
 
 
 
@@ -3478,7 +3697,8 @@ class novelpokiCom extends ParserChapter {
             .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/truyenNovel/novel/noveltop1Com.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearchChapter/truyenNovel/novel/noveltop1Com.js
+
 
 
 
@@ -3525,7 +3745,8 @@ class noveltop1Com extends ParserChapter {
             .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/truyenNovel/novel/readnovelfullCom.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearchChapter/truyenNovel/novel/readnovelfullCom.js
+
 
 
 
@@ -3573,7 +3794,8 @@ class readnovelfullCom extends ParserChapter {
             .catch(err => this.total = ffetchCatch(err, this.siteSearch.href));
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/truyenNovel/novel/topwebnovelCom.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearchChapter/truyenNovel/novel/topwebnovelCom.js
+
 
 
 
@@ -3616,7 +3838,8 @@ class topwebnovelCom extends ParserBook {
             .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/truyenNovel/truyen/allnovelfullCom.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearchChapter/truyenNovel/truyen/allnovelfullCom.js
+
 
 
 
@@ -3664,7 +3887,8 @@ class allnovelfullCom extends ParserChapter {
             .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/truyenNovel/truyen/allnovelOrg.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearchChapter/truyenNovel/truyen/allnovelOrg.js
+
 
 
 
@@ -3712,7 +3936,8 @@ class allnovelOrg extends ParserChapter {
             .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/truyenNovel/truyen/novelfullCom.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearchChapter/truyenNovel/truyen/novelfullCom.js
+
 
 
 
@@ -3760,7 +3985,8 @@ class novelfullCom extends ParserChapter {
             .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/truyenNovel/truyen/novelgreatNet.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearchChapter/truyenNovel/truyen/novelgreatNet.js
+
 
 
 
@@ -3803,7 +4029,8 @@ class novelgreatNet extends ParserBook {
             .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/wpManga/1stkissnovelLove.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearchChapter/wpManga/1stkissnovelLove.js
+
 
 
 
@@ -3851,7 +4078,8 @@ class oneStkissnovelLove extends ParserChapter {
             .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/wpManga/latestnovelNet.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearchChapter/wpManga/latestnovelNet.js
+
 
 
 
@@ -3898,7 +4126,8 @@ class latestnovelNet extends ParserChapter {
             .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/wpManga/lightnovelMobi.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearchChapter/wpManga/lightnovelMobi.js
+
 
 
 
@@ -3946,7 +4175,8 @@ class lightnovelMobi extends ParserChapter {
             .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/wpManga/novelteamNet.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearchChapter/wpManga/novelteamNet.js
+
 
 
 
@@ -3994,7 +4224,8 @@ class novelteamNet extends ParserChapter {
             .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/wpManga/noveltrenchCom.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearchChapter/wpManga/noveltrenchCom.js
+
 
 
 
@@ -4042,7 +4273,8 @@ class noveltrenchCom extends ParserChapter {
             .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/wpManga/readnovelsOrg.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearchChapter/wpManga/readnovelsOrg.js
+
 
 
 
@@ -4090,7 +4322,8 @@ class readnovelsOrg extends ParserChapter {
             .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/htmlSearchChapter/wpManga/webnovelonlineNet.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearchChapter/wpManga/webnovelonlineNet.js
+
 
 
 
@@ -4138,7 +4371,8 @@ class webnovelonlineNet extends ParserChapter {
             .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/ReplaceTitle/readlightnovelMe.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/ReplaceTitle/readlightnovelMe.js
+
 
 
 
@@ -4171,7 +4405,8 @@ class readlightnovelMe extends ParserChapter {
             .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/ReplaceTitle/lightnovelEWcom/lightnovelpubCom.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/ReplaceTitle/lightnovelEWcom/lightnovelpubCom.js
+
 
 
 
@@ -4200,7 +4435,8 @@ class lightnovelpubCom extends ParserChapter {
             .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/ReplaceTitle/lightnovelEWcom/lightnovelworldCom.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/ReplaceTitle/lightnovelEWcom/lightnovelworldCom.js
+
 
 
 
@@ -4229,7 +4465,7 @@ class lightnovelworldCom extends ParserChapter {
             .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/search/fastnovelNet.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/search/fastnovelNet.js
 
 
 class fastnovelNet extends ParserSearch {
@@ -4241,7 +4477,7 @@ class fastnovelNet extends ParserSearch {
         this.siteSearch = this.site.origin + "/search/" + this.bTitle;
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/search/novelgateNet.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/search/novelgateNet.js
 
 
 class novelgateNet extends ParserSearch {
@@ -4253,7 +4489,7 @@ class novelgateNet extends ParserSearch {
         this.siteSearch = this.site.origin + "/search/" + this.bTitle;
     }
 }
-;// CONCATENATED MODULE: ./src/js/parsers/search/ranobesNet.js
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/search/ranobesNet.js
 
 
 class ranobesNet extends ParserSearch {
@@ -4265,7 +4501,7 @@ class ranobesNet extends ParserSearch {
         this.siteSearch = this.site.origin + "/index.php?do=search&subaction=search&search_start=0&full_search=0&result_from=1&story=" + this.bTitle;
     }
 }
-;// CONCATENATED MODULE: ./src/js/class/GetTextClass.js
+;// CONCATENATED MODULE: ./src/js/Crawler/class/GetTextClass.js
 class GetText {
     constructor(_site) {
         this.site = new URL(_site);
@@ -4312,7 +4548,7 @@ class GetText {
         return this.sBookId === 0;
     }
 }
-;// CONCATENATED MODULE: ./src/js/getText/g_lightnovelplusCom.js
+;// CONCATENATED MODULE: ./src/js/Crawler/getText/g_lightnovelplusCom.js
 
 
 
@@ -4470,9 +4706,8 @@ function md5(d) { return rstr2hex(binl2rstr(binl_md5(rstr2binl(d), 8 * d.length)
 // @match       https://m.webnovel.com/book/*/*
 // @match       https://passport.webnovel.com/emaillogin.html*
 // @grant       GM_xmlhttpRequest
-// @version     0.6.2
+// @version     0.7
 // ==/UserScript==
-
 
 
 
@@ -4565,7 +4800,7 @@ function md5(d) { return rstr2hex(binl2rstr(binl_md5(rstr2binl(d), 8 * d.length)
 
 
 
-const SitesAll = [
+const SitesParser = [
     [
         new lightnovelplusCom(),
     ],
@@ -4657,180 +4892,19 @@ const SitesAll = [
 
 // GetText
 
-var GetTextAll = new g_lightnovelplusCom();
 
-async function CreateDivMain(_statusChapter, _cId = "") {
-    // divMain
-    let divMain;
-    if (_statusChapter === StatusChapter.PRIVATE) {
-        divMain = DivPanel(DivMain + "_" + _statusChapter, _statusChapter);
+const SitesGetText = [
+    [
+        new g_lightnovelplusCom(),
+    ]
+];
 
-        _cId = glavaWebNovel(location);
-        
-        if (GetChapterId(BookChapters, _cId).Index <= ChIndexLastLocked) {
-            _cId = BookChapters.Data.PrivilegeInfo[0].Id;
-        }
-    }
-    else {
-        divMain = DivPanel(DivMain + "_" + _cId, _statusChapter);
-    }
-
-    // divHomeNextChapter
-    let divHomeNextChapter = Object.assign(document.createElement("div"), {
-        className: "HomeNextChapter",
-    });
-
-    // InputBookInfo
-    divHomeNextChapter.appendChild(InputBookInfo(BookId));
-
-
-    // chapter
-    let chapter = GetChapterId(BookChapters, _cId);
-
-
-    // H1IdGlava
-    divHomeNextChapter.appendChild(H1IdGlava(chapter.Index, ChIndexLastLocked, ChLast.Index));
-
-
-    // add HomeNextChapter
-    divMain.appendChild(divHomeNextChapter);
-
-
-    //// Check "The End"
-    //if (_cId === BookInfo.data.lastChapterItem.chapterId) {
-    //    let tmpH1 = document.createElement("h1");
-    //    tmpH1.textContent = "The End";
-    //    divMain.appendChild(tmpH1);
-    //    return divMain;
-    //}
-
-
-    // divHomeNextChapter
-    let divParsingReplaceGetText = Object.assign(document.createElement("div"), {
-        className: "ParsingReplaceGetText",
-    });
-
-
-    // inputParsing
-    let inputParsing = Object.assign(document.createElement("input"), {
-        type: "button",
-        value: "Parsing"
-    });
-    inputParsing.addEventListener('click', async function () {
-        let divTable = document.querySelector("#divTable");
-        if (divTable !== null) {
-            if (_statusChapter === StatusChapter.PRIVATE) {
-                document.querySelector("#" + DivMain + "_" + _statusChapter).appendChild(divTable);
-            }
-            else {
-                document.querySelector("#" + DivMain + "_" + _cId).appendChild(divTable);
-            }
-
-            let crawlerTable = document.querySelector("#crawlerId");
-            crawlerTable.setAttribute("cId", _cId);
-            crawlerTable.hidden = false;
-
-            //ParsingAll();
-            CheckTotalAll();
-        }
-    });
-    divParsingReplaceGetText.appendChild(inputParsing);
-
-
-    // inputReplace
-    let inputReplace = Object.assign(document.createElement("input"), {
-        className: "replace",
-        type: "button",
-        value: "Replace"
-    });
-    inputReplace.addEventListener('click', async function () {
-        this.disabled = true;
-        await ReplaceText(BookId, _cId);
-        this.hidden = true;
-
-        let nick = document.querySelector("dialog header > div > i > img");
-        if (nick) {
-            setReadLocal(BookChapters, BookId, chapter.Index, nick.alt);
-        }
-        else {
-            setReadLocal(BookChapters, BookId, chapter.Index, "");
-        }
-    });
-    divParsingReplaceGetText.appendChild(inputReplace);
-
-
-    // inputGetText
-    let inputGetText = Object.assign(document.createElement("input"), {
-        className: "gettext",
-        type: "button",
-        value: GetTextAll.lastChapterIndex === -99999 ? "GetText" : "GetText: " + GetTextAll.lastChapterIndex
-    });
-    inputGetText.addEventListener('click', async function () {
-        this.disabled = true;
-        let tmpN = await GetTextAll.GetText(_cId, chapter.Name);
-
-        if (tmpN === -1) {
-            return;
-        }
-
-        if (GetTextAll.lastChapterIndex === -99999 && GetTextAll.lastChapterTitle !== "") {
-            GetTextAll.lastChapterIndex = GetChapterName(BookChapters, GetTextAll.lastChapterTitle).Index;
-            for (let gt of document.querySelectorAll("input.gettext")) {
-                gt.value = "GetText: " + GetTextAll.lastChapterIndex;
-            }
-        }
-
-        if (tmpN === -2) {
-            this.disabled = false;
-            return;
-        }
-    });
-    divParsingReplaceGetText.appendChild(inputGetText);
-
-
-    // add ParsingReplaceGetText
-    divMain.appendChild(divParsingReplaceGetText);
-
-
-
-    // divTable
-    if (document.querySelector("#divTable") === null) {
-        let divTable = Object.assign(document.createElement("div"), {
-            id: "divTable",
-        });
-
-
-        divTable.appendChild(CreateTableRead(BookChapters, BookId));
-
-
-        // tableCrawler
-        let tableCrawler = CreateTableSites(SitesAll, BookChapters, BookId);
-        tableCrawler.setAttribute("cId", _cId);
-        divTable.appendChild(tableCrawler);
-
-
-        divMain.appendChild(divTable);
-    }
-
-    return divMain;
-}
-
-var BookInfo;
-var BookTitle;
-var BookId;
-
-var BookChapters;
-
-const DivMain = "divMain";
-const StatusChapter = { LOCKED: 'locked', UNLOCKED: 'unlocked', FREE: 'free', PRIVATE: 'private' };
-var ChLast = "";
-var ChIndexLastLocked = "";
 
 (async function () {
     if (location.origin === 'https://m.webnovel.com' && location.pathname === "/") {
-        let lpR = localStorage.getItem("WebNovel_LP_r");
+        let lpR = localStorage.getItem(LS_Login_R);
         if (lpR !== null) {
-            localStorage.removeItem("WebNovel_LP_r");
+            localStorage.removeItem(LS_Login_R);
             document.location.replace("https://passport.webnovel.com/emaillogin.html?returnurl=" + lpR);
         }
 
@@ -4844,16 +4918,16 @@ var ChIndexLastLocked = "";
         return;
     }
 
-    BookInfo = await downloadBookIfno(location);
+    let BookInfo = await downloadBookIfno(location);
     console.info(BookInfo);
 
-    BookTitle = BookInfo.data.bookInfo.bookName;
+    let BookTitle = BookInfo.data.bookInfo.bookName;
     console.info(BookTitle);
 
-    BookId = BookInfo.data.bookInfo.bookId;
+    let BookId = BookInfo.data.bookInfo.bookId;
     console.info(BookId);
 
-    for (let sites of SitesAll) {
+    for (let sites of SitesParser) {
         for (let site of sites) {
             site.bId = BookId;
             site.bTitle = BookTitle;
@@ -4861,29 +4935,33 @@ var ChIndexLastLocked = "";
         }
     }
 
-    GetTextAll.bId = BookId;
-    GetTextAll.bTitle = BookTitle;
+    for (let sites of SitesGetText) {
+        for (let site of sites) {
+            site.bId = BookId;
+            site.bTitle = BookTitle;
+        }
+    }
 
-    BookChapters = await downloadBookChapters(location);
+    let BookChapters = await downloadBookChapters(location);
 
-    ChLast = GetChapterLast(BookChapters);
-    ChIndexLastLocked = GetIndexLastChapterLock(BookChapters);
+    let ChLast = GetChapterLast(BookChapters);
+    let ChIndexLastLocked = GetIndexLastChapterLock(BookChapters);
 
     while (true) {
         let contents = document.querySelectorAll("div.pr > div > div.styles_content__3tuD4");
         for (let c of contents) {
             let chapterId = c.id.match(/^content-(\d+)$/);
-            if (chapterId && c.parentElement.querySelector("#" + DivMain + "_" + chapterId[1]) === null) {
+            if (chapterId && c.parentElement.querySelector(DivMainId + "_" + chapterId[1]) === null) {
                 c.translate = false;
 
-                let divMain = await CreateDivMain(StatusChapter.LOCKED, chapterId[1]);
+                let divMain = await CreateDivMain(SitesParser, SitesGetText, BookChapters, BookId, ChLast, ChIndexLastLocked, StatusChapter.LOCKED, chapterId[1]);
 
                 let contentTitle = c.parentElement.querySelector("div.ChapterTitle_chapter_title_container__Wq5T8");
                 contentTitle.after(divMain);
             }
-            else {
-                console.warn("Copy");
-            }
+            //else {
+            //    console.warn("Copy");
+            //}
         }
 
         let contentsUnlocked = document.querySelectorAll("div.pr > div > div.styles_content__3tuD4:not(.styles_locked_content__16dUX)");
@@ -4905,8 +4983,8 @@ var ChIndexLastLocked = "";
         }
 
         let contentsPrivate = document.querySelector("div.pr > div > div.styles_last_chapter_footer__SPOMm");
-        if (contentsPrivate !== null && contentsPrivate.querySelector("#" + DivMain + "_" + StatusChapter.PRIVATE) === null) {
-            let divMain = await CreateDivMain(StatusChapter.PRIVATE);
+        if (contentsPrivate !== null && contentsPrivate.querySelector(DivMainId + "_" + StatusChapter.PRIVATE) === null) {
+            let divMain = await CreateDivMain(SitesParser, SitesGetText, BookChapters, BookId, ChLast, ChIndexLastLocked, StatusChapter.PRIVATE);
             contentsPrivate.prepend(divMain);
         }
 
@@ -4921,7 +4999,7 @@ var ChIndexLastLocked = "";
         console.log('webnovel.com');
 
         if (Loc.href.indexOf('webnovel.com/book/') != -1 && Loc.pathname.split('/').length == 4) {
-            var d = DivPanel();
+            //var d = DivPanel();
 
             if (Loc.href.endsWith('/catalog')) {
                 console.log('*/book/*/catalog');

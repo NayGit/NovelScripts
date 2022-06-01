@@ -2,7 +2,7 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 82:
+/***/ 108:
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
@@ -510,9 +510,9 @@ var insertStyleElement_default = /*#__PURE__*/__webpack_require__.n(insertStyleE
 // EXTERNAL MODULE: ./node_modules/style-loader/dist/runtime/styleTagTransform.js
 var styleTagTransform = __webpack_require__(589);
 var styleTagTransform_default = /*#__PURE__*/__webpack_require__.n(styleTagTransform);
-// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js!./src/css/webnovelTag.css
-var webnovelTag = __webpack_require__(82);
-;// CONCATENATED MODULE: ./src/css/webnovelTag.css
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js!./src/css/tag.css
+var tag = __webpack_require__(108);
+;// CONCATENATED MODULE: ./src/css/tag.css
 
       
       
@@ -534,14 +534,14 @@ options.setAttributes = (setAttributesWithoutAttributes_default());
 options.domAPI = (styleDomAPI_default());
 options.insertStyleElement = (insertStyleElement_default());
 
-var update = injectStylesIntoStyleTag_default()(webnovelTag/* default */.Z, options);
+var update = injectStylesIntoStyleTag_default()(tag/* default */.Z, options);
 
 
 
 
-       /* harmony default export */ const css_webnovelTag = (webnovelTag/* default */.Z && webnovelTag/* default.locals */.Z.locals ? webnovelTag/* default.locals */.Z.locals : undefined);
+       /* harmony default export */ const css_tag = (tag/* default */.Z && tag/* default.locals */.Z.locals ? tag/* default.locals */.Z.locals : undefined);
 
-;// CONCATENATED MODULE: ./src/js/webNovel.js
+;// CONCATENATED MODULE: ./src/js/Domain/webNovel.js
 
 
 // ���������� ���� � ��������� name. ��� undefined, ���� ������ �� �������
@@ -652,27 +652,25 @@ function GetIndexLastChapterLock(_bookChapters) {
 
     return _bookChapters.Data.Chapters[_bookChapters.Data.Chapters.length - 1].Index;
 }
-;// CONCATENATED MODULE: ./src/js/domain.js
-
-
+;// CONCATENATED MODULE: ./src/js/Domain/FetchResult.js
 async function ResponseToHTML(response) {
-        let bodyText = await response.text();
+    let bodyText = await response.text();
 
-        let parser = new DOMParser();
-        let bodyHtml = parser.parseFromString(bodyText, 'text/html');
+    let parser = new DOMParser();
+    let bodyHtml = parser.parseFromString(bodyText, 'text/html');
 
-        return bodyHtml;
+    return bodyHtml;
 }
 
 function fetchStatusHTML(response) {
     return response.ok ? ResponseToHTML(response) : Promise.reject(response)
 }
 
-function domain_fetchStatusJSON(response) {
+function FetchResult_fetchStatusJSON(response) {
     return response.ok ? response.json() : Promise.reject(response)
 }
 
-function domain_fetchCatch(_error, _site) {
+function FetchResult_fetchCatch(_error, _site) {
     if (_error instanceof TypeError) {
         if (_error.message == "Failed to fetch") {
             console.warn('TypeError: ' + new URL(_site));
@@ -693,48 +691,7 @@ function domain_fetchCatch(_error, _site) {
     console.warn(_error);
     return "Err";
 }
-
-function ReplaceName(name) {
-    return name.toLowerCase().replaceAll(' ', '-').replaceAll(/"/g, 'quot').replaceAll(/[.?!)(,:'\[\]]/g, '');
-}
-
-function copytext(el) {
-    /*
-        var $tmp = $("<textarea>");
-        $("body").append($tmp);
-        $tmp.val($(el).text()).select();
-        document.execCommand("copy");
-        $tmp.remove();
-    */
-}
-
-function copyHtml(el) {
-    //document.ondragstart =
-    //    document.onselectstart =
-    //    document.oncontextmenu =
-    //    document.body.oncontextmenu =
-    //    document.body.onkeydown =
-    //    () => true;
-
-    console.log("asdasdasda" + el);
-    var tmp = document.createElement("textarea");
-    tmp.id = "copyTextarea";
-    tmp.value = el;
-    document.getElementsByTagName("body")[0].append(tmp);
-
-    var copyTextarea = document.getElementById("copyTextarea");
-    copyTextarea.focus();
-    copyTextarea.select();
-
-    try {
-        var successful = document.execCommand('copy');
-        var msg = successful ? 'successful' : 'unsuccessful';
-        console.log('Copying text command was ' + msg);
-    } catch (err) {
-        console.log('Oops, unable to copy');
-    }
-}
-;// CONCATENATED MODULE: ./src/js/webnovel/tag.js
+;// CONCATENATED MODULE: ./src/js/Tag/tag.js
 function ceTagId(_tagName, _id, _translate) {
     return Object.assign(document.createElement(_tagName), {
         id: _id,
@@ -788,7 +745,7 @@ function ceInputCheckbox(_id) {
 // @author      Nay
 // @include     https://*.webnovel.com/tags/*
 // @grant       none
-// @version     0.2
+// @version     0.3
 // ==/UserScript==
 
 
@@ -934,11 +891,11 @@ async function downloadList(_csrfToken, type, order, pageIndex, tagName) {
 
     let bodyJson = "";
     await fetch(url)
-        .then(res => domain_fetchStatusJSON(res))
+        .then(res => FetchResult_fetchStatusJSON(res))
         .then(data => {
             bodyJson = data.data.items;
         })
-        .catch(err => domain_fetchCatch(err, url));
+        .catch(err => FetchResult_fetchCatch(err, url));
 
     return bodyJson;
 }

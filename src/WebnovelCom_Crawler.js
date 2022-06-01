@@ -8,99 +8,99 @@
 // @match       https://m.webnovel.com/book/*/*
 // @match       https://passport.webnovel.com/emaillogin.html*
 // @grant       GM_xmlhttpRequest
-// @version     0.6.3
+// @version     0.7
 // ==/UserScript==
 
 'use strict';
 
-import './css/webnovel.css'
+import './css/crawler.css'
 
-import { DivMainId, StatusChapter, LS_Login_R } from './js/variable/crawler'
+import { DivMainId, StatusChapter, LS_Login_R } from 'CrawlerVariable/Variable'
 
-import { downloadBookIfno, downloadBookChapters, GetChapterLast, GetIndexLastChapterLock } from './js/webNovel';
-import { CreateLogin } from './js/webnovel/ce/Login'
-import { CreateDivMain } from './js/webnovel/ce/CreateDivMain';
+import { downloadBookIfno, downloadBookChapters, GetChapterLast, GetIndexLastChapterLock } from 'Domain/webNovel';
+import { CreateLogin } from 'CrawlerHtml/Login'
+import { CreateDivMain } from 'CrawlerHtml/book/CreateDivMain';
 
 
 // 2fetch/apiSearch
 //    artBook
-import mWuxiaworldCo from './js/parsers/2fetch/apiSearch/artBook/mWuxiaworldCo'
-import novelupdatesCc from './js/parsers/2fetch/apiSearch/artBook/novelupdatesCc'
-import readlightnovelCc from './js/parsers/2fetch/apiSearch/artBook/readlightnovelCc'
-import readlightnovelCo from './js/parsers/2fetch/apiSearch/artBook/readlightnovelCo'
+import mWuxiaworldCo from './js/Crawler/parsers/2fetch/apiSearch/artBook/mWuxiaworldCo'
+import novelupdatesCc from './js/Crawler/parsers/2fetch/apiSearch/artBook/novelupdatesCc'
+import readlightnovelCc from './js/Crawler/parsers/2fetch/apiSearch/artBook/readlightnovelCc'
+import readlightnovelCo from './js/Crawler/parsers/2fetch/apiSearch/artBook/readlightnovelCo'
 
 // 2fetch/apiSearchChapter
-import lightnovelreaderOrg from './js/parsers/2fetch/apiSearchChapter/lightnovelreaderOrg';
+import lightnovelreaderOrg from './js/Crawler/parsers/2fetch/apiSearchChapter/lightnovelreaderOrg';
 //    bookWings
-import ltnovelCom from './js/parsers/2fetch/apiSearchChapter/bookWings/ltnovelCom';
-import novelmtCom from './js/parsers/2fetch/apiSearchChapter/bookWings/novelmtCom';
-import readwnCom from './js/parsers/2fetch/apiSearchChapter/bookWings/readwnCom';
-import wuxiahereCom from './js/parsers/2fetch/apiSearchChapter/bookWings/wuxiahereCom';
-import wuxiapubCom from './js/parsers/2fetch/apiSearchChapter/bookWings/wuxiapubCom';
+import ltnovelCom from './js/Crawler/parsers/2fetch/apiSearchChapter/bookWings/ltnovelCom';
+import novelmtCom from './js/Crawler/parsers/2fetch/apiSearchChapter/bookWings/novelmtCom';
+import readwnCom from './js/Crawler/parsers/2fetch/apiSearchChapter/bookWings/readwnCom';
+import wuxiahereCom from './js/Crawler/parsers/2fetch/apiSearchChapter/bookWings/wuxiahereCom';
+import wuxiapubCom from './js/Crawler/parsers/2fetch/apiSearchChapter/bookWings/wuxiapubCom';
 
 // 2fetch/htmlSearch
-import mMylovenovelCom from './js/parsers/2fetch/htmlSearch/mMylovenovelCom';
-import readnoveldailyCom from './js/parsers/2fetch/htmlSearch/readnoveldailyCom';
+import mMylovenovelCom from './js/Crawler/parsers/2fetch/htmlSearch/mMylovenovelCom';
+import readnoveldailyCom from './js/Crawler/parsers/2fetch/htmlSearch/readnoveldailyCom';
 
 // 2fetch/htmlSearchChapter
-import freewebnovelCom from './js/parsers/2fetch/htmlSearchChapter/freewebnovelCom';
-import novelfullvipCom from './js/parsers/2fetch/htmlSearchChapter/novelfullvipCom';
-import novelscafeCom from './js/parsers/2fetch/htmlSearchChapter/novelscafeCom';
+import freewebnovelCom from './js/Crawler/parsers/2fetch/htmlSearchChapter/freewebnovelCom';
+import novelfullvipCom from './js/Crawler/parsers/2fetch/htmlSearchChapter/novelfullvipCom';
+import novelscafeCom from './js/Crawler/parsers/2fetch/htmlSearchChapter/novelscafeCom';
 //    POST
-import novelsonlineNet from './js/parsers/2fetch/htmlSearchChapter/POST/novelsonlineNet';
+import novelsonlineNet from './js/Crawler/parsers/2fetch/htmlSearchChapter/POST/novelsonlineNet';
 
 // 2fetch/search
-import lightnovelplusCom from './js/parsers/2fetch/search/lightnovelplusCom';
+import lightnovelplusCom from './js/Crawler/parsers/2fetch/search/lightnovelplusCom';
 
 // apiSearch
-import lightnovelsMe from './js/parsers/apiSearch/lightnovelsMe';
+import lightnovelsMe from './js/Crawler/parsers/apiSearch/lightnovelsMe';
 
 // apiSearchChapter
-import octopiiCo from './js/parsers/apiSearchChapter/octopiiCo';
-import webnovelonlineCom from './js/parsers/apiSearchChapter/webnovelonlineCom';
+import octopiiCo from './js/Crawler/parsers/apiSearchChapter/octopiiCo';
+import webnovelonlineCom from './js/Crawler/parsers/apiSearchChapter/webnovelonlineCom';
 
 // htmlSearch
-import lightnovelWorld from './js/parsers/htmlSearch/lightnovelWorld';
-import novelhallCom from './js/parsers/htmlSearch/novelhallCom';
-import pandanovelCom from './js/parsers/htmlSearch/pandanovelCom';
-import readlightnovelsNet from './js/parsers/htmlSearch/readlightnovelsNet';
+import lightnovelWorld from './js/Crawler/parsers/htmlSearch/lightnovelWorld';
+import novelhallCom from './js/Crawler/parsers/htmlSearch/novelhallCom';
+import pandanovelCom from './js/Crawler/parsers/htmlSearch/pandanovelCom';
+import readlightnovelsNet from './js/Crawler/parsers/htmlSearch/readlightnovelsNet';
 
 // htmlSearchChapter
 //    madentertainment
-import madnovelCom from './js/parsers/htmlSearchChapter/madentertainment/madnovelCom';
-import novelbuddyCom from './js/parsers/htmlSearchChapter/madentertainment/novelbuddyCom';
-import novelforestCom from './js/parsers/htmlSearchChapter/madentertainment/novelforestCom';
-import novelfullMe from './js/parsers/htmlSearchChapter/madentertainment/novelfullMe';
+import madnovelCom from './js/Crawler/parsers/htmlSearchChapter/madentertainment/madnovelCom';
+import novelbuddyCom from './js/Crawler/parsers/htmlSearchChapter/madentertainment/novelbuddyCom';
+import novelforestCom from './js/Crawler/parsers/htmlSearchChapter/madentertainment/novelforestCom';
+import novelfullMe from './js/Crawler/parsers/htmlSearchChapter/madentertainment/novelfullMe';
 //    truyenNovel/novel
-import novelfullplusCom from './js/parsers/htmlSearchChapter/truyenNovel/novel/novelfullplusCom';
-import novelpokiCom from './js/parsers/htmlSearchChapter/truyenNovel/novel/novelpokiCom';
-import noveltop1Com from './js/parsers/htmlSearchChapter/truyenNovel/novel/noveltop1Com';
-import readnovelfullCom from './js/parsers/htmlSearchChapter/truyenNovel/novel/readnovelfullCom';
-import topwebnovelCom from './js/parsers/htmlSearchChapter/truyenNovel/novel/topwebnovelCom';
+import novelfullplusCom from './js/Crawler/parsers/htmlSearchChapter/truyenNovel/novel/novelfullplusCom';
+import novelpokiCom from './js/Crawler/parsers/htmlSearchChapter/truyenNovel/novel/novelpokiCom';
+import noveltop1Com from './js/Crawler/parsers/htmlSearchChapter/truyenNovel/novel/noveltop1Com';
+import readnovelfullCom from './js/Crawler/parsers/htmlSearchChapter/truyenNovel/novel/readnovelfullCom';
+import topwebnovelCom from './js/Crawler/parsers/htmlSearchChapter/truyenNovel/novel/topwebnovelCom';
 //    truyenNovel/truyen
-import allnovelfullCom from './js/parsers/htmlSearchChapter/truyenNovel/truyen/allnovelfullCom';
-import allnovelOrg from './js/parsers/htmlSearchChapter/truyenNovel/truyen/allnovelOrg';
-import novelfullCom from './js/parsers/htmlSearchChapter/truyenNovel/truyen/novelfullCom';
-import novelgreatNet from './js/parsers/htmlSearchChapter/truyenNovel/truyen/novelgreatNet';
+import allnovelfullCom from './js/Crawler/parsers/htmlSearchChapter/truyenNovel/truyen/allnovelfullCom';
+import allnovelOrg from './js/Crawler/parsers/htmlSearchChapter/truyenNovel/truyen/allnovelOrg';
+import novelfullCom from './js/Crawler/parsers/htmlSearchChapter/truyenNovel/truyen/novelfullCom';
+import novelgreatNet from './js/Crawler/parsers/htmlSearchChapter/truyenNovel/truyen/novelgreatNet';
 //    wpManga
-import oneStkissnovelLove from './js/parsers/htmlSearchChapter/wpManga/1stkissnovelLove'; // 1stkissnovelLove
-import latestnovelNet from './js/parsers/htmlSearchChapter/wpManga/latestnovelNet';
-import lightnovelMobi from './js/parsers/htmlSearchChapter/wpManga/lightnovelMobi';
-import novelteamNet from './js/parsers/htmlSearchChapter/wpManga/novelteamNet';
-import noveltrenchCom from './js/parsers/htmlSearchChapter/wpManga/noveltrenchCom';
-import readnovelsOrg from './js/parsers/htmlSearchChapter/wpManga/readnovelsOrg';
-import webnovelonlineNet from './js/parsers/htmlSearchChapter/wpManga/webnovelonlineNet';
+import oneStkissnovelLove from './js/Crawler/parsers/htmlSearchChapter/wpManga/1stkissnovelLove'; // 1stkissnovelLove
+import latestnovelNet from './js/Crawler/parsers/htmlSearchChapter/wpManga/latestnovelNet';
+import lightnovelMobi from './js/Crawler/parsers/htmlSearchChapter/wpManga/lightnovelMobi';
+import novelteamNet from './js/Crawler/parsers/htmlSearchChapter/wpManga/novelteamNet';
+import noveltrenchCom from './js/Crawler/parsers/htmlSearchChapter/wpManga/noveltrenchCom';
+import readnovelsOrg from './js/Crawler/parsers/htmlSearchChapter/wpManga/readnovelsOrg';
+import webnovelonlineNet from './js/Crawler/parsers/htmlSearchChapter/wpManga/webnovelonlineNet';
 
 // ReplaceTitle
-import readlightnovelMe from './js/parsers/ReplaceTitle/readlightnovelMe';
+import readlightnovelMe from './js/Crawler/parsers/ReplaceTitle/readlightnovelMe';
 //    lightnovelEWcom
-import lightnovelpubCom from './js/parsers/ReplaceTitle/lightnovelEWcom/lightnovelpubCom';
-import lightnovelworldCom from './js/parsers/ReplaceTitle/lightnovelEWcom/lightnovelworldCom';
+import lightnovelpubCom from './js/Crawler/parsers/ReplaceTitle/lightnovelEWcom/lightnovelpubCom';
+import lightnovelworldCom from './js/Crawler/parsers/ReplaceTitle/lightnovelEWcom/lightnovelworldCom';
 
 // search
-import fastnovelNet from './js/parsers/search/fastnovelNet';
-import novelgateNet from './js/parsers/search/novelgateNet';
-import ranobesNet from './js/parsers/search/ranobesNet';
+import fastnovelNet from './js/Crawler/parsers/search/fastnovelNet';
+import novelgateNet from './js/Crawler/parsers/search/novelgateNet';
+import ranobesNet from './js/Crawler/parsers/search/ranobesNet';
 
 const SitesParser = [
     [
@@ -193,7 +193,7 @@ const SitesParser = [
 
 
 // GetText
-import g_lightnovelplusCom from './js/getText/g_lightnovelplusCom';
+import g_lightnovelplusCom from './js/Crawler/getText/g_lightnovelplusCom';
 
 const SitesGetText = [
     [

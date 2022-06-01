@@ -6,14 +6,14 @@
 // @author      Nay
 // @include     https://*.webnovel.com/tags/*
 // @grant       none
-// @version     0.2
+// @version     0.3
 // ==/UserScript==
 
-import './css/webnovelTag.css'
+import './css/tag.css';
 
-import { getCookie } from './js/webNovel'
-import { fetchStatusJSON, fetchCatch } from './js/domain'
-import { ceTagId, ceNav, ceInputButton, ceInputNumber, ceInputCheckbox } from './js/webnovel/tag'
+import { getCookie } from 'Domain/webNovel';
+import { fetchStatusHTML, fetchStatusJSON, fetchCatch } from 'Domain/FetchResult';
+import { ceTagId, ceNav, ceInputButton, ceInputNumber, ceInputCheckbox } from 'Tag/tag';
 
 async function StartCreate() {
     await new Promise(r => setTimeout(r, 2500));

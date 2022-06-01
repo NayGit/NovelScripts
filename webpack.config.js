@@ -18,6 +18,19 @@ module.exports = (env) => {
                 }
             ]
         },
+        resolve: {
+            alias: {
+                '~': path.resolve(__dirname, 'src/'),
+                Domain: path.resolve(__dirname, 'src/js/Domain/'),
+
+                Crawler: path.resolve(__dirname, 'src/js/Crawler/'),
+                CrawlerClass: path.resolve(__dirname, 'src/js/Crawler/class/'),
+                CrawlerHtml: path.resolve(__dirname, 'src/js/Crawler/html/'),
+                CrawlerVariable: path.resolve(__dirname, 'src/js/Crawler/variable/'),
+
+                Tag: path.resolve(__dirname, 'src/js/Tag/'),
+            }
+        },
         optimization: {
             minimize: false
         }
