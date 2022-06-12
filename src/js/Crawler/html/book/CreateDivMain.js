@@ -7,6 +7,7 @@ import { CreateTableSites, CheckTotalAll } from './CreateTableSites';
 import { CreateTableRead, setReadLocal } from './CreateTableRead';
 
 import { ReplaceText } from 'Crawler/ReplaceText';
+import { ReplaceTesseract } from 'Crawler/ReplaceTesseract';
 
 
 export async function CreateDivMain(_sitesParser, _sitesGetText, _bookChapters, _bookId, _chLast, _chIndexLastLocked, _statusChapter, _cId = "") {
@@ -91,16 +92,18 @@ export async function CreateDivMain(_sitesParser, _sitesGetText, _bookChapters, 
     divParsingReplaceGetText.appendChild(inputParsing);
 
 
-    // inputReplace
-    let inputReplace = Object.assign(document.createElement("input"), {
-        className: "replace",
+    // inputReplaceText
+    let inputReplaceText = Object.assign(document.createElement("input"), {
+        className: "replace text",
         type: "button",
-        value: "Replace"
+        value: "ReplaceText"
     });
-    inputReplace.addEventListener('click', async function () {
+    inputReplaceText.addEventListener('click', async function () {
         this.disabled = true;
         await ReplaceText(_bookId, _cId);
         this.hidden = true;
+
+        this.parentNode.querySelector(".replace.tesseract").hidden = true;
 
         let nick = document.querySelector("dialog header > div > i > img");
         if (nick) {
@@ -110,7 +113,31 @@ export async function CreateDivMain(_sitesParser, _sitesGetText, _bookChapters, 
             setReadLocal(_bookChapters, _bookId, chapter.Index, "");
         }
     });
-    divParsingReplaceGetText.appendChild(inputReplace);
+    divParsingReplaceGetText.appendChild(inputReplaceText);
+
+
+    // inputReplaceTesseract
+    let inputReplaceTesseract = Object.assign(document.createElement("input"), {
+        className: "replace tesseract",
+        type: "button",
+        value: "ReplaceTesseract"
+    });
+    inputReplaceTesseract.addEventListener('click', async function () {
+        this.disabled = true;
+        await ReplaceTesseract(_cId);
+        this.hidden = true;
+
+        this.parentNode.querySelector(".replace.text").hidden = true;
+
+        let nick = document.querySelector("dialog header > div > i > img");
+        if (nick) {
+            setReadLocal(_bookChapters, _bookId, chapter.Index, nick.alt);
+        }
+        else {
+            setReadLocal(_bookChapters, _bookId, chapter.Index, "");
+        }
+    });
+    divParsingReplaceGetText.appendChild(inputReplaceTesseract);
 
 
     // inputGetText
