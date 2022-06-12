@@ -33,6 +33,10 @@ module.exports = (env) => {
         },
         optimization: {
             minimize: false
+        },
+        performance: {
+            maxEntrypointSize: 1512000,
+            maxAssetSize: 1512000
         }
     };
 };
