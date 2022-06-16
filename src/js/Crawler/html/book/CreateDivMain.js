@@ -4,7 +4,7 @@ import { glavaWebNovel, GetChapterId, GetChapterName } from 'Domain/webNovel';
 
 import { DivPanel, InputDivPanelHide, InputBookInfo, H1IdGlava } from './DivPanel';
 import { CreateTableSites, CheckTotalAll } from './CreateTableSites';
-import { CreateTableRead, setReadLocal } from './CreateTableRead';
+import { CreateRead, setReadLocal } from './CreateRead';
 
 import { ReplaceText } from 'Crawler/ReplaceText';
 import { ReplaceTesseract } from 'Crawler/ReplaceTesseract';
@@ -72,22 +72,7 @@ export async function CreateDivMain(_sitesParser, _sitesGetText, _bookChapters, 
         value: "Parsing"
     });
     inputParsing.addEventListener('click', async function () {
-        let divTable = document.querySelector("#divTable");
-        if (divTable !== null) {
-            if (_statusChapter === StatusChapter.PRIVATE) {
-                document.querySelector(DivMainId + "_" + _statusChapter).appendChild(divTable);
-            }
-            else {
-                document.querySelector(DivMainId + "_" + _cId).appendChild(divTable);
-            }
-
-            let crawlerTable = document.querySelector("#crawlerId");
-            crawlerTable.setAttribute("cId", _cId);
-            crawlerTable.hidden = false;
-
-            //ParsingAll();
-            CheckTotalAll();
-        }
+        DivTableMove(_cId, _statusChapter, false);
     });
     divParsingReplaceGetText.appendChild(inputParsing);
 
@@ -111,13 +96,8 @@ export async function CreateDivMain(_sitesParser, _sitesGetText, _bookChapters, 
 
         this.parentNode.querySelector(".replace.tesseract").hidden = true;
 
-        let nick = document.querySelector("dialog header > div > i > img");
-        if (nick) {
-            setReadLocal(_bookChapters, _bookId, chapter.Index, nick.alt);
-        }
-        else {
-            setReadLocal(_bookChapters, _bookId, chapter.Index, "");
-        }
+        DivTableMove(_cId, _statusChapter, true);
+        setReadLocal(_bookChapters, _bookId, chapter.Index, "RText");
     });
     divReplace.appendChild(inputReplaceText);
 
@@ -135,13 +115,8 @@ export async function CreateDivMain(_sitesParser, _sitesGetText, _bookChapters, 
 
         this.parentNode.querySelector(".replace.text").hidden = true;
 
-        let nick = document.querySelector("dialog header > div > i > img");
-        if (nick) {
-            setReadLocal(_bookChapters, _bookId, chapter.Index, nick.alt);
-        }
-        else {
-            setReadLocal(_bookChapters, _bookId, chapter.Index, "");
-        }
+        DivTableMove(_cId, _statusChapter, true);
+        setReadLocal(_bookChapters, _bookId, chapter.Index, "RTesseract");
     });
     divReplace.appendChild(inputReplaceTesseract);
 
@@ -175,6 +150,11 @@ export async function CreateDivMain(_sitesParser, _sitesGetText, _bookChapters, 
             this.disabled = false;
             return;
         }
+
+        if (tmpN === 1) {
+            DivTableMove(_cId, _statusChapter, true);
+            setReadLocal(_bookChapters, _bookId, chapter.Index, "GetText");
+        }
     });
     divParsingReplaceGetText.appendChild(inputGetText);
 
@@ -189,9 +169,7 @@ export async function CreateDivMain(_sitesParser, _sitesGetText, _bookChapters, 
             id: "divTable",
         });
 
-
-        divTable.appendChild(CreateTableRead(_bookChapters, _bookId));
-
+        divTable.appendChild(CreateRead(_bookChapters, _bookId));
 
         // tableCrawler
         let tableCrawler = CreateTableSites(_sitesParser, _bookChapters, _bookId);
@@ -203,4 +181,25 @@ export async function CreateDivMain(_sitesParser, _sitesGetText, _bookChapters, 
     }
 
     return divMain;
+}
+
+function DivTableMove(_cId, _statusChapter, _hidden) {
+    let divTable = document.querySelector("#divTable");
+    if (divTable !== null) {
+        if (_statusChapter === StatusChapter.PRIVATE) {
+            document.querySelector(DivMainId + "_" + _statusChapter).appendChild(divTable);
+        }
+        else {
+            document.querySelector(DivMainId + "_" + _cId).appendChild(divTable);
+        }
+
+        let crawlerTable = document.querySelector("#crawlerId");
+        crawlerTable.setAttribute("cId", _cId);
+        crawlerTable.hidden = _hidden; // Parsing = false, Replace/GetText = true
+
+        // Parsing
+        if (!_hidden) {
+            CheckTotalAll();
+        }
+    }
 }

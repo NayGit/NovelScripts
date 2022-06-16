@@ -1,6 +1,6 @@
 import { ParserSearch, ParserBook, ParserChapter } from 'CrawlerClass/ParserClass';
 import { GetChapterId, GetChapterIndex } from 'Domain/webNovel';
-import { CreateTableReadReplace, ReadLocalTotal } from './CreateTableRead'
+import { UpdateReadNew, ReadLocalTotal } from './CreateRead'
 
 var eventCheck = "event_check";
 var event = new Event(eventCheck);
@@ -85,7 +85,7 @@ export function CreateTableSites(_sites, _bookChapters, _bId) {
             });
             inputButton.addEventListener('click', function () {
                 _sites[i][j].linkBook();
-                CreateTableReadReplace(_bookChapters, _bId, Math.abs(_sites[i][j].total));
+                UpdateReadNew(_bookChapters, _bId, Math.abs(_sites[i][j].total));
             });
             inputButton.addEventListener(eventCheck, function () {
                 if (this.value === "???" && _sites[i][j].total === 0) {
@@ -148,7 +148,7 @@ export function CreateTableSites(_sites, _bookChapters, _bId) {
                     }
 
                     _sites[i][j].linkChapter(ch.Index, ch.Name);
-                    CreateTableReadReplace(_bookChapters, _bId, Math.abs(_sites[i][j].total));
+                    UpdateReadNew(_bookChapters, _bId, Math.abs(_sites[i][j].total));
                 });
             }
 

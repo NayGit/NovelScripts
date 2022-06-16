@@ -40,7 +40,7 @@ td.parsing:before {
     text-align: center;
 }
 
-div.locked > div input, div.unlocked div > input, div.free div > input, div.private div > input {
+div.HomeNextChapter input, div.ParsingReplaceGetText input {
     background: black;
     color: darkgray;
 }
@@ -107,4 +107,8 @@ table.hTrue tr.tcHidden {
 
 #divTable table {
     margin: 3px auto;
+}
+
+#readDivSelect span {
+    margin-right: 5px;
 }

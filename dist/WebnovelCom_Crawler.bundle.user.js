@@ -2301,7 +2301,7 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 var ___CSS_LOADER_URL_REPLACEMENT_0___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default()(___CSS_LOADER_URL_IMPORT_0___);
 var ___CSS_LOADER_URL_REPLACEMENT_1___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default()(___CSS_LOADER_URL_IMPORT_1___);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "/* https://icomoon.io/ --> IcoMoon - Free */\r\n/* to base64 */\r\n/* https://transfonter.org/ */\r\n@font-face {\r\n    font-family: 'icomoon';\r\n    src:\r\n        url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ") format('woff2'),\r\n        url(" + ___CSS_LOADER_URL_REPLACEMENT_1___ + ") format('woff');\r\n    font-weight: normal;\r\n    font-style: normal;\r\n    font-display: swap;\r\n}\r\n\r\ntd.search:before, td.read:before, td.parsing:before, .eye:before, .eye-hidden:before {\r\n    font-family: icomoon;\r\n    margin: 0px 5px;\r\n}\r\n\r\ntd.search:before {\r\n    content: \"\\e986\";\r\n}\r\n\r\ntd.read:before {\r\n    content: \"\\e926\";\r\n}\r\n\r\ntd.parsing:before {\r\n    content: \"\\e982\";\r\n}\r\n\r\n.eye:before {\r\n    content: \"\\e9ce\";\r\n}\r\n\r\n.eye-hidden:before {\r\n    content: \"\\e9d1\";\r\n}\r\n\r\n.eye, .eye-hidden {\r\n    text-align: center;\r\n}\r\n\r\ndiv.locked > div > input, div.unlocked > div > input, div.free > div > input, div.private > div > input {\r\n    background: black;\r\n    color: darkgray;\r\n}\r\n\r\ndiv.locked input.replace, div.free input.replace, div.private input.replace {\r\n    display: none;\r\n}\r\n\r\ndiv.free input.gettext, div.private input.gettext {\r\n    display: none;\r\n}\r\n\r\ndiv.HomeNextChapter, div.ParsingReplaceGetText {\r\n    width: 100%;\r\n    margin-bottom: 5px;\r\n    display: flex;\r\n    justify-content: space-between;\r\n}\r\n\r\ndiv.ParsingReplaceGetText {\r\n    justify-content: space-around;\r\n}\r\n\r\nh1.idGlava {\r\n    background: darkgray;\r\n    color: black;\r\n    /*background: lightgray;*/\r\n}\r\n\r\ninput.tcError, input.tcUp, input.tcDown {\r\n    width: 100%;\r\n}\r\n\r\ninput.tcError {\r\n    background: red;\r\n}\r\n\r\ninput.tcUp {\r\n    background: lime;\r\n}\r\n\r\ninput.tcDown {\r\n    background: orange;\r\n}\r\n\r\ntable.hTrue tr.tcHidden {\r\n    display: none;\r\n}\r\n\r\n#divTable {\r\n    display: flex;\r\n    align-items: center;\r\n    flex-direction: column;\r\n}\r\n\r\n#divTable table {\r\n    margin: 3px auto;\r\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "/* https://icomoon.io/ --> IcoMoon - Free */\r\n/* to base64 */\r\n/* https://transfonter.org/ */\r\n@font-face {\r\n    font-family: 'icomoon';\r\n    src:\r\n        url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ") format('woff2'),\r\n        url(" + ___CSS_LOADER_URL_REPLACEMENT_1___ + ") format('woff');\r\n    font-weight: normal;\r\n    font-style: normal;\r\n    font-display: swap;\r\n}\r\n\r\ntd.search:before, td.read:before, td.parsing:before, .eye:before, .eye-hidden:before {\r\n    font-family: icomoon;\r\n    margin: 0px 5px;\r\n}\r\n\r\ntd.search:before {\r\n    content: \"\\e986\";\r\n}\r\n\r\ntd.read:before {\r\n    content: \"\\e926\";\r\n}\r\n\r\ntd.parsing:before {\r\n    content: \"\\e982\";\r\n}\r\n\r\n.eye:before {\r\n    content: \"\\e9ce\";\r\n}\r\n\r\n.eye-hidden:before {\r\n    content: \"\\e9d1\";\r\n}\r\n\r\n.eye, .eye-hidden {\r\n    text-align: center;\r\n}\r\n\r\ndiv.HomeNextChapter input, div.ParsingReplaceGetText input {\r\n    background: black;\r\n    color: darkgray;\r\n}\r\n\r\ndiv.locked input.replace, div.free input.replace, div.private input.replace {\r\n    display: none;\r\n}\r\n\r\ndiv.free input.gettext, div.private input.gettext {\r\n    display: none;\r\n}\r\n\r\ndiv.HomeNextChapter, div.ParsingReplaceGetText {\r\n    width: 100%;\r\n    margin-bottom: 5px;\r\n    display: flex;\r\n    justify-content: space-between;\r\n}\r\n\r\ndiv.ParsingReplaceGetText {\r\n    justify-content: space-around;\r\n}\r\n\r\ndiv.divReplace {\r\n    display: flex;\r\n    flex-direction: column;\r\n}\r\n\r\ndiv.divReplace input {\r\n    margin: 3px;\r\n}\r\n\r\nh1.idGlava {\r\n    background: darkgray;\r\n    color: black;\r\n    /*background: lightgray;*/\r\n}\r\n\r\ninput.tcError, input.tcUp, input.tcDown {\r\n    width: 100%;\r\n}\r\n\r\ninput.tcError {\r\n    background: red;\r\n}\r\n\r\ninput.tcUp {\r\n    background: lime;\r\n}\r\n\r\ninput.tcDown {\r\n    background: orange;\r\n}\r\n\r\ntable.hTrue tr.tcHidden {\r\n    display: none;\r\n}\r\n\r\n#divTable {\r\n    display: flex;\r\n    align-items: center;\r\n    flex-direction: column;\r\n}\r\n\r\n#divTable table {\r\n    margin: 3px auto;\r\n}\r\n\r\n#readDivSelect span {\r\n    margin-right: 5px;\r\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -13129,80 +13129,124 @@ class ParserChapter extends ParserBook {
         this.endUrl = "";
     }
 }
-;// CONCATENATED MODULE: ./src/js/Crawler/html/book/CreateTableRead.js
+;// CONCATENATED MODULE: ./src/js/Crawler/html/book/CreateRead.js
 
 
 
-function CreateTableRead(_bookChapter, _bId) {
-    let tbl = document.createElement('table');
-    tbl.id = "crawlerRead";
-    tbl.style.fontSize = "16px";
-    tbl.style.border = '1px solid black';
+function CreateRead(_bookChapter, _bId) {
+    let divRead = Object.assign(document.createElement("div"), {
+        id: "readMain"
+    });
+
+    divRead.appendChild(CreateReadNew(_bookChapter, _bId));
+    divRead.appendChild(CreateReadLocal(_bookChapter, _bId));
+
+    return divRead;
+}
+
+function CreateReadNew(_bookChapter, _bId) {
+    let divSelect = Object.assign(document.createElement("div"), {
+        id: "readDivSelect"
+    });
+
+
+    // spanIndex
+    let spanSave = Object.assign(document.createElement("span"), {
+        id: "readSpan"
+    });
+    spanSave.style.fontWeight = "bold";
+    spanSave.style.fontStyle = "italic";
+    spanSave.addEventListener('click', function () {
+        setReadLocal(_bookChapter, _bId, this.textContent, "Parsing");
+    });
+    divSelect.appendChild(spanSave);
+
+
+    // select
+    let select = Object.assign(document.createElement("select"), {
+        id: "readSelect",
+        size: 0
+    });
+    select.addEventListener("change", function () {
+        setReadLocal(_bookChapter, _bId, this.options[this.selectedIndex].value, "Parsing");
+    });
+
+    for (let chapter of _bookChapter.Data.Chapters) {
+        select.add(new Option(chapter.Index + ": " + chapter.Name, chapter.Index));
+    }
+    divSelect.appendChild(select);
+    
+
+    return divSelect;
+}
+
+function UpdateReadNew(_bookChapter, _bId, _index) {
+    document.querySelector("#readSpan").textContent = _index;
+
+    let readSelect = document.querySelector("#readSelect");
+    for (let i in readSelect.options) {
+        if (i == _index) {
+            readSelect.options[i].selected = true;
+
+            break;
+        }
+    }
+}
+
+function CreateReadLocal(_bookChapter, _bId) {
+    let divRL = Object.assign(document.createElement("div"), {
+        id: "readLocal"
+    });
+    divRL.style.fontSize = "16px";
+    divRL.style.border = '1px solid black';
+    divRL.style.display = "flex";
+    divRL.style.justifyContent = "space-around";
+
+    let spanType = document.createElement("span");
+    divRL.appendChild(spanType);
+
+    let spanIndex = document.createElement("span");
+    spanIndex.style.fontWeight = "bold";
+    divRL.appendChild(spanIndex);
+
+    let spanName = document.createElement("span");
+    divRL.appendChild(spanName);
+
+    let spanClear = document.createElement("span");
+    spanClear.textContent = "Clear";
+    spanClear.style.fontWeight = "bold";
+    spanClear.style.fontStyle = "italic";
+    spanClear.addEventListener('click', function () {
+        clearReadLocal(_bookChapter, _bId);
+    });
+    divRL.appendChild(spanClear);
+
+    UpdateReadLocal(_bookChapter, _bId, divRL);
+
+    return divRL;
+}
+
+function UpdateReadLocal(_bookChapter, _bId, _divRL = undefined) {
+    let readLocal = (_divRL === undefined) ? document.querySelectorAll("#readLocal span") : _divRL.querySelectorAll("span");
+
+    let spanType = readLocal[0];
+    let spanIndex = readLocal[1];
+    let spanName = readLocal[2];
 
     let bookId = getReadLocal();
     if (bookId[_bId] === undefined) {
-        let tB = tbl.createTBody();
+        spanType.textContent = "";
+        spanIndex.textContent = "";
+        spanName.textContent = "";
     }
     else {
+        spanType.textContent = bookId[_bId].type;
+
+        spanIndex.textContent = bookId[_bId].index;
+        spanIndex.style.fontWeight = "bold";
+
         let ch = GetChapterIndex(_bookChapter, bookId[_bId].index);
-
-        let tH = tbl.createTHead();
-        let trH = tH.insertRow();
-
-        let tdType = trH.insertCell();
-        tdType.textContent = bookId[_bId].type;
-
-        let tdIndex = trH.insertCell();
-        tdIndex.textContent = bookId[_bId].index;
-        tdIndex.style.fontWeight = "bold";
-
-        let tdName = trH.insertCell();
-        tdName.textContent = ch.Name;
-
-        let tdButton = trH.insertCell();
-        tdButton.textContent = "Clear";
-        tdButton.style.fontWeight = "bold";
-        tdButton.style.fontStyle = "italic";
-        tdButton.addEventListener('click', function () {
-            clearReadLocal(_bookChapter, _bId);
-        });
-
-
-        let tB = tbl.createTBody();
-    }
-
-    return tbl;
-}
-
-function CreateTableReadReplace(_bookChapter, _bId, _index) {
-    let body = document.querySelector("#crawlerRead tbody");
-    while (body.rows[0]) {
-        body.deleteRow(0);
-    }
-
-    for (let i = _index - 2; i <= _index + 2; i++) {
-        let ch = GetChapterIndex(_bookChapter, i);
-        if (ch !== undefined) {
-            let tr = body.insertRow();
-            if (_index === i) {
-                tr.style.fontWeight = "bold";
-            }
-
-            let tdType = tr.insertCell();
-            tdType.textContent = "";
-
-            let tdIndex = tr.insertCell();
-            tdIndex.textContent = ch.Index;
-
-            let tdName = tr.insertCell();
-            tdName.textContent = ch.Name;
-
-            let tdButton = tr.insertCell();
-            tdButton.textContent = "Save";
-            tdButton.addEventListener('click', function () {
-                setReadLocal(_bookChapter, _bId, ch.Index, "Parsing");
-            });
-        }
+        spanName.textContent = (ch === undefined) ? "" : ch.Name;
     }
 }
 
@@ -13224,15 +13268,10 @@ async function setReadLocal(_bookChapter, _bId, _index, _type) {
         type: _type,
         index: _index
     };
-    //bookId[_bId] = _index;
     bookId = JSON.stringify(bookId);
     localStorage.setItem("WebNovelRead", bookId);
 
-    //let tbl = document.querySelector("#crawlerRead")
-    //tbl.replaceWith(CreateTableRead(_bookChapter, _bId));
-    //document.querySelector("#crawlerRead").remove();
-    document.querySelector("#crawlerRead").hidden = true;
-    document.querySelector("#divTable").prepend(CreateTableRead(_bookChapter, _bId));
+    UpdateReadLocal(_bookChapter, _bId);
 
     CheckTotalAll();
 }
@@ -13244,11 +13283,7 @@ async function clearReadLocal(_bookChapter, _bId) {
     bookId = JSON.stringify(bookId);
     localStorage.setItem("WebNovelRead", bookId);
 
-    //let tbl = document.querySelector("#crawlerRead")
-    //tbl.replaceWith(CreateTableRead(_bookChapter, _bId));
-    //document.querySelector("#crawlerRead").remove();
-    document.querySelector("#crawlerRead").hidden = true;
-    document.querySelector("#divTable").prepend(CreateTableRead(_bookChapter, _bId));
+    UpdateReadLocal(_bookChapter, _bId);
 
     CheckTotalAll();
 }
@@ -13350,7 +13385,7 @@ function CreateTableSites(_sites, _bookChapters, _bId) {
             });
             inputButton.addEventListener('click', function () {
                 _sites[i][j].linkBook();
-                CreateTableReadReplace(_bookChapters, _bId, Math.abs(_sites[i][j].total));
+                UpdateReadNew(_bookChapters, _bId, Math.abs(_sites[i][j].total));
             });
             inputButton.addEventListener(eventCheck, function () {
                 if (this.value === "???" && _sites[i][j].total === 0) {
@@ -13413,7 +13448,7 @@ function CreateTableSites(_sites, _bookChapters, _bId) {
                     }
 
                     _sites[i][j].linkChapter(ch.Index, ch.Name);
-                    CreateTableReadReplace(_bookChapters, _bId, Math.abs(_sites[i][j].total));
+                    UpdateReadNew(_bookChapters, _bId, Math.abs(_sites[i][j].total));
                 });
             }
 
@@ -13619,7 +13654,7 @@ async function ReplaceText(_bId, _cId) {
     // ����������
     let pOrder = contentCheck.querySelectorAll("p._cfcmp");
     if (pOrder.length > 0) {
-        let p2 = await GetChapterFetch("https://m-webnovel-com.translate.goog/book/" + _bId + "/" + _cId + "?_x_tr_sl=en&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp", _cId);
+        let p2 = await GetChapterFetch("https://m-webnovel-com.translate.goog/book/" + _bId + "/" + _cId + "?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp", _cId);
         if (p2.length > 0) {
             var dict = {};
             let pReplace = document.querySelectorAll("#content-" + _cId + " > p");
@@ -13981,31 +14016,22 @@ async function CreateDivMain(_sitesParser, _sitesGetText, _bookChapters, _bookId
         value: "Parsing"
     });
     inputParsing.addEventListener('click', async function () {
-        let divTable = document.querySelector("#divTable");
-        if (divTable !== null) {
-            if (_statusChapter === StatusChapter.PRIVATE) {
-                document.querySelector(DivMainId + "_" + _statusChapter).appendChild(divTable);
-            }
-            else {
-                document.querySelector(DivMainId + "_" + _cId).appendChild(divTable);
-            }
-
-            let crawlerTable = document.querySelector("#crawlerId");
-            crawlerTable.setAttribute("cId", _cId);
-            crawlerTable.hidden = false;
-
-            //ParsingAll();
-            CheckTotalAll();
-        }
+        DivTableMove(_cId, _statusChapter, false);
     });
     divParsingReplaceGetText.appendChild(inputParsing);
+
+
+    // divReplace
+    let divReplace = Object.assign(document.createElement("div"), {
+        className: "divReplace",
+    });
 
 
     // inputReplaceText
     let inputReplaceText = Object.assign(document.createElement("input"), {
         className: "replace text",
         type: "button",
-        value: "ReplaceText"
+        value: "Text"
     });
     inputReplaceText.addEventListener('click', async function () {
         this.disabled = true;
@@ -14014,22 +14040,17 @@ async function CreateDivMain(_sitesParser, _sitesGetText, _bookChapters, _bookId
 
         this.parentNode.querySelector(".replace.tesseract").hidden = true;
 
-        let nick = document.querySelector("dialog header > div > i > img");
-        if (nick) {
-            setReadLocal(_bookChapters, _bookId, chapter.Index, nick.alt);
-        }
-        else {
-            setReadLocal(_bookChapters, _bookId, chapter.Index, "");
-        }
+        DivTableMove(_cId, _statusChapter, true);
+        setReadLocal(_bookChapters, _bookId, chapter.Index, "RText");
     });
-    divParsingReplaceGetText.appendChild(inputReplaceText);
+    divReplace.appendChild(inputReplaceText);
 
 
     // inputReplaceTesseract
     let inputReplaceTesseract = Object.assign(document.createElement("input"), {
         className: "replace tesseract",
         type: "button",
-        value: "ReplaceTesseract"
+        value: "Tesseract"
     });
     inputReplaceTesseract.addEventListener('click', async function () {
         this.disabled = true;
@@ -14038,15 +14059,14 @@ async function CreateDivMain(_sitesParser, _sitesGetText, _bookChapters, _bookId
 
         this.parentNode.querySelector(".replace.text").hidden = true;
 
-        let nick = document.querySelector("dialog header > div > i > img");
-        if (nick) {
-            setReadLocal(_bookChapters, _bookId, chapter.Index, nick.alt);
-        }
-        else {
-            setReadLocal(_bookChapters, _bookId, chapter.Index, "");
-        }
+        DivTableMove(_cId, _statusChapter, true);
+        setReadLocal(_bookChapters, _bookId, chapter.Index, "RTesseract");
     });
-    divParsingReplaceGetText.appendChild(inputReplaceTesseract);
+    divReplace.appendChild(inputReplaceTesseract);
+
+
+    // add divReplace
+    divParsingReplaceGetText.appendChild(divReplace);
 
 
     // inputGetText
@@ -14074,6 +14094,11 @@ async function CreateDivMain(_sitesParser, _sitesGetText, _bookChapters, _bookId
             this.disabled = false;
             return;
         }
+
+        if (tmpN === 1) {
+            DivTableMove(_cId, _statusChapter, true);
+            setReadLocal(_bookChapters, _bookId, chapter.Index, "GetText");
+        }
     });
     divParsingReplaceGetText.appendChild(inputGetText);
 
@@ -14082,16 +14107,13 @@ async function CreateDivMain(_sitesParser, _sitesGetText, _bookChapters, _bookId
     divMain.appendChild(divParsingReplaceGetText);
 
 
-
     // divTable
     if (document.querySelector("#divTable") === null) {
         let divTable = Object.assign(document.createElement("div"), {
             id: "divTable",
         });
 
-
-        divTable.appendChild(CreateTableRead(_bookChapters, _bookId));
-
+        divTable.appendChild(CreateRead(_bookChapters, _bookId));
 
         // tableCrawler
         let tableCrawler = CreateTableSites(_sitesParser, _bookChapters, _bookId);
@@ -14103,6 +14125,27 @@ async function CreateDivMain(_sitesParser, _sitesGetText, _bookChapters, _bookId
     }
 
     return divMain;
+}
+
+function DivTableMove(_cId, _statusChapter, _hidden) {
+    let divTable = document.querySelector("#divTable");
+    if (divTable !== null) {
+        if (_statusChapter === StatusChapter.PRIVATE) {
+            document.querySelector(DivMainId + "_" + _statusChapter).appendChild(divTable);
+        }
+        else {
+            document.querySelector(DivMainId + "_" + _cId).appendChild(divTable);
+        }
+
+        let crawlerTable = document.querySelector("#crawlerId");
+        crawlerTable.setAttribute("cId", _cId);
+        crawlerTable.hidden = _hidden; // Parsing = false, Replace/GetText = true
+
+        // Parsing
+        if (!_hidden) {
+            CheckTotalAll();
+        }
+    }
 }
 ;// CONCATENATED MODULE: ./src/js/Domain/StringProcent/tanimoto.js
 function tanimoto(s1, s2) {
@@ -16962,7 +17005,7 @@ function md5(d) { return rstr2hex(binl2rstr(binl_md5(rstr2binl(d), 8 * d.length)
 // @match       https://m.webnovel.com/book/*/*
 // @match       https://passport.webnovel.com/emaillogin.html*
 // @grant       GM_xmlhttpRequest
-// @version     0.8
+// @version     0.8.3
 // ==/UserScript==
 
 
