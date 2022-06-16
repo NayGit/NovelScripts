@@ -163,7 +163,7 @@ export async function ReplaceText(_bId, _cId) {
     // Сортировка
     let pOrder = contentCheck.querySelectorAll("p._cfcmp");
     if (pOrder.length > 0) {
-        let p2 = await GetChapterFetch("https://m-webnovel-com.translate.goog/book/" + _bId + "/" + _cId + "?_x_tr_sl=en&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp", _cId);
+        let p2 = await GetChapterFetch("https://m-webnovel-com.translate.goog/book/" + _bId + "/" + _cId + "?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp", _cId);
         if (p2.length > 0) {
             var dict = {};
             let pReplace = document.querySelectorAll("#content-" + _cId + " > p");
