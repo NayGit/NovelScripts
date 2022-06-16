@@ -92,11 +92,17 @@ export async function CreateDivMain(_sitesParser, _sitesGetText, _bookChapters, 
     divParsingReplaceGetText.appendChild(inputParsing);
 
 
+    // divReplace
+    let divReplace = Object.assign(document.createElement("div"), {
+        className: "divReplace",
+    });
+
+
     // inputReplaceText
     let inputReplaceText = Object.assign(document.createElement("input"), {
         className: "replace text",
         type: "button",
-        value: "ReplaceText"
+        value: "Text"
     });
     inputReplaceText.addEventListener('click', async function () {
         this.disabled = true;
@@ -113,14 +119,14 @@ export async function CreateDivMain(_sitesParser, _sitesGetText, _bookChapters, 
             setReadLocal(_bookChapters, _bookId, chapter.Index, "");
         }
     });
-    divParsingReplaceGetText.appendChild(inputReplaceText);
+    divReplace.appendChild(inputReplaceText);
 
 
     // inputReplaceTesseract
     let inputReplaceTesseract = Object.assign(document.createElement("input"), {
         className: "replace tesseract",
         type: "button",
-        value: "ReplaceTesseract"
+        value: "Tesseract"
     });
     inputReplaceTesseract.addEventListener('click', async function () {
         this.disabled = true;
@@ -137,7 +143,11 @@ export async function CreateDivMain(_sitesParser, _sitesGetText, _bookChapters, 
             setReadLocal(_bookChapters, _bookId, chapter.Index, "");
         }
     });
-    divParsingReplaceGetText.appendChild(inputReplaceTesseract);
+    divReplace.appendChild(inputReplaceTesseract);
+
+
+    // add divReplace
+    divParsingReplaceGetText.appendChild(divReplace);
 
 
     // inputGetText
@@ -171,7 +181,6 @@ export async function CreateDivMain(_sitesParser, _sitesGetText, _bookChapters, 
 
     // add ParsingReplaceGetText
     divMain.appendChild(divParsingReplaceGetText);
-
 
 
     // divTable
