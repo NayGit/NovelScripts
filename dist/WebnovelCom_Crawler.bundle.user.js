@@ -2301,7 +2301,7 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 var ___CSS_LOADER_URL_REPLACEMENT_0___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default()(___CSS_LOADER_URL_IMPORT_0___);
 var ___CSS_LOADER_URL_REPLACEMENT_1___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default()(___CSS_LOADER_URL_IMPORT_1___);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "/* https://icomoon.io/ --> IcoMoon - Free */\r\n/* to base64 */\r\n/* https://transfonter.org/ */\r\n@font-face {\r\n    font-family: 'icomoon';\r\n    src:\r\n        url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ") format('woff2'),\r\n        url(" + ___CSS_LOADER_URL_REPLACEMENT_1___ + ") format('woff');\r\n    font-weight: normal;\r\n    font-style: normal;\r\n    font-display: swap;\r\n}\r\n\r\ntd.search:before, td.read:before, td.parsing:before, .eye:before, .eye-hidden:before {\r\n    font-family: icomoon;\r\n    margin: 0px 5px;\r\n}\r\n\r\ntd.search:before {\r\n    content: \"\\e986\";\r\n}\r\n\r\ntd.read:before {\r\n    content: \"\\e926\";\r\n}\r\n\r\ntd.parsing:before {\r\n    content: \"\\e982\";\r\n}\r\n\r\n.eye:before {\r\n    content: \"\\e9ce\";\r\n}\r\n\r\n.eye-hidden:before {\r\n    content: \"\\e9d1\";\r\n}\r\n\r\n.eye, .eye-hidden {\r\n    text-align: center;\r\n}\r\n\r\ndiv.HomeNextChapter input, div.ParsingReplaceGetText input {\r\n    background: black;\r\n    color: darkgray;\r\n}\r\n\r\ndiv.locked input.replace, div.free input.replace, div.private input.replace {\r\n    display: none;\r\n}\r\n\r\ndiv.free input.gettext, div.private input.gettext {\r\n    display: none;\r\n}\r\n\r\ndiv.HomeNextChapter, div.ParsingReplaceGetText {\r\n    width: 100%;\r\n    margin-bottom: 5px;\r\n    display: flex;\r\n    justify-content: space-between;\r\n}\r\n\r\ndiv.ParsingReplaceGetText {\r\n    justify-content: space-around;\r\n}\r\n\r\ndiv.divReplace {\r\n    display: flex;\r\n    flex-direction: column;\r\n}\r\n\r\ndiv.divReplace input {\r\n    margin: 3px;\r\n}\r\n\r\nh1.idGlava {\r\n    background: darkgray;\r\n    color: black;\r\n    /*background: lightgray;*/\r\n}\r\n\r\ninput.tcError, input.tcUp, input.tcDown {\r\n    width: 100%;\r\n}\r\n\r\ninput.tcError {\r\n    background: red;\r\n}\r\n\r\ninput.tcUp {\r\n    background: lime;\r\n}\r\n\r\ninput.tcDown {\r\n    background: orange;\r\n}\r\n\r\ntable.hTrue tr.tcHidden {\r\n    display: none;\r\n}\r\n\r\n#divTable {\r\n    display: flex;\r\n    align-items: center;\r\n    flex-direction: column;\r\n}\r\n\r\n#divTable table {\r\n    margin: 3px auto;\r\n}\r\n\r\n#readDivSelect span {\r\n    margin-right: 5px;\r\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "/* https://icomoon.io/ --> IcoMoon - Free */\r\n/* to base64 */\r\n/* https://transfonter.org/ */\r\n@font-face {\r\n    font-family: 'icomoon';\r\n    src:\r\n        url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ") format('woff2'),\r\n        url(" + ___CSS_LOADER_URL_REPLACEMENT_1___ + ") format('woff');\r\n    font-weight: normal;\r\n    font-style: normal;\r\n    font-display: swap;\r\n}\r\n\r\ntd.search:before, td.read:before, td.parsing:before, .eye:before, .eye-hidden:before {\r\n    font-family: icomoon;\r\n    margin: 0px 5px;\r\n}\r\n\r\ntd.search:before {\r\n    content: \"\\e986\";\r\n}\r\n\r\ntd.read:before {\r\n    content: \"\\e926\";\r\n}\r\n\r\ntd.parsing:before {\r\n    content: \"\\e982\";\r\n}\r\n\r\n.eye:before {\r\n    content: \"\\e9ce\";\r\n}\r\n\r\n.eye-hidden:before {\r\n    content: \"\\e9d1\";\r\n}\r\n\r\n.eye, .eye-hidden {\r\n    text-align: center;\r\n}\r\n\r\ndiv.HomeNextChapter input, div.ParsingReplaceGetText input {\r\n    background: black;\r\n    color: darkgray;\r\n}\r\n\r\ndiv.locked input.replace, div.free input.replace, div.private input.replace {\r\n    display: none;\r\n}\r\n\r\ndiv.free input.gettext, div.private input.gettext {\r\n    display: none;\r\n}\r\n\r\ndiv.HomeNextChapter, div.ParsingReplaceGetText {\r\n    width: 100%;\r\n    margin-bottom: 5px;\r\n    display: flex;\r\n    justify-content: space-between;\r\n}\r\n\r\ndiv.ParsingReplaceGetText {\r\n    justify-content: space-around;\r\n}\r\n\r\ndiv.divReplace {\r\n    display: flex;\r\n    flex-direction: column;\r\n}\r\n\r\ndiv.divReplace input {\r\n    margin: 3px;\r\n}\r\n\r\nh1.idGlava {\r\n    background: darkgray;\r\n    color: black;\r\n    /*background: lightgray;*/\r\n}\r\n\r\ninput.tcError, input.tcUp, input.tcDown {\r\n    width: 100%;\r\n}\r\n\r\ninput.tcError {\r\n    background: red;\r\n}\r\n\r\ninput.tcUp {\r\n    background: lime;\r\n}\r\n\r\ninput.tcDown {\r\n    background: orange;\r\n}\r\n\r\ntable.hTrue tr.tcHidden {\r\n    display: none;\r\n}\r\n\r\n#divTable {\r\n    display: flex;\r\n    align-items: center;\r\n    flex-direction: column;\r\n}\r\n\r\n#divTable table {\r\n    margin: 3px auto;\r\n}\r\n\r\n#readDivSelect {\r\n    display: flex;\r\n    justify-content: space-between;\r\n}\r\n\r\n#readDivSelect select {\r\n    width: 90%\r\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -13185,7 +13185,7 @@ function UpdateReadNew(_bookChapter, _bId, _index) {
 
     let readSelect = document.querySelector("#readSelect");
     for (let i in readSelect.options) {
-        if (i == _index) {
+        if (readSelect.options[i].value == _index) {
             readSelect.options[i].selected = true;
 
             break;
@@ -13438,12 +13438,11 @@ function CreateTableSites(_sites, _bookChapters, _bId) {
                     let cId = document.querySelector("#crawlerId").getAttribute("cId");
 
                     let ch = GetChapterId(_bookChapters, cId);
-                    console.info(ch);
 
                     let tmpR = ReadLocalTotal(_bId);
                     if (tmpR !== undefined) {
                         if (ch.Index < tmpR) {
-                            ch = GetChapterIndex(_bookChapters, tmpR + 1);
+                            ch = GetChapterIndex(_bookChapters, tmpR * 1 + 1);
                         }
                     }
 
@@ -17005,7 +17004,7 @@ function md5(d) { return rstr2hex(binl2rstr(binl_md5(rstr2binl(d), 8 * d.length)
 // @match       https://m.webnovel.com/book/*/*
 // @match       https://passport.webnovel.com/emaillogin.html*
 // @grant       GM_xmlhttpRequest
-// @version     0.8.3
+// @version     0.8.4
 // ==/UserScript==
 
 

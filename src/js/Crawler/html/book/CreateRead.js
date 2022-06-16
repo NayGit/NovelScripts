@@ -53,7 +53,7 @@ export function UpdateReadNew(_bookChapter, _bId, _index) {
 
     let readSelect = document.querySelector("#readSelect");
     for (let i in readSelect.options) {
-        if (i == _index) {
+        if (readSelect.options[i].value == _index) {
             readSelect.options[i].selected = true;
 
             break;

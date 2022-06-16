@@ -109,6 +109,11 @@ table.hTrue tr.tcHidden {
     margin: 3px auto;
 }
 
-#readDivSelect span {
-    margin-right: 5px;
+#readDivSelect {
+    display: flex;
+    justify-content: space-between;
+}
+
+#readDivSelect select {
+    width: 90%
 }

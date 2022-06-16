@@ -138,12 +138,11 @@ export function CreateTableSites(_sites, _bookChapters, _bId) {
                     let cId = document.querySelector("#crawlerId").getAttribute("cId");
 
                     let ch = GetChapterId(_bookChapters, cId);
-                    console.info(ch);
 
                     let tmpR = ReadLocalTotal(_bId);
                     if (tmpR !== undefined) {
                         if (ch.Index < tmpR) {
-                            ch = GetChapterIndex(_bookChapters, tmpR + 1);
+                            ch = GetChapterIndex(_bookChapters, tmpR * 1 + 1);
                         }
                     }
 
