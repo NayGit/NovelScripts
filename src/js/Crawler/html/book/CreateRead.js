@@ -43,15 +43,20 @@ export function CreateReadNew(_bookChapter, _bId) {
         select.add(new Option(chapter.Index + ": " + chapter.Name, chapter.Index));
     }
     divSelect.appendChild(select);
-    
+
+    let tmpTotal = ReadLocalTotal(_bId);
+    if (tmpTotal !== undefined) {
+        UpdateReadNew(_bookChapter, _bId, tmpTotal, divSelect)
+    }
 
     return divSelect;
 }
 
-export function UpdateReadNew(_bookChapter, _bId, _index) {
-    document.querySelector("#readSpan").textContent = _index;
+export function UpdateReadNew(_bookChapter, _bId, _index, _divSelect = undefined) {
+    let readSpan = (_divSelect === undefined) ? document.querySelector("#readSpan") : _divSelect.querySelector("#readSpan");
+    readSpan.textContent = _index;
 
-    let readSelect = document.querySelector("#readSelect");
+    let readSelect = (_divSelect === undefined) ? document.querySelector("#readSelect") : _divSelect.querySelector("#readSelect");
     for (let i in readSelect.options) {
         if (readSelect.options[i].value == _index) {
             readSelect.options[i].selected = true;

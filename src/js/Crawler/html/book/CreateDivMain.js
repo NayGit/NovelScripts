@@ -7,7 +7,7 @@ import { CreateTableSites, CheckTotalAll } from './CreateTableSites';
 import { CreateRead, setReadLocal } from './CreateRead';
 
 import { ReplaceText } from 'Crawler/ReplaceText';
-import { ReplaceTesseract } from 'Crawler/ReplaceTesseract';
+import { ReplaceTesseract2 } from 'Crawler/ReplaceTesseract2';
 
 
 export async function CreateDivMain(_sitesParser, _sitesGetText, _bookChapters, _bookId, _chLast, _chIndexLastLocked, _statusChapter, _cId = "") {
@@ -110,7 +110,7 @@ export async function CreateDivMain(_sitesParser, _sitesGetText, _bookChapters, 
     });
     inputReplaceTesseract.addEventListener('click', async function () {
         this.disabled = true;
-        await ReplaceTesseract(_cId);
+        await ReplaceTesseract2(_cId);
         this.hidden = true;
 
         this.parentNode.querySelector(".replace.text").hidden = true;

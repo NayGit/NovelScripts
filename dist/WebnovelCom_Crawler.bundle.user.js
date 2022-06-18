@@ -13175,15 +13175,20 @@ function CreateReadNew(_bookChapter, _bId) {
         select.add(new Option(chapter.Index + ": " + chapter.Name, chapter.Index));
     }
     divSelect.appendChild(select);
-    
+
+    let tmpTotal = ReadLocalTotal(_bId);
+    if (tmpTotal !== undefined) {
+        UpdateReadNew(_bookChapter, _bId, tmpTotal, divSelect)
+    }
 
     return divSelect;
 }
 
-function UpdateReadNew(_bookChapter, _bId, _index) {
-    document.querySelector("#readSpan").textContent = _index;
+function UpdateReadNew(_bookChapter, _bId, _index, _divSelect = undefined) {
+    let readSpan = (_divSelect === undefined) ? document.querySelector("#readSpan") : _divSelect.querySelector("#readSpan");
+    readSpan.textContent = _index;
 
-    let readSelect = document.querySelector("#readSelect");
+    let readSelect = (_divSelect === undefined) ? document.querySelector("#readSelect") : _divSelect.querySelector("#readSelect");
     for (let i in readSelect.options) {
         if (readSelect.options[i].value == _index) {
             readSelect.options[i].selected = true;
@@ -13747,7 +13752,7 @@ var html2canvas = __webpack_require__(1120);
 var html2canvas_default = /*#__PURE__*/__webpack_require__.n(html2canvas);
 // EXTERNAL MODULE: ./node_modules/tesseract.js/src/index.js
 var src = __webpack_require__(7320);
-;// CONCATENATED MODULE: ./src/js/Crawler/ReplaceTesseract.js
+;// CONCATENATED MODULE: ./src/js/Crawler/ReplaceTesseract2.js
 
 
 
@@ -13766,14 +13771,14 @@ async function WorkerNew() {
     return worker;
 }
 
-function ReplaceTesseract_RemoveTag(_parrent) {
+function ReplaceTesseract2_RemoveTag(_parrent) {
     let y = _parrent.querySelectorAll("y.sy-0");
     for (let sy of y) {
         sy.remove();
     }
 }
 
-async function ReplaceTesseract_ArraySortOrder(_parrent) {
+async function ReplaceTesseract2_ArraySortOrder(_parrent) {
     let pCopy = _parrent;
     while (true) {
         if (!pCopy.classList.contains("_mix")) {
@@ -13789,7 +13794,7 @@ async function ReplaceTesseract_ArraySortOrder(_parrent) {
         }
     }
 
-    ReplaceTesseract_RemoveTag(pCopy);
+    ReplaceTesseract2_RemoveTag(pCopy);
 
     let str = "";
     [].slice.call(pCopy.children).sort(function (a, b) {
@@ -13814,51 +13819,106 @@ async function ReplaceTesseract_ArraySortOrder(_parrent) {
     return str;
 }
 
-async function ReplaceTesseract_ReplaceSymbolGO(_worker, _element) {
-    while (_element.tagName === undefined) {
-        _element = _element.parentElement;
-    }
+function ReplaceTesseract2_ReplaceSymbolGO(_element, _dict) {
+    let str = "";
+    _element.textContent.split('').forEach(element => {
+        if (_dict[element] !== undefined) {
+            str = str + _dict[element];
+        }
+        else {
+            str = str + element;
+        }
+    });
 
-    let c = await html2canvas_default()(_element);
-
-    let { data: { text } } = await _worker.recognize(c.toDataURL());
-
-    _element.textContent = text;
+    _element.textContent = str;
 }
 
-async function ReplaceTesseract_ReplaceSymbol(_worker, _element) {
+function ReplaceTesseract2_ReplaceSymbol(_element, _dict) {
     if (_element.hasChildNodes()) {
         let children = _element.childNodes;
 
         for (let ch of children) {
             if (ch.hasChildNodes()) {
-                await ReplaceTesseract_ReplaceSymbol(_worker, ch);
+                ReplaceTesseract2_ReplaceSymbol(ch, _dict);
             }
             else {
-                await ReplaceTesseract_ReplaceSymbolGO(_worker, ch);
+                ReplaceTesseract2_ReplaceSymbolGO(ch, _dict);
             }
         }
     }
     else {
-        await ReplaceTesseract_ReplaceSymbolGO(_worker, _element);
+        ReplaceTesseract2_ReplaceSymbolGO(_element, _dict);
     }
 }
 
-async function ReplaceTesseract(_cId) {
+async function ReplaceTesseract2(_cId) {
     let contentCheck = document.querySelector("#content-" + _cId);
 
     // ����������
     let pOrder = contentCheck.querySelectorAll("p._cfcmp");
     if (pOrder.length > 0) {
-        let p_cfcmp = document.querySelectorAll("#content-" + _cId + " > p");
-        for (let p of p_cfcmp) {
+        let pAll = document.querySelectorAll("#content-" + _cId + " > p");
+        for (let p of pAll) {
             p.translate = false;
         }
 
+        let _workerPre = await WorkerNew();
+        let dict = await Dict(_cId, _workerPre, {}, 1);
+        await _workerPre.terminate();
+
+        let p_cfnp = document.querySelectorAll("#content-" + _cId + " > p._cfnp");
+        for (let p of p_cfnp) {
+            ReplaceTesseract2_RemoveTag(p);
+
+            ReplaceTesseract2_ReplaceSymbol(p, dict);
+
+            p.translate = true;
+        }
+
+        //let p_cfcmp = document.querySelectorAll("#content-" + _cId + " > p._cfcmp");
+        //for (let p of p_cfcmp) {
+        //    p.translate = false;
+        //}
+
         contentCheck.translate = true;
 
-        WorkerCfnp(_cId);
-        WorkerCfcmp(_cId);
+        // ������� �����������
+        let observer = new IntersectionObserver((entries, observer) => {
+            // ��� ������ ������-�������� ��������
+            entries.forEach(async entry => {
+                // ���� ������� �������� �����������
+                if (entry.isIntersecting) {
+                    const pObserve = entry.target;
+
+                    // ���������� ����������
+                    observer.unobserve(pObserve);
+
+                    let pTr = document.createElement("p");
+
+                    pTr.innerText = await ReplaceTesseract2_ArraySortOrder(pObserve);
+                    ReplaceTesseract2_ReplaceSymbol(pTr, dict);
+
+
+                    pObserve.after(pTr);
+
+                    pObserve.style.display = "none";
+                }
+            })
+        },
+            {
+                // �������� �������� �������� - ������� ���������
+                root: null,
+                // ��� ��������
+                rootMargin: '0px',
+                // ������� ����������� - �������� �����������
+                threshold: 1.0
+            });
+
+        // � ������� ����� ������ �� ����� img �� ��������
+        let p_cfcmpMix = document.querySelectorAll("#content-" + _cId + " > p._cfcmp");
+        p_cfcmpMix.forEach(i => {
+            observer.observe(i)
+        });
     }
     else {
         alert("Chapter: Error")
@@ -13866,79 +13926,69 @@ async function ReplaceTesseract(_cId) {
     }
 }
 
-async function WorkerCfnp(_cId) {
-    var workerCnfp = await WorkerNew();
-    let p_cfnp = document.querySelectorAll("#content-" + _cId + " > p._cfnp");
+async function Dict(_cId, _workerPre, _dict, _i) {
+    console.warn(_i);
 
-    for (let p of p_cfnp) {
-        ReplaceTesseract_RemoveTag(p);
-
-        await ReplaceTesseract_ReplaceSymbol(workerCnfp, p);
-        p.translate = true;
+    if (Object.keys(_dict).length > 0 || _i > 20) {
+        return _dict;
     }
-}
 
-async function WorkerCfcmp(_cId) {
-    var workerCfcmp = await WorkerNew();
-
-    let stackP = [];
-
-    // ������� �����������
-    let observer = new IntersectionObserver((entries, observer) => {
-        // ��� ������ ������-�������� ��������
-        entries.forEach(async entry => {
-            // ���� ������� �������� �����������
-            if (entry.isIntersecting) {
-                let pObserve = entry.target;
-
-                stackP.push(pObserve);
-
-                // ���������� ����������
-                observer.unobserve(pObserve);
-            }
-        })
-    },
-        {
-            // �������� �������� �������� - ������� ���������
-            root: null,
-            // ��� ��������
-            rootMargin: '0px',
-            // ������� ����������� - �������� �����������
-            threshold: 0.8
-        });
-
-    // � ������� ����� ������ �� ����� img �� ��������
-    let p_cfcmpMix = document.querySelectorAll("#content-" + _cId + " > p._cfcmp");
-    p_cfcmpMix.forEach(i => {
-        observer.observe(i)
-    });
-
-    while (true) {
-        if (stackP.length > 0) {
-            let pObserve = stackP.shift();
-
-            let pTr = document.createElement("p");
-            pTr.className = pObserve.className;
-            pTr.classList.remove("_cfcmp");
-            pTr.classList.add("_rs");
-
-            pTr.translate = false;
-
-            pTr.innerText = await ReplaceTesseract_ArraySortOrder(pObserve);
-
-            pObserve.after(pTr);
-
-            pObserve.style.display = "none";
-
-            let pTrNew = document.querySelector("p." + pTr.className.replaceAll(' ', '.'));
-            await ReplaceTesseract_ReplaceSymbol(workerCfcmp, pTrNew);
-
-            pTrNew.translate = true;
+    let pAll = document.querySelectorAll("#content-" + _cId + " > p");
+    for (let p of pAll) {
+        let y = p.querySelectorAll("y.sy-0");
+        for (let sy of y) {
+            sy.remove();
         }
-        else {
-            await new Promise(r => setTimeout(r, 1000));
+
+        for (let s of p.textContent.split('')) {
+            _dict[s] = s;
         }
     }
+
+    delete _dict[' '];
+    delete _dict['\''];
+    delete _dict['"'];
+    delete _dict[String.fromCharCode(8211)]; //'�'.charCodeAt(0)
+    delete _dict[String.fromCharCode(8212)]; //'�'.charCodeAt(0)
+    delete _dict[String.fromCharCode(8230)]; //'�'.charCodeAt(0)
+
+
+    let tesseract = document.createElement('pre');
+    tesseract.style.fontSize = 16 + _i + "px";
+    tesseract.style.fontWeight = 'bold';
+    //tesseract.style.letterSpacing = _i + "px";
+    for (let s in _dict) {
+        tesseract.textContent = tesseract.textContent + _dict[s];
+    }
+    document.querySelector("#content-" + _cId).prepend(tesseract);
+
+
+    let c = await html2canvas_default()(tesseract);
+
+    let { data: { text } } = await _workerPre.recognize(c.toDataURL());
+
+
+    let tmpText = "";
+    for (let t of text.trim().replace(/\s/, '').replace(String.fromCharCode(32), '').split("\n")) {
+        tmpText = tmpText + t;
+    }
+    //console.info(tmpText, tmpText.length);
+
+    document.querySelector("#content-" + _cId + " pre").remove();
+
+    //console.info(Object.keys(_dict).length, tmpText.length)
+
+    if (Object.keys(_dict).length === tmpText.length) {
+        let i = 0;
+        for (let s in _dict) {
+            _dict[s] = tmpText[i];
+            console.info(s, _dict[s], tmpText[i].charCodeAt(0));
+            i++;
+        }
+        return _dict;
+    }
+
+    return Dict(_cId, _workerPre, {}, ++_i);
 }
 ;// CONCATENATED MODULE: ./src/js/Crawler/html/book/CreateDivMain.js
 
@@ -14053,7 +14103,7 @@ async function CreateDivMain(_sitesParser, _sitesGetText, _bookChapters, _bookId
     });
     inputReplaceTesseract.addEventListener('click', async function () {
         this.disabled = true;
-        await ReplaceTesseract(_cId);
+        await ReplaceTesseract2(_cId);
         this.hidden = true;
 
         this.parentNode.querySelector(".replace.text").hidden = true;
@@ -17004,7 +17054,7 @@ function md5(d) { return rstr2hex(binl2rstr(binl_md5(rstr2binl(d), 8 * d.length)
 // @match       https://m.webnovel.com/book/*/*
 // @match       https://passport.webnovel.com/emaillogin.html*
 // @grant       GM_xmlhttpRequest
-// @version     0.8.4
+// @version     0.8.5
 // ==/UserScript==
 
 
