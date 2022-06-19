@@ -1,18 +1,53 @@
-export async function ResponseToHTML(response) {
-    let bodyText = await response.text();
+export const FXmode = { fetchHTML: 'fetchHTML', fetchJSON: 'fetchJSON', xhrHTML: 'xhrHTML', xhrJSON: 'xhrJSON' };
 
-    let parser = new DOMParser();
-    let bodyHtml = parser.parseFromString(bodyText, 'text/html');
+export async function fetchXHR(_fxMode, _url, _param = {}) {
+    if (_fxMode === FXmode.fetchHTML || _fxMode === FXmode.fetchJSON) {
+        return await fetch(_url, _param)
+            .then(async response => {
+                if (!response.ok) {
+                    return Promise.reject(response);
+                }
 
-    return bodyHtml;
-}
+                if (_fxMode === FXmode.fetchHTML) {
+                    let parser = new DOMParser();
+                    return parser.parseFromString(await response.text(), 'text/html');
+                }
 
-export function fetchStatusHTML(response) {
-    return response.ok ? ResponseToHTML(response) : Promise.reject(response)
-}
+                if (_fxMode === FXmode.fetchJSON) {
+                    return response.json();
+                }
+            });
+    }
+    else {
+        // novelmtCom: redirect???
 
-export function fetchStatusJSON(response) {
-    return response.ok ? response.json() : Promise.reject(response)
+        return new Promise((resolve, reject) => {
+            GM_xmlhttpRequest(Object.assign(_param, {
+                url: _url,
+                onload: function (response) {
+                    //for (let o in response)
+                    //    console.warn(o, response[o]);
+
+                    //console.info(response["response"]);
+                    //console.warn(response.response);
+
+                    if (_fxMode === FXmode.xhrHTML) {
+                        let parser = new DOMParser();
+                        resolve(parser.parseFromString(response.response, 'text/html'));
+                    }
+
+                    if (FXmode === FXmode.xhrJSON) {
+                        resolve(JSON.parse(response.responseText));
+                    }
+
+                    reject(response);
+                },
+                onerror: function (response) {
+                    reject(response);
+                }
+            }));
+        });
+    }
 }
 
 export function fetchCatch(_error, _site) {

@@ -1,5 +1,5 @@
 import { ParserBook } from 'CrawlerClass/ParserClass';
-import { fetchStatusHTML, fetchStatusJSON, fetchCatch } from 'Domain/FetchResult';
+import { fetchXHR, FXmode, fetchCatch } from 'Domain/FetchResult';
 import { ReplaceName } from 'Domain/domain';
 import tanimoto from 'Domain/StringProcent/tanimoto';
 
@@ -18,8 +18,7 @@ export default class lightnovelsMe extends ParserBook {
     async totalChapters() {
         this.apiSearch = new URL(this.site.origin + "/api/search?keyword=" + this.bTitle + "&index=0&limit=20");
 
-        await fetch(this.apiSearch.href)
-            .then(res => fetchStatusJSON(res))
+        await fetchXHR(FXmode.fetchJSON, this.apiSearch.href)
             .then(data => {
                 if (Object.keys(data.results).length == 0) {
                     this.total = "B0";

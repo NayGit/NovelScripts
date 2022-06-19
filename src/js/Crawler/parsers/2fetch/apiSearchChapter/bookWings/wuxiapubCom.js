@@ -1,5 +1,5 @@
 import { ParserChapter } from 'CrawlerClass/ParserClass';
-import { fetchStatusHTML, fetchStatusJSON, fetchCatch } from 'Domain/FetchResult';
+import { fetchXHR, FXmode, fetchCatch } from 'Domain/FetchResult';
 import { ReplaceName } from 'Domain/domain';
 import tanimoto from 'Domain/StringProcent/tanimoto';
 
@@ -25,7 +25,7 @@ export default class wuxiapubCom extends ParserChapter {
             this.apiSearch = new URL(this.site.origin + "/e/search/index.php");
 
             let isError = '';
-            await fetch(this.apiSearch.href, {
+            await fetchXHR(FXmode.fetchHTML, this.apiSearch.href, {
                 "headers": {
                     "content-type": "application/x-www-form-urlencoded",
                 },
@@ -33,7 +33,6 @@ export default class wuxiapubCom extends ParserChapter {
                 "body": "show=title&tempid=1&tbname=news&keyboard=" + this.bTitle,
                 "method": "POST",
             })
-                .then(res => fetchStatusHTML(res))
                 .then(data => {
                     if (data.title === "Message hint" || data.title == "") {
                         isError = "B0";
@@ -62,8 +61,7 @@ export default class wuxiapubCom extends ParserChapter {
         }
 
         if (this.checkBookSite()) {
-            return await fetch(this.siteBook.href)
-                .then(res => fetchStatusHTML(res))
+            return await fetchXHR(FXmode.fetchHTML, this.siteBook.href)
                 .then(data => {
                     this.total = data.querySelector("div.novel-info > div.header-stats > span:nth-child(1) > strong").textContent.trim();
                     return;

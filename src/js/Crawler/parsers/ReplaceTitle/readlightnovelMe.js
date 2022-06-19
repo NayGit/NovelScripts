@@ -1,5 +1,5 @@
 import { ParserChapter } from 'CrawlerClass/ParserClass';
-import { fetchStatusHTML, fetchStatusJSON, fetchCatch } from 'Domain/FetchResult';
+import { fetchXHR, FXmode, fetchCatch } from 'Domain/FetchResult';
 import { ReplaceName } from 'Domain/domain';
 
 export default class readlightnovelMe extends ParserChapter {
@@ -22,8 +22,7 @@ export default class readlightnovelMe extends ParserChapter {
     }
 
     async totalChapters() {
-        await fetch(this.siteSearch.href)
-            .then(res => fetchStatusHTML(res))
+        await fetchXHR(FXmode.fetchHTML, this.siteSearch.href)
             .then(data => {
                 this.total = data.querySelector("div.novel-detail-item[style='display:flex;'] > div.novel-detail-body > ul > li:first-child > a").textContent.match(/\D*(\d+)/)[1];
                 return;

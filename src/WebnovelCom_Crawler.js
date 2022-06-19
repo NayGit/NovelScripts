@@ -8,7 +8,7 @@
 // @match       https://m.webnovel.com/book/*/*
 // @match       https://passport.webnovel.com/emaillogin.html*
 // @grant       GM_xmlhttpRequest
-// @version     0.8.6
+// @version     0.8.7
 // ==/UserScript==
 
 'use strict';
@@ -104,9 +104,10 @@ import ranobesNet from './js/Crawler/parsers/search/ranobesNet';
 
 const SitesParser = [
     [
-        new lightnovelplusCom(),
+        new pandanovelCom(),
     ],
     [
+        new lightnovelplusCom(),
     ],
     [
         // 2fetch/apiSearch
@@ -148,7 +149,7 @@ const SitesParser = [
         // htmlSearch
         new lightnovelWorld(),
         new novelhallCom(),
-        new pandanovelCom(),
+    //new pandanovelCom(),
         new readlightnovelsNet(),
 
         // htmlSearchChapter

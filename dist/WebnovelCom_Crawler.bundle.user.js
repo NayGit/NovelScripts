@@ -12673,24 +12673,59 @@ const SelectLoginId = "#" + SelectLogin;
 
 const LS_Login_LP = "WebNovel_Login_LP";
 ;// CONCATENATED MODULE: ./src/js/Domain/FetchResult.js
-async function ResponseToHTML(response) {
-    let bodyText = await response.text();
+const FetchResult_FXmode = { fetchHTML: 'fetchHTML', fetchJSON: 'fetchJSON', xhrHTML: 'xhrHTML', xhrJSON: 'xhrJSON' };
 
-    let parser = new DOMParser();
-    let bodyHtml = parser.parseFromString(bodyText, 'text/html');
+async function FetchResult_fetchXHR(_fxMode, _url, _param = {}) {
+    if (_fxMode === FetchResult_FXmode.fetchHTML || _fxMode === FetchResult_FXmode.fetchJSON) {
+        return await fetch(_url, _param)
+            .then(async response => {
+                if (!response.ok) {
+                    return Promise.reject(response);
+                }
 
-    return bodyHtml;
+                if (_fxMode === FetchResult_FXmode.fetchHTML) {
+                    let parser = new DOMParser();
+                    return parser.parseFromString(await response.text(), 'text/html');
+                }
+
+                if (_fxMode === FetchResult_FXmode.fetchJSON) {
+                    return response.json();
+                }
+            });
+    }
+    else {
+        // novelmtCom: redirect???
+
+        return new Promise((resolve, reject) => {
+            GM_xmlhttpRequest(Object.assign(_param, {
+                url: _url,
+                onload: function (response) {
+                    //for (let o in response)
+                    //    console.warn(o, response[o]);
+
+                    //console.info(response["response"]);
+                    //console.warn(response.response);
+
+                    if (_fxMode === FetchResult_FXmode.xhrHTML) {
+                        let parser = new DOMParser();
+                        resolve(parser.parseFromString(response.response, 'text/html'));
+                    }
+
+                    if (FetchResult_FXmode === FetchResult_FXmode.xhrJSON) {
+                        resolve(JSON.parse(response.responseText));
+                    }
+
+                    reject(response);
+                },
+                onerror: function (response) {
+                    reject(response);
+                }
+            }));
+        });
+    }
 }
 
-function fetchStatusHTML(response) {
-    return response.ok ? ResponseToHTML(response) : Promise.reject(response)
-}
-
-function fetchStatusJSON(response) {
-    return response.ok ? response.json() : Promise.reject(response)
-}
-
-function fetchCatch(_error, _site) {
+function FetchResult_fetchCatch(_error, _site) {
     if (_error instanceof TypeError) {
         if (_error.message == "Failed to fetch") {
             console.warn('TypeError: ' + new URL(_site));
@@ -12747,12 +12782,11 @@ function glavaWebNovel(loc) {
 async function downloadBookIfno(_loc) {
     let url = _loc.origin + '/go/pcm/book/get-book-detail?_csrfToken=' + getCookie("_csrfToken") + '&bookId=' + bookWebNovel(_loc);
 
-    return await fetch(url)
-        .then(res => fetchStatusJSON(res))
+    return await FetchResult_fetchXHR(FetchResult_FXmode.fetchJSON, url)
         .then(data => {
             return data;
         })
-        .catch(err => fetchCatch(err, url));
+        .catch(err => FetchResult_fetchCatch(err, url));
 }
 
 async function downloadBookChapters(_loc) {
@@ -12765,7 +12799,6 @@ async function downloadBookChapters(_loc) {
             headers: { 'User-Agent': 'Mozilla/mobile QDHWReaderAndroid/5.9.3/643/2000002/000000005bfaef39ffffffffd99fa8a4' },
             onload: function (data) {
                 resolve(JSON.parse(data.response));
-
             },
             onerror: function (error) {
                 reject(error);
@@ -13123,7 +13156,7 @@ class ParserBook extends Parser {
     }
 }
 
-class ParserChapter extends ParserBook {
+class ParserClass_ParserChapter extends ParserBook {
     constructor(_site) {
         super(_site);
         this.endUrl = "";
@@ -13435,7 +13468,7 @@ function CreateTableSites(_sites, _bookChapters, _bId) {
 
 
             // Read
-            if (_sites[i][j] instanceof ParserChapter) {
+            if (_sites[i][j] instanceof ParserClass_ParserChapter) {
                 let tdRead = trB.insertCell();
                 tdRead.className = "read"
                 tdRead.style.border = '1px solid black';
@@ -13470,7 +13503,7 @@ function CreateTableSites(_sites, _bookChapters, _bId) {
 
 
             // -_-
-            if (!(_sites[i][j] instanceof ParserChapter)) {
+            if (!(_sites[i][j] instanceof ParserClass_ParserChapter)) {
                 tdTotal.colSpan = "2";
             }
         }
@@ -13552,8 +13585,7 @@ function ParsingAll() {
 //}
 
 async function GetChapterFetch(_url, _cId) {
-    return await fetch(_url)
-        .then(res => fetchStatusHTML(res))
+    return await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, _url)
         .then(data => {
             let pOrig = data.querySelectorAll("#content-" + _cId + " > p");
 
@@ -13569,7 +13601,7 @@ async function GetChapterFetch(_url, _cId) {
                 return [];
             }
         })
-        .catch(err => fetchCatch(err, this.siteSearch.href));
+        .catch(err => FetchResult_fetchCatch(err, this.siteSearch.href));
 }
 
 function RemoveTag(_parrent) {
@@ -14183,7 +14215,7 @@ function DivTableMove(_cId, _statusChapter, _hidden) {
     }
 }
 ;// CONCATENATED MODULE: ./src/js/Domain/StringProcent/tanimoto.js
-function tanimoto(s1, s2) {
+function tanimoto_tanimoto(s1, s2) {
     s1 = Array.from(s1.toLowerCase());
     s2 = Array.from(s2.toLowerCase());
 
@@ -14221,8 +14253,7 @@ class mWuxiaworldCo extends ParserBook {
     async totalChapters() {
         if (this.checkBookUndefined()) {
             let isError = '';
-            await fetch(this.siteSearch.href)
-                .then(res => fetchStatusHTML(res))
+            await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteSearch.href)
                 .then(data => {
                     let block = data.querySelectorAll("div.result-container_2.result-container > ul.result-list > li.list-item");
 
@@ -14234,7 +14265,7 @@ class mWuxiaworldCo extends ParserBook {
                     for (let book of block) {
                         let titleParser = book.querySelector("a.list-img > img.item-img").alt;
 
-                        let diff = tanimoto(this.bTitle, titleParser);
+                        let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                         if (diff > 0.8) {
                             this.siteBook = this.site.origin + book.querySelector("a.list-img").pathname;
@@ -14243,7 +14274,7 @@ class mWuxiaworldCo extends ParserBook {
                         }
                     }
                 })
-                .catch(err => isError = fetchCatch(err, this.siteSearch.href));
+                .catch(err => isError = FetchResult_fetchCatch(err, this.siteSearch.href));
 
             if (isError != '') {
                 this.total = isError;
@@ -14252,8 +14283,7 @@ class mWuxiaworldCo extends ParserBook {
         }
 
         if (this.checkBookSite()) {
-            return await fetch(this.siteBook.href)
-                .then(res => fetchStatusHTML(res))
+            return await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteBook.href)
                 .then(data => {
                     let allCH = data.querySelector("#detail > div.chapter-wrapper > ul").getElementsByTagName("a");
                     for (let i = allCH.length - 1; i >= 0; i--) {
@@ -14268,7 +14298,7 @@ class mWuxiaworldCo extends ParserBook {
                     this.total = data.querySelector("#detail > div.chapter-wrapper > div > a").textContent.match(/\D*(\d+)/)[1] * -1;
                     return;
                 })
-                .catch(err => this.total = fetchCatch(err, this.siteBook.href));
+                .catch(err => this.total = FetchResult_fetchCatch(err, this.siteBook.href));
         }
 
         this.total = "S0";
@@ -14293,8 +14323,7 @@ class novelupdatesCc extends ParserBook {
     async totalChapters() {
         if (this.checkBookUndefined()) {
             let isError = '';
-            await fetch(this.siteSearch.href)
-                .then(res => fetchStatusHTML(res))
+            await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteSearch.href)
                 .then(data => {
                     let block = data.querySelectorAll("div.result-container_2.result-container > ul.result-list > li.list-item");
 
@@ -14306,7 +14335,7 @@ class novelupdatesCc extends ParserBook {
                     for (let book of block) {
                         let titleParser = book.querySelector("a.list-img > img.item-img").alt;
 
-                        let diff = tanimoto(this.bTitle, titleParser);
+                        let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                         if (diff > 0.8) {
                             this.siteBook = this.site.origin + book.querySelector("a.list-img").pathname;
@@ -14315,7 +14344,7 @@ class novelupdatesCc extends ParserBook {
                         }
                     }
                 })
-                .catch(err => isError = fetchCatch(err, this.siteSearch.href));
+                .catch(err => isError = FetchResult_fetchCatch(err, this.siteSearch.href));
 
             if (isError != '') {
                 this.total = isError;
@@ -14324,8 +14353,7 @@ class novelupdatesCc extends ParserBook {
         }
 
         if (this.checkBookSite()) {
-            return await fetch(this.siteBook.href)
-                .then(res => fetchStatusHTML(res))
+            return await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteBook.href)
                 .then(data => {
                     let allCH = data.querySelector("#detail > div.chapter-wrapper > ul").getElementsByTagName("a");
                     for (let i = allCH.length - 1; i >= 0; i--) {
@@ -14340,7 +14368,7 @@ class novelupdatesCc extends ParserBook {
                     this.total = data.querySelector("#detail > div.chapter-wrapper > div > a").textContent.match(/\D*(\d+)/)[1] * -1;
                     return;
                 })
-                .catch(err => this.total = fetchCatch(err, this.siteBook.href));
+                .catch(err => this.total = FetchResult_fetchCatch(err, this.siteBook.href));
         }
 
         this.total = "S0";
@@ -14365,8 +14393,7 @@ class readlightnovelCc extends ParserBook {
     async totalChapters() {
         if (this.checkBookUndefined()) {
             let isError = '';
-            await fetch(this.siteSearch.href)
-                .then(res => fetchStatusHTML(res))
+            await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteSearch.href)
                 .then(data => {
                     let block = data.querySelectorAll("div.result-container_2.result-container > ul.result-list > li.list-item");
 
@@ -14378,7 +14405,7 @@ class readlightnovelCc extends ParserBook {
                     for (let book of block) {
                         let titleParser = book.querySelector("a.list-img > img.item-img").alt;
 
-                        let diff = tanimoto(this.bTitle, titleParser);
+                        let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                         if (diff > 0.8) {
                             this.siteBook = this.site.origin + book.querySelector("a.list-img").pathname;
@@ -14387,7 +14414,7 @@ class readlightnovelCc extends ParserBook {
                         }
                     }
                 })
-                .catch(err => isError = fetchCatch(err, this.siteSearch.href));
+                .catch(err => isError = FetchResult_fetchCatch(err, this.siteSearch.href));
 
             if (isError != '') {
                 this.total = isError;
@@ -14396,8 +14423,7 @@ class readlightnovelCc extends ParserBook {
         }
 
         if (this.checkBookSite()) {
-            return await fetch(this.siteBook.href)
-                .then(res => fetchStatusHTML(res))
+            return await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteBook.href)
                 .then(data => {
                     let allCH = data.querySelector("#detail > div.chapter-wrapper > ul").getElementsByTagName("a");
                     for (let i = allCH.length - 1; i >= 0; i--) {
@@ -14412,7 +14438,7 @@ class readlightnovelCc extends ParserBook {
                     this.total = data.querySelector("#detail > div.chapter-wrapper > div > a").textContent.match(/\D*(\d+)/)[1] * -1;
                     return;
                 })
-                .catch(err => this.total = fetchCatch(err, this.siteBook.href));
+                .catch(err => this.total = FetchResult_fetchCatch(err, this.siteBook.href));
         }
 
         this.total = "S0";
@@ -14437,8 +14463,7 @@ class readlightnovelCo extends ParserBook {
     async totalChapters() {
         if (this.checkBookUndefined()) {
             let isError = '';
-            await fetch(this.siteSearch.href)
-                .then(res => fetchStatusHTML(res))
+            await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteSearch.href)
                 .then(data => {
                     let block = data.querySelectorAll("div.result-container_2.result-container > ul.result-list > li.list-item");
 
@@ -14450,7 +14475,7 @@ class readlightnovelCo extends ParserBook {
                     for (let book of block) {
                         let titleParser = book.querySelector("a.list-img > img.item-img").alt;
 
-                        let diff = tanimoto(this.bTitle, titleParser);
+                        let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                         if (diff > 0.8) {
                             this.siteBook = this.site.origin + book.querySelector("a.list-img").pathname;
@@ -14459,7 +14484,7 @@ class readlightnovelCo extends ParserBook {
                         }
                     }
                 })
-                .catch(err => isError = fetchCatch(err, this.siteSearch.href));
+                .catch(err => isError = FetchResult_fetchCatch(err, this.siteSearch.href));
 
             if (isError != '') {
                 this.total = isError;
@@ -14468,8 +14493,7 @@ class readlightnovelCo extends ParserBook {
         }
 
         if (this.checkBookSite()) {
-            return await fetch(this.siteBook.href)
-                .then(res => fetchStatusHTML(res))
+            return await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteBook.href)
                 .then(data => {
                     let allCH = data.querySelector("#detail > div.chapter-wrapper > ul").getElementsByTagName("a");
                     for (let i = allCH.length - 1; i >= 0; i--) {
@@ -14484,7 +14508,7 @@ class readlightnovelCo extends ParserBook {
                     this.total = data.querySelector("#detail > div.chapter-wrapper > div > a").textContent.match(/\D*(\d+)/)[1] * -1;
                     return;
                 })
-                .catch(err => this.total = fetchCatch(err, this.siteBook.href));
+                .catch(err => this.total = FetchResult_fetchCatch(err, this.siteBook.href));
         }
 
         this.total = "S0";
@@ -14496,7 +14520,7 @@ class readlightnovelCo extends ParserBook {
 
 
 
-class lightnovelreaderOrg extends ParserChapter {
+class lightnovelreaderOrg extends ParserClass_ParserChapter {
     constructor() {
         super('https://lightnovelreader.org/');
         this.apiSearch = '';
@@ -14517,8 +14541,7 @@ class lightnovelreaderOrg extends ParserChapter {
             this.apiSearch = new URL(this.site.origin + "/search/autocomplete?query=" + this.bTitle);
 
             let isError = '';
-            await fetch(this.apiSearch.href)
-                .then(res => fetchStatusJSON(res))
+            await FetchResult_fetchXHR(FetchResult_FXmode.fetchJSON, this.apiSearch.href)
                 .then(data => {
                     if (Object.keys(data).length == 0) {
                         isError = "B0";
@@ -14528,7 +14551,7 @@ class lightnovelreaderOrg extends ParserChapter {
                     for (let book of data.results) {
                         let titleParser = book.original_title;
 
-                        let diff = tanimoto(this.bTitle, titleParser);
+                        let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                         if (diff > 0.8) {
                             this.siteBook = book.link;
@@ -14537,7 +14560,7 @@ class lightnovelreaderOrg extends ParserChapter {
                         }
                     }
                 })
-                .catch(err => isError = fetchCatch(err, this.apiSearch.href));
+                .catch(err => isError = FetchResult_fetchCatch(err, this.apiSearch.href));
 
             if (isError != '') {
                 this.total = isError;
@@ -14546,13 +14569,12 @@ class lightnovelreaderOrg extends ParserChapter {
         }
 
         if (this.checkBookSite()) {
-            return await fetch(this.siteBook.href)
-                .then(res => fetchStatusHTML(res))
+            return await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteBook.href)
                 .then(data => {
                     this.total = data.querySelector("body > section:nth-child(4) > div > div > div.col-12.col-xl-9 > div > div:nth-child(2) > div > div.novels-detail-right > ul > li:nth-child(9) > div.novels-detail-right-in-right > a:nth-child(1)").textContent.match(/\D*(\d+)/)[1];
                     return;
                 })
-                .catch(err => this.total = fetchCatch(err, url));
+                .catch(err => this.total = FetchResult_fetchCatch(err, url));
         }
 
         this.total = "S0";
@@ -14564,7 +14586,7 @@ class lightnovelreaderOrg extends ParserChapter {
 
 
 
-class ltnovelCom extends ParserChapter {
+class ltnovelCom extends ParserClass_ParserChapter {
     constructor() {
         super('https://www.ltnovel.com/');
         this.endUrl = '.html';
@@ -14586,7 +14608,7 @@ class ltnovelCom extends ParserChapter {
             this.apiSearch = new URL(this.site.origin + "/e/search/index.php");
 
             let isError = '';
-            await fetch(this.apiSearch.href, {
+            await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.apiSearch.href, {
                 "headers": {
                     "content-type": "application/x-www-form-urlencoded",
                 },
@@ -14594,7 +14616,6 @@ class ltnovelCom extends ParserChapter {
                 "body": "show=title&tempid=1&tbname=news&keyboard=" + this.bTitle,
                 "method": "POST",
             })
-                .then(res => fetchStatusHTML(res))
                 .then(data => {
                     if (data.title === "Message hint" || data.title == "") {
                         isError = "B0";
@@ -14605,7 +14626,7 @@ class ltnovelCom extends ParserChapter {
                     for (let book of block) {
                         let titleParser = book.querySelector("a > h4.novel-title.text2row").textContent;
 
-                        let diff = tanimoto(this.bTitle, titleParser);
+                        let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                         if (diff > 0.8) {
                             this.siteBook = this.site.origin + book.querySelector("a").pathname;
@@ -14614,7 +14635,7 @@ class ltnovelCom extends ParserChapter {
                         }
                     }
                 })
-                .catch(err => isError = fetchCatch(err, this.apiSearch.href));
+                .catch(err => isError = FetchResult_fetchCatch(err, this.apiSearch.href));
 
             if (isError != '') {
                 this.total = isError;
@@ -14623,13 +14644,12 @@ class ltnovelCom extends ParserChapter {
         }
 
         if (this.checkBookSite()) {
-            return await fetch(this.siteBook.href)
-                .then(res => fetchStatusHTML(res))
+            return await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteBook.href)
                 .then(data => {
                     this.total = data.querySelector("div.novel-info > div.header-stats > span:nth-child(1) > strong").textContent.trim();
                     return;
                 })
-                .catch(err => this.total = fetchCatch(err, this.siteBook.href));
+                .catch(err => this.total = FetchResult_fetchCatch(err, this.siteBook.href));
         }
 
         this.total = "S0";
@@ -14641,7 +14661,7 @@ class ltnovelCom extends ParserChapter {
 
 
 
-class novelmtCom extends ParserChapter {
+class novelmtCom extends ParserClass_ParserChapter {
     constructor() {
         super('https://www.novelmt.com/');
         this.endUrl = '.html';
@@ -14663,7 +14683,7 @@ class novelmtCom extends ParserChapter {
             this.apiSearch = new URL(this.site.origin + "/e/search/index.php");
 
             let isError = '';
-            await fetch(this.apiSearch.href, {
+            await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.apiSearch.href, {
                 "headers": {
                     "content-type": "application/x-www-form-urlencoded",
                 },
@@ -14671,7 +14691,6 @@ class novelmtCom extends ParserChapter {
                 "body": "show=title&tempid=1&tbname=news&keyboard=" + this.bTitle,
                 "method": "POST",
             })
-                .then(res => fetchStatusHTML(res))
                 .then(data => {
                     if (data.title === "Message hint" || data.title == "") {
                         isError = "B0";
@@ -14682,7 +14701,7 @@ class novelmtCom extends ParserChapter {
                     for (let book of block) {
                         let titleParser = book.querySelector("a > h4.novel-title.text2row").textContent;
 
-                        let diff = tanimoto(this.bTitle, titleParser);
+                        let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                         if (diff > 0.8) {
                             this.siteBook = this.site.origin + book.querySelector("a").pathname;
@@ -14691,7 +14710,7 @@ class novelmtCom extends ParserChapter {
                         }
                     }
                 })
-                .catch(err => isError = fetchCatch(err, this.apiSearch.href));
+                .catch(err => isError = FetchResult_fetchCatch(err, this.apiSearch.href));
 
             if (isError != '') {
                 this.total = isError;
@@ -14700,13 +14719,12 @@ class novelmtCom extends ParserChapter {
         }
 
         if (this.checkBookSite()) {
-            return await fetch(this.siteBook.href)
-                .then(res => fetchStatusHTML(res))
+            return await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteBook.href)
                 .then(data => {
                     this.total = data.querySelector("div.novel-info > div.header-stats > span:nth-child(1) > strong").textContent.trim();
                     return;
                 })
-                .catch(err => this.total = fetchCatch(err, this.siteBook.href));
+                .catch(err => this.total = FetchResult_fetchCatch(err, this.siteBook.href));
         }
 
         this.total = "S0";
@@ -14718,7 +14736,7 @@ class novelmtCom extends ParserChapter {
 
 
 
-class readwnCom extends ParserChapter {
+class readwnCom extends ParserClass_ParserChapter {
     constructor() {
         super('https://www.readwn.com/');
         this.endUrl = '.html';
@@ -14740,7 +14758,7 @@ class readwnCom extends ParserChapter {
             this.apiSearch = new URL(this.site.origin + "/e/search/index.php");
 
             let isError = '';
-            await fetch(this.apiSearch.href, {
+            await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.apiSearch.href, {
                 "headers": {
                     "content-type": "application/x-www-form-urlencoded",
                 },
@@ -14748,7 +14766,6 @@ class readwnCom extends ParserChapter {
                 "body": "show=title&tempid=1&tbname=news&keyboard=" + this.bTitle,
                 "method": "POST",
             })
-                .then(res => fetchStatusHTML(res))
                 .then(data => {
                     if (data.title === "Message hint" || data.title == "") {
                         isError = "B0";
@@ -14759,7 +14776,7 @@ class readwnCom extends ParserChapter {
                     for (let book of block) {
                         let titleParser = book.querySelector("a > h4.novel-title.text2row").textContent;
 
-                        let diff = tanimoto(this.bTitle, titleParser);
+                        let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                         if (diff > 0.8) {
                             this.siteBook = this.site.origin + book.querySelector("a").pathname;
@@ -14768,7 +14785,7 @@ class readwnCom extends ParserChapter {
                         }
                     }
                 })
-                .catch(err => isError = fetchCatch(err, this.apiSearch.href));
+                .catch(err => isError = FetchResult_fetchCatch(err, this.apiSearch.href));
 
             if (isError != '') {
                 this.total = isError;
@@ -14777,13 +14794,12 @@ class readwnCom extends ParserChapter {
         }
 
         if (this.checkBookSite()) {
-            return await fetch(this.siteBook.href)
-                .then(res => fetchStatusHTML(res))
+            return await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteBook.href)
                 .then(data => {
                     this.total = data.querySelector("div.novel-info > div.header-stats > span:nth-child(1) > strong").textContent.trim();
                     return;
                 })
-                .catch(err => this.total = fetchCatch(err, this.siteBook.href));
+                .catch(err => this.total = FetchResult_fetchCatch(err, this.siteBook.href));
         }
 
         this.total = "S0";
@@ -14795,7 +14811,7 @@ class readwnCom extends ParserChapter {
 
 
 
-class wuxiahereCom extends ParserChapter {
+class wuxiahereCom extends ParserClass_ParserChapter {
     constructor() {
         super('https://www.wuxiahere.com/');
         this.endUrl = '.html';
@@ -14817,7 +14833,7 @@ class wuxiahereCom extends ParserChapter {
             this.apiSearch = new URL(this.site.origin + "/e/search/index.php");
 
             let isError = '';
-            await fetch(this.apiSearch.href, {
+            await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.apiSearch.href, {
                 "headers": {
                     "content-type": "application/x-www-form-urlencoded",
                 },
@@ -14825,7 +14841,6 @@ class wuxiahereCom extends ParserChapter {
                 "body": "show=title&tempid=1&tbname=news&keyboard=" + this.bTitle,
                 "method": "POST",
             })
-                .then(res => fetchStatusHTML(res))
                 .then(data => {
                     if (data.title === "Message hint" || data.title == "") {
                         isError = "B0";
@@ -14836,7 +14851,7 @@ class wuxiahereCom extends ParserChapter {
                     for (let book of block) {
                         let titleParser = book.querySelector("a > h4.novel-title.text2row").textContent;
 
-                        let diff = tanimoto(this.bTitle, titleParser);
+                        let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                         if (diff > 0.8) {
                             this.siteBook = this.site.origin + book.querySelector("a").pathname;
@@ -14845,7 +14860,7 @@ class wuxiahereCom extends ParserChapter {
                         }
                     }
                 })
-                .catch(err => isError = fetchCatch(err, this.apiSearch.href));
+                .catch(err => isError = FetchResult_fetchCatch(err, this.apiSearch.href));
 
             if (isError != '') {
                 this.total = isError;
@@ -14854,13 +14869,12 @@ class wuxiahereCom extends ParserChapter {
         }
 
         if (this.checkBookSite()) {
-            return await fetch(this.siteBook.href)
-                .then(res => fetchStatusHTML(res))
+            return await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteBook.href)
                 .then(data => {
                     this.total = data.querySelector("div.novel-info > div.header-stats > span:nth-child(1) > strong").textContent.trim();
                     return;
                 })
-                .catch(err => this.total = fetchCatch(err, this.siteBook.href));
+                .catch(err => this.total = FetchResult_fetchCatch(err, this.siteBook.href));
         }
 
         this.total = "S0";
@@ -14872,7 +14886,7 @@ class wuxiahereCom extends ParserChapter {
 
 
 
-class wuxiapubCom extends ParserChapter {
+class wuxiapubCom extends ParserClass_ParserChapter {
     constructor() {
         super('https://www.wuxiapub.com/');
         this.endUrl = '.html';
@@ -14894,7 +14908,7 @@ class wuxiapubCom extends ParserChapter {
             this.apiSearch = new URL(this.site.origin + "/e/search/index.php");
 
             let isError = '';
-            await fetch(this.apiSearch.href, {
+            await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.apiSearch.href, {
                 "headers": {
                     "content-type": "application/x-www-form-urlencoded",
                 },
@@ -14902,7 +14916,6 @@ class wuxiapubCom extends ParserChapter {
                 "body": "show=title&tempid=1&tbname=news&keyboard=" + this.bTitle,
                 "method": "POST",
             })
-                .then(res => fetchStatusHTML(res))
                 .then(data => {
                     if (data.title === "Message hint" || data.title == "") {
                         isError = "B0";
@@ -14913,7 +14926,7 @@ class wuxiapubCom extends ParserChapter {
                     for (let book of block) {
                         let titleParser = book.querySelector("a > h4.novel-title.text2row").textContent;
 
-                        let diff = tanimoto(this.bTitle, titleParser);
+                        let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                         if (diff > 0.8) {
                             this.siteBook = this.site.origin + book.querySelector("a").pathname;
@@ -14922,7 +14935,7 @@ class wuxiapubCom extends ParserChapter {
                         }
                     }
                 })
-                .catch(err => isError = fetchCatch(err, this.apiSearch.href));
+                .catch(err => isError = FetchResult_fetchCatch(err, this.apiSearch.href));
 
             if (isError != '') {
                 this.total = isError;
@@ -14931,13 +14944,12 @@ class wuxiapubCom extends ParserChapter {
         }
 
         if (this.checkBookSite()) {
-            return await fetch(this.siteBook.href)
-                .then(res => fetchStatusHTML(res))
+            return await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteBook.href)
                 .then(data => {
                     this.total = data.querySelector("div.novel-info > div.header-stats > span:nth-child(1) > strong").textContent.trim();
                     return;
                 })
-                .catch(err => this.total = fetchCatch(err, this.siteBook.href));
+                .catch(err => this.total = FetchResult_fetchCatch(err, this.siteBook.href));
         }
 
         this.total = "S0";
@@ -14961,8 +14973,7 @@ class mMylovenovelCom extends ParserBook {
     async totalChapters() {
         if (this.checkBookUndefined()) {
             let isError = '';
-            await fetch(this.siteSearch.href)
-                .then(res => fetchStatusHTML(res))
+            await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteSearch.href)
                 .then(data => {
                     let block = data.querySelectorAll("div.main > ul.list > li");
 
@@ -14974,7 +14985,7 @@ class mMylovenovelCom extends ParserBook {
                     for (let book of block) {
                         let titleParser = book.querySelector("a > p.bookname").textContent;
 
-                        let diff = tanimoto(this.bTitle, titleParser);
+                        let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                         if (diff > 0.8) {
                             this.siteBook = this.site.origin + book.querySelector("a").pathname;
@@ -14983,7 +14994,7 @@ class mMylovenovelCom extends ParserBook {
                         }
                     }
                 })
-                .catch(err => isError = fetchCatch(err, this.siteSearch.href));
+                .catch(err => isError = FetchResult_fetchCatch(err, this.siteSearch.href));
 
             if (isError != '') {
                 this.total = isError;
@@ -14992,13 +15003,12 @@ class mMylovenovelCom extends ParserBook {
         }
 
         if (this.checkBookSite()) {
-            return await fetch(this.siteBook.href)
-                .then(res => fetchStatusHTML(res))
+            return await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteBook.href)
                 .then(data => {
                     this.total = data.querySelector("#info > div.main > div.detail > p.chapter > a").textContent.match(/\D*(\d+)/)[1] * -1;
                     return;
                 })
-                .catch(err => this.total = fetchCatch(err, this.siteBook.href));
+                .catch(err => this.total = FetchResult_fetchCatch(err, this.siteBook.href));
         }
 
         this.total = "S0";
@@ -15022,8 +15032,7 @@ class readnoveldailyCom extends ParserBook {
     async totalChapters() {
         if (this.checkBookUndefined()) {
             let isError = '';
-            await fetch(this.siteSearch.href)
-                .then(res => fetchStatusHTML(res))
+            await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteSearch.href)
                 .then(data => {
                     let block = data.querySelectorAll("#list-posts div.row.special > div");
 
@@ -15035,7 +15044,7 @@ class readnoveldailyCom extends ParserBook {
                     for (let book of block) {
                         let titleParser = book.querySelector("h3.title-book > a").textContent;
 
-                        let diff = tanimoto(this.bTitle, titleParser);
+                        let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                         if (diff > 0.8) {
                             this.siteBook = book.querySelector("h3.title-book > a").href;
@@ -15044,7 +15053,7 @@ class readnoveldailyCom extends ParserBook {
                         }
                     }
                 })
-                .catch(err => isError = fetchCatch(err, this.siteSearch.href));
+                .catch(err => isError = FetchResult_fetchCatch(err, this.siteSearch.href));
 
             if (isError != '') {
                 this.total = isError;
@@ -15053,13 +15062,12 @@ class readnoveldailyCom extends ParserBook {
         }
 
         if (this.checkBookSite()) {
-            return await fetch(this.siteBook.href)
-                .then(res => fetchStatusHTML(res))
+            return await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteBook.href)
                 .then(data => {
                     this.total = data.querySelector("div.latest-chapters.list-chapter > ul.list > li:first-child").textContent.match(/\D*(\d+)/)[1] * -1;
                     return;
                 })
-                .catch(err => this.total = fetchCatch(err, this.siteBook.href));
+                .catch(err => this.total = FetchResult_fetchCatch(err, this.siteBook.href));
         }
 
         this.total = "S0";
@@ -15071,7 +15079,7 @@ class readnoveldailyCom extends ParserBook {
 
 
 
-class freewebnovelCom extends ParserChapter {
+class freewebnovelCom extends ParserClass_ParserChapter {
     constructor() {
         super('https://freewebnovel.com/');
         this.endUrl = '.html';
@@ -15088,8 +15096,7 @@ class freewebnovelCom extends ParserChapter {
     async totalChapters() {
         if (this.checkBookUndefined()) {
             let isError = '';
-            await fetch(this.siteSearch.href)
-                .then(res => fetchStatusHTML(res))
+            await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteSearch.href)
                 .then(data => {
                     let block = data.querySelectorAll("div.col-content > div > div.li-row");
 
@@ -15101,7 +15108,7 @@ class freewebnovelCom extends ParserChapter {
                     for (let book of block) {
                         let titleParser = book.querySelector("div.txt > h3.tit > a").textContent;
 
-                        let diff = tanimoto(this.bTitle, titleParser);
+                        let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                         if (diff > 0.8) {
                             this.siteBook = this.site.origin + book.querySelector("div.txt > h3.tit > a").pathname;
@@ -15110,7 +15117,7 @@ class freewebnovelCom extends ParserChapter {
                         }
                     }
                 })
-                .catch(err => isError = fetchCatch(err, this.siteSearch.href));
+                .catch(err => isError = FetchResult_fetchCatch(err, this.siteSearch.href));
 
             if (isError != '') {
                 this.total = isError;
@@ -15119,13 +15126,12 @@ class freewebnovelCom extends ParserChapter {
         }
 
         if (this.checkBookSite()) {
-            return await fetch(this.siteBook.href)
-                .then(res => fetchStatusHTML(res))
+            return await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteBook.href)
                 .then(data => {
                     this.total = data.querySelector("body > div.main > div > div > div.col-content > div.m-newest1 > ul > li:nth-child(1) > a").textContent.match(/\D*(\d+)/)[1] * -1;
                     return;
                 })
-                .catch(err => this.total = fetchCatch(err, this.siteBook.href));
+                .catch(err => this.total = FetchResult_fetchCatch(err, this.siteBook.href));
         }
 
         this.total = "S0";
@@ -15137,7 +15143,7 @@ class freewebnovelCom extends ParserChapter {
 
 
 
-class novelfullvipCom extends ParserChapter {
+class novelfullvipCom extends ParserClass_ParserChapter {
     constructor() {
         super('https://novelfullvip.com/');
         this.endUrl = '.html';
@@ -15154,8 +15160,7 @@ class novelfullvipCom extends ParserChapter {
     async totalChapters() {
         if (this.checkBookUndefined()) {
             let isError = '';
-            await fetch(this.siteSearch.href)
-                .then(res => fetchStatusHTML(res))
+            await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteSearch.href)
                 .then(data => {
                     let block = data.querySelectorAll("#truyen-slide > div.list.list-thumbnail.col-xs-12.col-md-9 > div.row > div.col-xs-4.col-sm-3.col-md-3");
 
@@ -15167,7 +15172,7 @@ class novelfullvipCom extends ParserChapter {
                     for (let book of block) {
                         let titleParser = book.querySelector("a").title;
 
-                        let diff = tanimoto(this.bTitle, titleParser);
+                        let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                         if (diff > 0.8) {
                             this.siteBook = book.querySelector("a").href;
@@ -15176,7 +15181,7 @@ class novelfullvipCom extends ParserChapter {
                         }
                     }
                 })
-                .catch(err => isError = fetchCatch(err, this.siteSearch.href));
+                .catch(err => isError = FetchResult_fetchCatch(err, this.siteSearch.href));
 
             if (isError != '') {
                 this.total = isError;
@@ -15185,13 +15190,12 @@ class novelfullvipCom extends ParserChapter {
         }
 
         if (this.checkBookSite()) {
-            return await fetch(this.siteBook.href)
-                .then(res => fetchStatusHTML(res))
+            return await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteBook.href)
                 .then(data => {
                     this.total = data.querySelector("#truyen > div.col-xs-12.col-sm-12.col-md-9.col-truyen-main > div.col-xs-12.col-info-desc > div.col-xs-12.col-sm-8.col-md-8.desc > div.l-chapter > ul > li:nth-child(1) > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
                     return;
                 })
-                .catch(err => this.total = fetchCatch(err, this.siteBook.href));
+                .catch(err => this.total = FetchResult_fetchCatch(err, this.siteBook.href));
         }
 
         this.total = "S0";
@@ -15244,7 +15248,7 @@ function copyHtml(el) {
 
 
 
-class novelscafeCom extends ParserChapter {
+class novelscafeCom extends ParserClass_ParserChapter {
     constructor() {
         super('https://novelscafe.com/');
         this.endUrl = '/';
@@ -15261,8 +15265,7 @@ class novelscafeCom extends ParserChapter {
     async totalChapters() {
         if (this.checkBookUndefined()) {
             let isError = '';
-            await fetch(this.siteSearch.href)
-                .then(res => fetchStatusHTML(res))
+            await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteSearch.href)
                 .then(data => {
                     let block = data.querySelectorAll("div.posts.row > div.col-4.col-md-3.col-lg-2.post-column.mt-3");
 
@@ -15274,6 +15277,85 @@ class novelscafeCom extends ParserChapter {
                     for (let book of block) {
                         let titleParser = book.querySelector("a > div.post-title").textContent;
 
+                        let diff = tanimoto_tanimoto(this.bTitle, titleParser);
+
+                        if (diff > 0.8) {
+                            this.siteBook = book.querySelector("a").href;
+                            this.setBookLocal();
+                            break;
+                        }
+                    }
+                })
+                .catch(err => isError = FetchResult_fetchCatch(err, this.siteSearch.href));
+
+            if (isError != '') {
+                this.total = isError;
+                return;
+            }
+        }
+
+        if (this.checkBookSite()) {
+            return await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteBook.href)
+                .then(data => {
+                    this.total = data.querySelector("#primary > div:nth-child(2) > div.col-12.col-md-9 > div.last-10-chapters > div > div:nth-child(1) > h3 > a").textContent.match(/\D*(\d+)/)[1] * -1;
+                    return;
+                })
+                .catch(err => this.total = FetchResult_fetchCatch(err, this.siteBook.href));
+        }
+
+        this.total = "S0";
+    }
+}
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/2fetch/htmlSearchChapter/POST/novelsonlineNet.js
+
+
+
+
+
+class novelsonlineNet extends (/* unused pure expression or super */ null && (ParserChapter)) {
+    constructor() {
+        super('https://novelsonline.net/');
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin;
+
+        // POST url
+    }
+
+    linkChapter(_cIndex, _cTitle) {
+        window.open(this.siteBook.href + '/chapter-' + _cIndex);
+    }
+
+    async totalChapters() {
+        if (this.checkBookUndefined()) {
+            let url = new URL(this.site.origin + "/sResults.php");
+
+            let isError = '';
+            await fetchXHR(FXmode.fetchHTML, url.href, {
+                headers: new Headers({
+                    "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+                    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.54 Safari/537.36"
+                }),
+                //"headers": {
+                //    "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+                //    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.54 Safari/537.36"
+                //},
+                "referrer": "https://novelsonline.net/",
+                "body": "q=" + this.bTitle,
+                "method": "POST",
+            })
+                .then(data => {
+                    let block = data.querySelectorAll("ul > li");
+
+                    if (block.length == 0) {
+                        isError = "B0";
+                        return;
+                    }
+
+                    for (let book of block) {
+                        let titleParser = book.querySelector("a > span.title").textContent;
+
                         let diff = tanimoto(this.bTitle, titleParser);
 
                         if (diff > 0.8) {
@@ -15283,7 +15365,7 @@ class novelscafeCom extends ParserChapter {
                         }
                     }
                 })
-                .catch(err => isError = fetchCatch(err, this.siteSearch.href));
+                .catch(err => isError = fetchCatch(err, url.href));
 
             if (isError != '') {
                 this.total = isError;
@@ -15292,10 +15374,9 @@ class novelscafeCom extends ParserChapter {
         }
 
         if (this.checkBookSite()) {
-            return await fetch(this.siteBook.href)
-                .then(res => fetchStatusHTML(res))
+            return await fetchXHR(FXmode.fetchHTML, this.siteBook.href)
                 .then(data => {
-                    this.total = data.querySelector("#primary > div:nth-child(2) > div.col-12.col-md-9 > div.last-10-chapters > div > div:nth-child(1) > h3 > a").textContent.match(/\D*(\d+)/)[1] * -1;
+                    this.total = data.querySelector("#collapse-1 > div > div > div.tab-pane.active > ul > li:last-child").textContent.match(/\D*(\d+)/)[1];
                     return;
                 })
                 .catch(err => this.total = fetchCatch(err, this.siteBook.href));
@@ -15304,6 +15385,9 @@ class novelscafeCom extends ParserChapter {
         this.total = "S0";
     }
 }
+
+
+
 ;// CONCATENATED MODULE: ./src/js/Crawler/parsers/2fetch/search/lightnovelplusCom.js
 
 
@@ -15328,8 +15412,7 @@ class lightnovelplusCom extends ParserSearch {
 
         let isLucky = false;
         var isError = '';
-        await fetch(this.site.href)
-            .then(res => fetchStatusHTML(res))
+        await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.site.href)
             .then(data => {
                 let block = data.querySelectorAll("#list-page > div.col-xs-12.col-sm-12.col-md-9.col-truyen-main_1.archive > div > div.row");
 
@@ -15341,7 +15424,7 @@ class lightnovelplusCom extends ParserSearch {
                 for (let book of block) {
                     let titleParser = book.querySelector("h3.truyen-title > a").textContent;
 
-                    let diff = tanimoto(this.bTitle, titleParser);
+                    let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
                         this.site = new URL(this.site.origin + book.querySelector("h3.truyen-title > a").pathname);
@@ -15352,7 +15435,7 @@ class lightnovelplusCom extends ParserSearch {
 
                 return;
             })
-            .catch(err => isError = fetchCatch(err, this.site.href));
+            .catch(err => isError = FetchResult_fetchCatch(err, this.site.href));
 
         if (isError != '') {
             console.error(isError);
@@ -15362,13 +15445,12 @@ class lightnovelplusCom extends ParserSearch {
 
         if (isLucky) {
             isLucky = false;
-            await fetch(this.site.href)
-                .then(res => fetchStatusHTML(res))
+            await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.site.href)
                 .then(data => {
                     this.site = new URL(this.site.origin + data.querySelector("#list-chapter > ul > li.last > a").pathname + data.querySelector("#list-chapter > ul > li.last > a").search);
                     isLucky = true;
                 })
-                .catch(err => isError = fetchCatch(err, this.site.href));
+                .catch(err => isError = FetchResult_fetchCatch(err, this.site.href));
 
 
             if (isError != '') {
@@ -15381,8 +15463,7 @@ class lightnovelplusCom extends ParserSearch {
                 window.open(this.site);
                 return;
 
-                //return await fetch(this.site)
-                //    .then(res => fetchStatusHTML(res))
+                //return await fetchXHR(FXmode.fetchHTML, this.site)
                 //    .then(data => {
                 //        return data.querySelector("#list-chapter > div.row > div:nth-child(1) > ul:last-child- > li > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
                 //    })
@@ -15415,8 +15496,7 @@ class lightnovelsMe extends ParserBook {
     async totalChapters() {
         this.apiSearch = new URL(this.site.origin + "/api/search?keyword=" + this.bTitle + "&index=0&limit=20");
 
-        await fetch(this.apiSearch.href)
-            .then(res => fetchStatusJSON(res))
+        await FetchResult_fetchXHR(FetchResult_FXmode.fetchJSON, this.apiSearch.href)
             .then(data => {
                 if (Object.keys(data.results).length == 0) {
                     this.total = "B0";
@@ -15426,7 +15506,7 @@ class lightnovelsMe extends ParserBook {
                 for (let book of data.results) {
                     let titleParser = book.novel_name;
 
-                    let diff = tanimoto(this.bTitle, titleParser);
+                    let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
                         this.siteBook = this.site.origin + '/novel' + book.novel_slug;
@@ -15438,7 +15518,7 @@ class lightnovelsMe extends ParserBook {
                 this.total = "S0";
                 return;
             })
-            .catch(err => this.total = fetchCatch(err, this.apiSearch.href));
+            .catch(err => this.total = FetchResult_fetchCatch(err, this.apiSearch.href));
     }
 }
 ;// CONCATENATED MODULE: ./src/js/Crawler/parsers/apiSearchChapter/octopiiCo.js
@@ -15447,7 +15527,7 @@ class lightnovelsMe extends ParserBook {
 
 
 
-class octopiiCo extends ParserChapter {
+class octopiiCo extends ParserClass_ParserChapter {
     constructor() {
         super('https://octopii.co/');
         this.apiSearch = '';
@@ -15466,14 +15546,13 @@ class octopiiCo extends ParserChapter {
     async totalChapters() {
         this.apiSearch = new URL(this.site.origin + "/api/advance-search");
 
-        await fetch(this.apiSearch.href, {
+        await FetchResult_fetchXHR(FetchResult_FXmode.fetchJSON, this.apiSearch.href, {
             "headers": {
                 "content-type": "application/json",
             },
             "body": "{\"clicked\":false,\"limit\":\"24\",\"page\":0,\"pageCount\":1,\"value\":\"" + this.bTitle + "\",\"sort\":3,\"selected\":{\"genre\":[],\"status\":[],\"sort\":[],\"author\":[]},\"results\":[],\"label\":\"searching ....\"}",
             "method": "POST",
         })
-            .then(res => fetchStatusJSON(res))
             .then(data => {
                 if (Object.keys(data.results).length == 0) {
                     this.total = "B0";
@@ -15483,7 +15562,7 @@ class octopiiCo extends ParserChapter {
                 for (let book of data.results) {
                     let titleParser = book.novel_name;
 
-                    let diff = tanimoto(this.bTitle, titleParser);
+                    let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
                         this.siteBook = this.site.origin + "/novel/" + book.novel_slug;
@@ -15495,7 +15574,7 @@ class octopiiCo extends ParserChapter {
                 this.total = "S0";
                 return;
             })
-            .catch(err => this.total = fetchCatch(err, this.apiSearch.href));
+            .catch(err => this.total = FetchResult_fetchCatch(err, this.apiSearch.href));
     }
 }
 ;// CONCATENATED MODULE: ./src/js/Crawler/parsers/apiSearchChapter/webnovelonlineCom.js
@@ -15504,7 +15583,7 @@ class octopiiCo extends ParserChapter {
 
 
 
-class webnovelonlineCom extends ParserChapter {
+class webnovelonlineCom extends ParserClass_ParserChapter {
     constructor() {
         super('https://webnovelonline.com/');
         this.apiSearch = '';
@@ -15523,8 +15602,7 @@ class webnovelonlineCom extends ParserChapter {
     async totalChapters() {
         this.apiSearch = new URL(this.site.protocol + "//api." + this.site.hostname + "/api/v1/wuxia/search?name=" + this.bTitle);
 
-        await fetch(this.apiSearch.href)
-            .then(res => fetchStatusJSON(res))
+        await FetchResult_fetchXHR(FetchResult_FXmode.fetchJSON, this.apiSearch.href)
             .then(data => {
                 if (Object.keys(data.data).length == 0) {
                     this.total = "B0";
@@ -15534,7 +15612,7 @@ class webnovelonlineCom extends ParserChapter {
                 for (let book of data.data) {
                     let titleParser = book.title;
 
-                    let diff = tanimoto(this.bTitle, titleParser);
+                    let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
                         this.siteBook = this.site.origin + new URL(book.url).pathname;
@@ -15546,7 +15624,7 @@ class webnovelonlineCom extends ParserChapter {
                 this.total = "S0";
                 return;
             })
-            .catch(err => this.total = fetchCatch(err, this.apiSearch.href));
+            .catch(err => this.total = FetchResult_fetchCatch(err, this.apiSearch.href));
     }
 }
 ;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearch/lightnovelWorld.js
@@ -15565,8 +15643,7 @@ class lightnovelWorld extends ParserBook {
     }
 
     async totalChapters() {
-        await fetch(this.siteSearch.href)
-            .then(res => fetchStatusHTML(res))
+        await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.book_info");
 
@@ -15579,7 +15656,7 @@ class lightnovelWorld extends ParserBook {
                     book.querySelector("li.text1.textC000 span").remove();
                     let titleParser = book.querySelector("li.text1.textC000").textContent.trim();
 
-                    let diff = tanimoto(this.bTitle, titleParser);
+                    let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
                         this.siteBook = this.site.origin + book.querySelector("div.book_info_r > ul > li.book_info_add_afv > a:nth-child(2)").pathname;
@@ -15591,7 +15668,7 @@ class lightnovelWorld extends ParserBook {
                 this.total = "S0";
                 return;
             })
-            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+            .catch(err => this.total = FetchResult_fetchCatch(err, this.siteSearch.href));
     }
 }
 ;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearch/novelhallCom.js
@@ -15610,8 +15687,7 @@ class novelhallCom extends ParserBook {
     }
 
     async totalChapters() {
-        await fetch(this.siteSearch.href)
-            .then(res => fetchStatusHTML(res))
+        await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("#main > div.container > div > table > tbody > tr");
 
@@ -15623,7 +15699,7 @@ class novelhallCom extends ParserBook {
                 for (let book of block) {
                     let titleParser = book.querySelector("td:nth-child(2) > a").textContent;
 
-                    let diff = tanimoto(this.bTitle, titleParser);
+                    let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
                         this.siteBook = this.site.origin + book.querySelector("td:nth-child(2) > a").pathname;
@@ -15635,7 +15711,7 @@ class novelhallCom extends ParserBook {
                 this.total = "S0";
                 return;
             })
-            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+            .catch(err => this.total = FetchResult_fetchCatch(err, this.siteSearch.href));
     }
 }
 ;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearch/pandanovelCom.js
@@ -15656,8 +15732,7 @@ class pandanovelCom extends ParserBook {
     async totalChapters() {
         let isLucky = false;
         var isError = '';
-        await fetch(this.siteSearch.href)
-            .then(res => fetchStatusHTML(res))
+        await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("#panda-app > div.sr-body > div.novel-list > ul > li");
 
@@ -15669,7 +15744,7 @@ class pandanovelCom extends ParserBook {
                 for (let book of block) {
                     let titleParser = book.querySelector("div.novel-desc > h4").textContent;
 
-                    let diff = tanimoto(this.bTitle, titleParser);
+                    let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
                         this.siteBook = this.site.origin + book.querySelector("a").pathname;
@@ -15678,7 +15753,7 @@ class pandanovelCom extends ParserBook {
                     }
                 }
             })
-            .catch(err => isError = fetchCatch(err, this.siteSearch.href));
+            .catch(err => isError = FetchResult_fetchCatch(err, this.siteSearch.href));
 
         if (isError != '') {
             this.total = isError;
@@ -15686,13 +15761,12 @@ class pandanovelCom extends ParserBook {
         }
 
         if (isLucky) {
-            return await fetch(this.siteBook.href)
-                .then(res => fetchStatusHTML(res))
+            return await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteBook.href)
                 .then(data => {
                     this.total = data.querySelector("#detailsBody > div > div.details-chapters > dl > dt > p > a").textContent.match(/\D*(\d+)/)[1] * -1;
                     return;
                 })
-                .catch(err => this.total = fetchCatch(err, this.siteBook.href));
+                .catch(err => this.total = FetchResult_fetchCatch(err, this.siteBook.href));
         }
 
         this.total = "S0";
@@ -15715,8 +15789,7 @@ class readlightnovelsNet extends ParserBook {
     }
 
     async totalChapters() {
-        await fetch(this.siteSearch.href)
-            .then(res => fetchStatusHTML(res))
+        await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.col-md-3.col-sm-6.col-xs-6.home-truyendecu");
 
@@ -15728,7 +15801,7 @@ class readlightnovelsNet extends ParserBook {
                 for (let book of block) {
                     let titleParser = book.querySelector("a").title;
 
-                    let diff = tanimoto(this.bTitle, titleParser);
+                    let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
                         this.siteBook = book.querySelector("a").href;
@@ -15740,7 +15813,7 @@ class readlightnovelsNet extends ParserBook {
                 this.total = "S0";
                 return;
             })
-            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+            .catch(err => this.total = FetchResult_fetchCatch(err, this.siteSearch.href));
     }
 }
 ;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearchChapter/madentertainment/madnovelCom.js
@@ -15749,7 +15822,7 @@ class readlightnovelsNet extends ParserBook {
 
 
 
-class madnovelCom extends ParserChapter {
+class madnovelCom extends ParserClass_ParserChapter {
     constructor() {
         super('https://madnovel.com/');
     }
@@ -15763,8 +15836,7 @@ class madnovelCom extends ParserChapter {
     }
 
     async totalChapters() {
-        await fetch(this.siteSearch.href)
-            .then(res => fetchStatusHTML(res))
+        await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.section-body > div.list > div.book-item");
 
@@ -15776,7 +15848,7 @@ class madnovelCom extends ParserChapter {
                 for (let book of block) {
                     let titleParser = book.querySelector("div.title > h3 > a").title;
 
-                    let diff = tanimoto(this.bTitle, titleParser);
+                    let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
                         this.siteBook = this.site.origin + book.querySelector("div.title > h3 > a").pathname;
@@ -15788,7 +15860,7 @@ class madnovelCom extends ParserChapter {
                 this.total = "S0";
                 return;
             })
-            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+            .catch(err => this.total = FetchResult_fetchCatch(err, this.siteSearch.href));
     }
 }
 ;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearchChapter/madentertainment/novelbuddyCom.js
@@ -15797,7 +15869,7 @@ class madnovelCom extends ParserChapter {
 
 
 
-class novelbuddyCom extends ParserChapter {
+class novelbuddyCom extends ParserClass_ParserChapter {
     constructor() {
         super('https://novelbuddy.com/');
     }
@@ -15811,8 +15883,7 @@ class novelbuddyCom extends ParserChapter {
     }
 
     async totalChapters() {
-        await fetch(this.siteSearch.href)
-            .then(res => fetchStatusHTML(res))
+        await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.section-body > div.list > div.book-item");
 
@@ -15824,7 +15895,7 @@ class novelbuddyCom extends ParserChapter {
                 for (let book of block) {
                     let titleParser = book.querySelector("div.title > h3 > a").title;
 
-                    let diff = tanimoto(this.bTitle, titleParser);
+                    let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
                         this.siteBook = this.site.origin + book.querySelector("div.title > h3 > a").pathname;
@@ -15836,7 +15907,7 @@ class novelbuddyCom extends ParserChapter {
                 this.total = "S0";
                 return;
             })
-            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+            .catch(err => this.total = FetchResult_fetchCatch(err, this.siteSearch.href));
     }
 }
 ;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearchChapter/madentertainment/novelforestCom.js
@@ -15845,7 +15916,7 @@ class novelbuddyCom extends ParserChapter {
 
 
 
-class novelforestCom extends ParserChapter {
+class novelforestCom extends ParserClass_ParserChapter {
     constructor() {
         super('https://novelforest.com/');
     }
@@ -15859,8 +15930,7 @@ class novelforestCom extends ParserChapter {
     }
 
     async totalChapters() {
-        await fetch(this.siteSearch.href)
-            .then(res => fetchStatusHTML(res))
+        await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.section-body > div.list > div.book-item");
 
@@ -15872,7 +15942,7 @@ class novelforestCom extends ParserChapter {
                 for (let book of block) {
                     let titleParser = book.querySelector("div.title > h3 > a").title;
 
-                    let diff = tanimoto(this.bTitle, titleParser);
+                    let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
                         this.siteBook = this.site.origin + book.querySelector("div.title > h3 > a").pathname;
@@ -15884,7 +15954,7 @@ class novelforestCom extends ParserChapter {
                 this.total = "S0";
                 return;
             })
-            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+            .catch(err => this.total = FetchResult_fetchCatch(err, this.siteSearch.href));
     }
 }
 ;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearchChapter/madentertainment/novelfullMe.js
@@ -15893,7 +15963,7 @@ class novelforestCom extends ParserChapter {
 
 
 
-class novelfullMe extends ParserChapter {
+class novelfullMe extends ParserClass_ParserChapter {
     constructor() {
         super('https://novelfull.me/');
     }
@@ -15907,8 +15977,7 @@ class novelfullMe extends ParserChapter {
     }
 
     async totalChapters() {
-        await fetch(this.siteSearch.href)
-            .then(res => fetchStatusHTML(res))
+        await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.section-body > div.list > div.book-item");
 
@@ -15920,7 +15989,7 @@ class novelfullMe extends ParserChapter {
                 for (let book of block) {
                     let titleParser = book.querySelector("div.title > h3 > a").title;
 
-                    let diff = tanimoto(this.bTitle, titleParser);
+                    let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
                         this.siteBook = this.site.origin + book.querySelector("div.title > h3 > a").pathname;
@@ -15932,7 +16001,7 @@ class novelfullMe extends ParserChapter {
                 this.total = "S0";
                 return;
             })
-            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+            .catch(err => this.total = FetchResult_fetchCatch(err, this.siteSearch.href));
     }
 }
 ;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearchChapter/truyenNovel/novel/novelfullplusCom.js
@@ -15941,7 +16010,7 @@ class novelfullMe extends ParserChapter {
 
 
 
-class novelfullplusCom extends ParserChapter {
+class novelfullplusCom extends ParserClass_ParserChapter {
     constructor() {
         super(new URL('https://novelfullplus.com/'));
     }
@@ -15955,8 +16024,7 @@ class novelfullplusCom extends ParserChapter {
     }
 
     async totalChapters() {
-        await fetch(this.siteSearch.href)
-            .then(res => fetchStatusHTML(res))
+        await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-novel-main.archive > div.list.list-novel.col-xs-12 > div.row");
 
@@ -15968,7 +16036,7 @@ class novelfullplusCom extends ParserChapter {
                 for (let book of block) {
                     let titleParser = book.querySelector("h3.novel-title > a").textContent;
 
-                    let diff = tanimoto(this.bTitle, titleParser);
+                    let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
                         this.siteBook = book.querySelector("h3.novel-title > a").href;
@@ -15980,7 +16048,7 @@ class novelfullplusCom extends ParserChapter {
                 this.total = "S0";
                 return;
             })
-            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+            .catch(err => this.total = FetchResult_fetchCatch(err, this.siteSearch.href));
     }
 }
 ;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearchChapter/truyenNovel/novel/novelpokiCom.js
@@ -15989,7 +16057,7 @@ class novelfullplusCom extends ParserChapter {
 
 
 
-class novelpokiCom extends ParserChapter {
+class novelpokiCom extends ParserClass_ParserChapter {
     constructor() {
         super(new URL('https://novelpoki.com/'));
     }
@@ -16003,8 +16071,7 @@ class novelpokiCom extends ParserChapter {
     }
 
     async totalChapters() {
-        await fetch(this.siteSearch.href)
-            .then(res => fetchStatusHTML(res))
+        await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-novel-main.archive > div.list.list-novel.col-xs-12 > div.row");
 
@@ -16016,7 +16083,7 @@ class novelpokiCom extends ParserChapter {
                 for (let book of block) {
                     let titleParser = book.querySelector("h3.novel-title > a").textContent;
 
-                    let diff = tanimoto(this.bTitle, titleParser);
+                    let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
                         this.siteBook = book.querySelector("h3.novel-title > a").href;
@@ -16028,7 +16095,7 @@ class novelpokiCom extends ParserChapter {
                 this.total = "S0";
                 return;
             })
-            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+            .catch(err => this.total = FetchResult_fetchCatch(err, this.siteSearch.href));
     }
 }
 ;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearchChapter/truyenNovel/novel/noveltop1Com.js
@@ -16037,7 +16104,7 @@ class novelpokiCom extends ParserChapter {
 
 
 
-class noveltop1Com extends ParserChapter {
+class noveltop1Com extends ParserClass_ParserChapter {
     constructor() {
         super(new URL('https://noveltop1.com/'));
     }
@@ -16051,8 +16118,7 @@ class noveltop1Com extends ParserChapter {
     }
 
     async totalChapters() {
-        await fetch(this.siteSearch.href)
-            .then(res => fetchStatusHTML(res))
+        await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-novel-main.archive > div.list.list-novel.col-xs-12 > div.row");
 
@@ -16064,7 +16130,7 @@ class noveltop1Com extends ParserChapter {
                 for (let book of block) {
                     let titleParser = book.querySelector("h3.novel-title > a").textContent;
 
-                    let diff = tanimoto(this.bTitle, titleParser);
+                    let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
                         this.siteBook = book.querySelector("h3.novel-title > a").href;
@@ -16076,7 +16142,7 @@ class noveltop1Com extends ParserChapter {
                 this.total = "S0";
                 return;
             })
-            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+            .catch(err => this.total = FetchResult_fetchCatch(err, this.siteSearch.href));
     }
 }
 ;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearchChapter/truyenNovel/novel/readnovelfullCom.js
@@ -16085,7 +16151,7 @@ class noveltop1Com extends ParserChapter {
 
 
 
-class readnovelfullCom extends ParserChapter {
+class readnovelfullCom extends ParserClass_ParserChapter {
     constructor() {
         super('https://readnovelfull.com/');
         this.endUrl = ".html";
@@ -16100,8 +16166,7 @@ class readnovelfullCom extends ParserChapter {
     }
 
     async totalChapters() {
-        await fetch(this.siteSearch.href)
-            .then(res => fetchStatusHTML(res))
+        await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-novel-main.archive > div.list.list-novel.col-xs-12 > div.row");
 
@@ -16113,7 +16178,7 @@ class readnovelfullCom extends ParserChapter {
                 for (let book of block) {
                     let titleParser = book.querySelector("h3.novel-title > a").textContent;
 
-                    let diff = tanimoto(this.bTitle, titleParser);
+                    let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
                         this.siteBook = this.site.origin + book.querySelector("h3.novel-title > a").pathname;
@@ -16144,8 +16209,7 @@ class topwebnovelCom extends ParserBook {
     }
 
     async totalChapters() {
-        await fetch(this.siteSearch.href)
-            .then(res => fetchStatusHTML(res))
+        await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-novel-main.archive > div.list.list-novel.col-xs-12 > div.row");
 
@@ -16157,7 +16221,7 @@ class topwebnovelCom extends ParserBook {
                 for (let book of block) {
                     let titleParser = book.querySelector("h3.novel-title > a").textContent;
 
-                    let diff = tanimoto(this.bTitle, titleParser);
+                    let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
                         this.siteBook = this.site.origin + book.querySelector("h3.novel-title > a").pathname;
@@ -16169,7 +16233,7 @@ class topwebnovelCom extends ParserBook {
                 this.total = "S0";
                 return;
             })
-            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+            .catch(err => this.total = FetchResult_fetchCatch(err, this.siteSearch.href));
     }
 }
 ;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearchChapter/truyenNovel/truyen/allnovelfullCom.js
@@ -16178,7 +16242,7 @@ class topwebnovelCom extends ParserBook {
 
 
 
-class allnovelfullCom extends ParserChapter {
+class allnovelfullCom extends ParserClass_ParserChapter {
     constructor() {
         super('https://allnovelfull.com/');
         this.endUrl = ".html";
@@ -16193,8 +16257,7 @@ class allnovelfullCom extends ParserChapter {
     }
 
     async totalChapters() {
-        await fetch(this.siteSearch.href)
-            .then(res => fetchStatusHTML(res))
+        await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-truyen-main.archive > div.list.list-truyen.col-xs-12 > div.row");
 
@@ -16206,7 +16269,7 @@ class allnovelfullCom extends ParserChapter {
                 for (let book of block) {
                     let titleParser = book.querySelector("h3.truyen-title > a").textContent;
 
-                    let diff = tanimoto(this.bTitle, titleParser);
+                    let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
                         this.siteBook = this.site.origin + book.querySelector("h3.truyen-title > a").pathname;
@@ -16218,7 +16281,7 @@ class allnovelfullCom extends ParserChapter {
                 this.total = "S0";
                 return;
             })
-            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+            .catch(err => this.total = FetchResult_fetchCatch(err, this.siteSearch.href));
     }
 }
 ;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearchChapter/truyenNovel/truyen/allnovelOrg.js
@@ -16227,7 +16290,7 @@ class allnovelfullCom extends ParserChapter {
 
 
 
-class allnovelOrg extends ParserChapter {
+class allnovelOrg extends ParserClass_ParserChapter {
     constructor() {
         super('https://allnovel.org/');
         this.endUrl = ".html";
@@ -16242,8 +16305,7 @@ class allnovelOrg extends ParserChapter {
     }
 
     async totalChapters() {
-        await fetch(this.siteSearch.href)
-            .then(res => fetchStatusHTML(res))
+        await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-truyen-main.archive > div.list.list-truyen.col-xs-12 > div.row");
 
@@ -16255,7 +16317,7 @@ class allnovelOrg extends ParserChapter {
                 for (let book of block) {
                     let titleParser = book.querySelector("h3.truyen-title > a").textContent;
 
-                    let diff = tanimoto(this.bTitle, titleParser);
+                    let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
                         this.siteBook = this.site.origin + book.querySelector("h3.truyen-title > a").pathname;
@@ -16267,7 +16329,7 @@ class allnovelOrg extends ParserChapter {
                 this.total = "S0";
                 return;
             })
-            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+            .catch(err => this.total = FetchResult_fetchCatch(err, this.siteSearch.href));
     }
 }
 ;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearchChapter/truyenNovel/truyen/novelfullCom.js
@@ -16276,7 +16338,7 @@ class allnovelOrg extends ParserChapter {
 
 
 
-class novelfullCom extends ParserChapter {
+class novelfullCom extends ParserClass_ParserChapter {
     constructor() {
         super('https://novelfull.com/');
         this.endUrl = ".html";
@@ -16291,8 +16353,7 @@ class novelfullCom extends ParserChapter {
     }
 
     async totalChapters() {
-        await fetch(this.siteSearch.href)
-            .then(res => fetchStatusHTML(res))
+        await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-truyen-main.archive > div.list.list-truyen.col-xs-12 > div.row");
 
@@ -16304,7 +16365,7 @@ class novelfullCom extends ParserChapter {
                 for (let book of block) {
                     let titleParser = book.querySelector("h3.truyen-title > a").textContent;
 
-                    let diff = tanimoto(this.bTitle, titleParser);
+                    let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
                         this.siteBook = this.site.origin + book.querySelector("h3.truyen-title > a").pathname;
@@ -16316,7 +16377,7 @@ class novelfullCom extends ParserChapter {
                 this.total = "S0";
                 return;
             })
-            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+            .catch(err => this.total = FetchResult_fetchCatch(err, this.siteSearch.href));
     }
 }
 ;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearchChapter/truyenNovel/truyen/novelgreatNet.js
@@ -16335,8 +16396,7 @@ class novelgreatNet extends ParserBook {
     }
 
     async totalChapters() {
-        await fetch(this.siteSearch.href)
-            .then(res => fetchStatusHTML(res))
+        await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-truyen-main.archive > div.list.list-truyen.col-xs-12 > div.row");
 
@@ -16348,7 +16408,7 @@ class novelgreatNet extends ParserBook {
                 for (let book of block) {
                     let titleParser = book.querySelector("h3.truyen-title > a").textContent;
 
-                    let diff = tanimoto(this.bTitle, titleParser);
+                    let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
                         this.siteBook = this.site.origin + book.querySelector("h3.truyen-title > a").pathname;
@@ -16360,7 +16420,7 @@ class novelgreatNet extends ParserBook {
                 this.total = "S0";
                 return;
             })
-            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+            .catch(err => this.total = FetchResult_fetchCatch(err, this.siteSearch.href));
     }
 }
 ;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearchChapter/wpManga/1stkissnovelLove.js
@@ -16369,7 +16429,7 @@ class novelgreatNet extends ParserBook {
 
 
 
-class oneStkissnovelLove extends ParserChapter {
+class oneStkissnovelLove extends ParserClass_ParserChapter {
     constructor() {
         super('https://1stkissnovel.love/');
         this.endUrl = "/";
@@ -16384,8 +16444,7 @@ class oneStkissnovelLove extends ParserChapter {
     }
 
     async totalChapters() {
-        await fetch(this.siteSearch.href)
-            .then(res => fetchStatusHTML(res))
+        await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.row.c-tabs-item__content");
 
@@ -16397,7 +16456,7 @@ class oneStkissnovelLove extends ParserChapter {
                 for (let book of block) {
                     let titleParser = book.querySelector("div.post-title > h3 > a").textContent;
 
-                    let diff = tanimoto(this.bTitle, titleParser);
+                    let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
                         this.siteBook = book.querySelector("div.post-title > h3 > a").href;
@@ -16409,7 +16468,7 @@ class oneStkissnovelLove extends ParserChapter {
                 this.total = "S0";
                 return;
             })
-            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+            .catch(err => this.total = FetchResult_fetchCatch(err, this.siteSearch.href));
     }
 }
 ;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearchChapter/wpManga/latestnovelNet.js
@@ -16418,7 +16477,7 @@ class oneStkissnovelLove extends ParserChapter {
 
 
 
-class latestnovelNet extends ParserChapter {
+class latestnovelNet extends ParserClass_ParserChapter {
     constructor() {
         super('https://latestnovel.net/');
     }
@@ -16432,8 +16491,7 @@ class latestnovelNet extends ParserChapter {
     }
 
     async totalChapters() {
-        await fetch(this.siteSearch.href)
-            .then(res => fetchStatusHTML(res))
+        await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.row.c-tabs-item__content");
 
@@ -16445,7 +16503,7 @@ class latestnovelNet extends ParserChapter {
                 for (let book of block) {
                     let titleParser = book.querySelector("div.post-title > h3 > a").textContent;
 
-                    let diff = tanimoto(this.bTitle, titleParser);
+                    let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
                         this.siteBook = book.querySelector("div.post-title > h3 > a").href;
@@ -16457,7 +16515,7 @@ class latestnovelNet extends ParserChapter {
                 this.total = "S0";
                 return;
             })
-            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+            .catch(err => this.total = FetchResult_fetchCatch(err, this.siteSearch.href));
     }
 }
 ;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearchChapter/wpManga/lightnovelMobi.js
@@ -16466,7 +16524,7 @@ class latestnovelNet extends ParserChapter {
 
 
 
-class lightnovelMobi extends ParserChapter {
+class lightnovelMobi extends ParserClass_ParserChapter {
     constructor() {
         super('https://lightnovel.mobi/');
         this.endUrl = "/";
@@ -16481,8 +16539,7 @@ class lightnovelMobi extends ParserChapter {
     }
 
     async totalChapters() {
-        await fetch(this.siteSearch.href)
-            .then(res => fetchStatusHTML(res))
+        await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.row.c-tabs-item__content");
 
@@ -16494,7 +16551,7 @@ class lightnovelMobi extends ParserChapter {
                 for (let book of block) {
                     let titleParser = book.querySelector("div.post-title > h3 > a").textContent;
 
-                    let diff = tanimoto(this.bTitle, titleParser);
+                    let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
                         this.siteBook = book.querySelector("div.post-title > h3 > a").href;
@@ -16506,7 +16563,7 @@ class lightnovelMobi extends ParserChapter {
                 this.total = "S0";
                 return;
             })
-            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+            .catch(err => this.total = FetchResult_fetchCatch(err, this.siteSearch.href));
     }
 }
 ;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearchChapter/wpManga/novelteamNet.js
@@ -16515,7 +16572,7 @@ class lightnovelMobi extends ParserChapter {
 
 
 
-class novelteamNet extends ParserChapter {
+class novelteamNet extends ParserClass_ParserChapter {
     constructor() {
         super('https://novelteam.net/');
         this.endUrl = "/";
@@ -16530,8 +16587,7 @@ class novelteamNet extends ParserChapter {
     }
 
     async totalChapters() {
-        await fetch(this.siteSearch.href)
-            .then(res => fetchStatusHTML(res))
+        await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.row.c-tabs-item__content");
 
@@ -16543,7 +16599,7 @@ class novelteamNet extends ParserChapter {
                 for (let book of block) {
                     let titleParser = book.querySelector("div.post-title > h3 > a").textContent;
 
-                    let diff = tanimoto(this.bTitle, titleParser);
+                    let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
                         this.siteBook = book.querySelector("div.post-title > h3 > a").href;
@@ -16555,7 +16611,7 @@ class novelteamNet extends ParserChapter {
                 this.total = "S0";
                 return;
             })
-            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+            .catch(err => this.total = FetchResult_fetchCatch(err, this.siteSearch.href));
     }
 }
 ;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearchChapter/wpManga/noveltrenchCom.js
@@ -16564,7 +16620,7 @@ class novelteamNet extends ParserChapter {
 
 
 
-class noveltrenchCom extends ParserChapter {
+class noveltrenchCom extends ParserClass_ParserChapter {
     constructor() {
         super('https://noveltrench.com/');
         this.endUrl = "/";
@@ -16579,8 +16635,7 @@ class noveltrenchCom extends ParserChapter {
     }
 
     async totalChapters() {
-        await fetch(this.siteSearch.href)
-            .then(res => fetchStatusHTML(res))
+        await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.row.c-tabs-item__content");
 
@@ -16592,7 +16647,7 @@ class noveltrenchCom extends ParserChapter {
                 for (let book of block) {
                     let titleParser = book.querySelector("div.post-title > h3 > a").textContent;
 
-                    let diff = tanimoto(this.bTitle, titleParser);
+                    let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
                         this.siteBook = book.querySelector("div.post-title > h3 > a").href;
@@ -16604,7 +16659,7 @@ class noveltrenchCom extends ParserChapter {
                 this.total = "S0";
                 return;
             })
-            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+            .catch(err => this.total = FetchResult_fetchCatch(err, this.siteSearch.href));
     }
 }
 ;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearchChapter/wpManga/readnovelsOrg.js
@@ -16613,7 +16668,7 @@ class noveltrenchCom extends ParserChapter {
 
 
 
-class readnovelsOrg extends ParserChapter {
+class readnovelsOrg extends ParserClass_ParserChapter {
     constructor() {
         super('https://readnovels.org/');
         this.endUrl = "/";
@@ -16628,8 +16683,7 @@ class readnovelsOrg extends ParserChapter {
     }
 
     async totalChapters() {
-        await fetch(this.siteSearch.href)
-            .then(res => fetchStatusHTML(res))
+        await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.row.c-tabs-item__content");
 
@@ -16641,7 +16695,7 @@ class readnovelsOrg extends ParserChapter {
                 for (let book of block) {
                     let titleParser = book.querySelector("div.post-title > h3 > a").textContent;
 
-                    let diff = tanimoto(this.bTitle, titleParser);
+                    let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
                         this.siteBook = book.querySelector("div.post-title > h3 > a").href;
@@ -16653,7 +16707,7 @@ class readnovelsOrg extends ParserChapter {
                 this.total = "S0";
                 return;
             })
-            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+            .catch(err => this.total = FetchResult_fetchCatch(err, this.siteSearch.href));
     }
 }
 ;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearchChapter/wpManga/webnovelonlineNet.js
@@ -16662,7 +16716,7 @@ class readnovelsOrg extends ParserChapter {
 
 
 
-class webnovelonlineNet extends ParserChapter {
+class webnovelonlineNet extends ParserClass_ParserChapter {
     constructor() {
         super('https://webnovelonline.net/');
         this.endUrl = "/";
@@ -16677,8 +16731,7 @@ class webnovelonlineNet extends ParserChapter {
     }
 
     async totalChapters() {
-        await fetch(this.siteSearch.href)
-            .then(res => fetchStatusHTML(res))
+        await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.row.c-tabs-item__content");
 
@@ -16690,7 +16743,7 @@ class webnovelonlineNet extends ParserChapter {
                 for (let book of block) {
                     let titleParser = book.querySelector("div.post-title > h3 > a").textContent;
 
-                    let diff = tanimoto(this.bTitle, titleParser);
+                    let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                     if (diff > 0.8) {
                         this.siteBook = book.querySelector("div.post-title > h3 > a").href;
@@ -16702,7 +16755,7 @@ class webnovelonlineNet extends ParserChapter {
                 this.total = "S0";
                 return;
             })
-            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+            .catch(err => this.total = FetchResult_fetchCatch(err, this.siteSearch.href));
     }
 }
 ;// CONCATENATED MODULE: ./src/js/Crawler/parsers/ReplaceTitle/readlightnovelMe.js
@@ -16710,7 +16763,7 @@ class webnovelonlineNet extends ParserChapter {
 
 
 
-class readlightnovelMe extends ParserChapter {
+class readlightnovelMe extends ParserClass_ParserChapter {
     constructor() {
         super('https://www.readlightnovel.me/');
     }
@@ -16730,13 +16783,12 @@ class readlightnovelMe extends ParserChapter {
     }
 
     async totalChapters() {
-        await fetch(this.siteSearch.href)
-            .then(res => fetchStatusHTML(res))
+        await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteSearch.href)
             .then(data => {
                 this.total = data.querySelector("div.novel-detail-item[style='display:flex;'] > div.novel-detail-body > ul > li:first-child > a").textContent.match(/\D*(\d+)/)[1];
                 return;
             })
-            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+            .catch(err => this.total = FetchResult_fetchCatch(err, this.siteSearch.href));
     }
 }
 ;// CONCATENATED MODULE: ./src/js/Crawler/parsers/ReplaceTitle/lightnovelEWcom/lightnovelpubCom.js
@@ -16744,7 +16796,7 @@ class readlightnovelMe extends ParserChapter {
 
 
 
-class lightnovelpubCom extends ParserChapter {
+class lightnovelpubCom extends ParserClass_ParserChapter {
     constructor() {
         super('https://www.lightnovelpub.com/');
     }
@@ -16760,13 +16812,12 @@ class lightnovelpubCom extends ParserChapter {
     }
 
     async totalChapters() {
-        await fetch(this.siteSearch.href)
-            .then(res => fetchStatusHTML(res))
+        await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteSearch.href)
             .then(data => {
                 this.total = data.querySelector("#novel > div.novel-body.container > nav > a.grdbtn.chapter-latest-container > div > p.latest.text1row").textContent.match(/\D*(\d+)/)[1];
                 return;
             })
-            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+            .catch(err => this.total = FetchResult_fetchCatch(err, this.siteSearch.href));
     }
 }
 ;// CONCATENATED MODULE: ./src/js/Crawler/parsers/ReplaceTitle/lightnovelEWcom/lightnovelworldCom.js
@@ -16774,7 +16825,7 @@ class lightnovelpubCom extends ParserChapter {
 
 
 
-class lightnovelworldCom extends ParserChapter {
+class lightnovelworldCom extends ParserClass_ParserChapter {
     constructor() {
         super('https://www.lightnovelworld.com/');
     }
@@ -16790,13 +16841,12 @@ class lightnovelworldCom extends ParserChapter {
     }
 
     async totalChapters() {
-        await fetch(this.siteSearch.href)
-            .then(res => fetchStatusHTML(res))
+        await FetchResult_fetchXHR(FetchResult_FXmode.fetchHTML, this.siteSearch.href)
             .then(data => {
                 this.total = data.querySelector("#novel > div.novel-body.container > nav > a.grdbtn.chapter-latest-container > div > p.latest.text1row").textContent.match(/\D*(\d+)/)[1];
                 return;
             })
-            .catch(err => this.total = fetchCatch(err, this.siteSearch.href));
+            .catch(err => this.total = FetchResult_fetchCatch(err, this.siteSearch.href));
     }
 }
 ;// CONCATENATED MODULE: ./src/js/Crawler/parsers/search/fastnovelNet.js
@@ -16965,7 +17015,7 @@ class g_lightnovelplusCom extends GetText {
 
                 let titleParser = book.name;
 
-                let diff = tanimoto(this.bTitle, titleParser);
+                let diff = tanimoto_tanimoto(this.bTitle, titleParser);
 
                 if (diff > 0.9) {
                     this.sBookId = book.book_id;
@@ -17040,7 +17090,7 @@ function md5(d) { return rstr2hex(binl2rstr(binl_md5(rstr2binl(d), 8 * d.length)
 // @match       https://m.webnovel.com/book/*/*
 // @match       https://passport.webnovel.com/emaillogin.html*
 // @grant       GM_xmlhttpRequest
-// @version     0.8.6
+// @version     0.8.7
 // ==/UserScript==
 
 
@@ -17136,9 +17186,10 @@ function md5(d) { return rstr2hex(binl2rstr(binl_md5(rstr2binl(d), 8 * d.length)
 
 const SitesParser = [
     [
-        new lightnovelplusCom(),
+        new pandanovelCom(),
     ],
     [
+        new lightnovelplusCom(),
     ],
     [
         // 2fetch/apiSearch
@@ -17180,7 +17231,7 @@ const SitesParser = [
         // htmlSearch
         new lightnovelWorld(),
         new novelhallCom(),
-        new pandanovelCom(),
+    //new pandanovelCom(),
         new readlightnovelsNet(),
 
         // htmlSearchChapter

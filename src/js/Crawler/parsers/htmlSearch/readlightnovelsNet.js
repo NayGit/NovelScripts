@@ -1,5 +1,5 @@
 import { ParserBook } from 'CrawlerClass/ParserClass';
-import { fetchStatusHTML, fetchStatusJSON, fetchCatch } from 'Domain/FetchResult';
+import { fetchXHR, FXmode, fetchCatch } from 'Domain/FetchResult';
 import { ReplaceName } from 'Domain/domain';
 import tanimoto from 'Domain/StringProcent/tanimoto';
 
@@ -14,8 +14,7 @@ export default class readlightnovelsNet extends ParserBook {
     }
 
     async totalChapters() {
-        await fetch(this.siteSearch.href)
-            .then(res => fetchStatusHTML(res))
+        await fetchXHR(FXmode.fetchHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.col-md-3.col-sm-6.col-xs-6.home-truyendecu");
 

@@ -1,5 +1,5 @@
 import { ParserChapter } from 'CrawlerClass/ParserClass';
-import { fetchStatusHTML, fetchStatusJSON, fetchCatch } from 'Domain/FetchResult';
+import { fetchXHR, FXmode, fetchCatch } from 'Domain/FetchResult';
 import { ReplaceName } from 'Domain/domain';
 import tanimoto from 'Domain/StringProcent/tanimoto';
 
@@ -20,8 +20,7 @@ export default class freewebnovelCom extends ParserChapter {
     async totalChapters() {
         if (this.checkBookUndefined()) {
             let isError = '';
-            await fetch(this.siteSearch.href)
-                .then(res => fetchStatusHTML(res))
+            await fetchXHR(FXmode.fetchHTML, this.siteSearch.href)
                 .then(data => {
                     let block = data.querySelectorAll("div.col-content > div > div.li-row");
 
@@ -51,8 +50,7 @@ export default class freewebnovelCom extends ParserChapter {
         }
 
         if (this.checkBookSite()) {
-            return await fetch(this.siteBook.href)
-                .then(res => fetchStatusHTML(res))
+            return await fetchXHR(FXmode.fetchHTML, this.siteBook.href)
                 .then(data => {
                     this.total = data.querySelector("body > div.main > div > div > div.col-content > div.m-newest1 > ul > li:nth-child(1) > a").textContent.match(/\D*(\d+)/)[1] * -1;
                     return;

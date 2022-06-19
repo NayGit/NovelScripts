@@ -546,6 +546,80 @@ var update = injectStylesIntoStyleTag_default()(tag/* default */.Z, options);
 
        /* harmony default export */ const css_tag = (tag/* default */.Z && tag/* default.locals */.Z.locals ? tag/* default.locals */.Z.locals : undefined);
 
+;// CONCATENATED MODULE: ./src/js/Domain/FetchResult.js
+const FetchResult_FXmode = { fetchHTML: 'fetchHTML', fetchJSON: 'fetchJSON', xhrHTML: 'xhrHTML', xhrJSON: 'xhrJSON' };
+
+async function FetchResult_fetchXHR(_fxMode, _url, _param = {}) {
+    if (_fxMode === FetchResult_FXmode.fetchHTML || _fxMode === FetchResult_FXmode.fetchJSON) {
+        return await fetch(_url, _param)
+            .then(async response => {
+                if (!response.ok) {
+                    return Promise.reject(response);
+                }
+
+                if (_fxMode === FetchResult_FXmode.fetchHTML) {
+                    let parser = new DOMParser();
+                    return parser.parseFromString(await response.text(), 'text/html');
+                }
+
+                if (_fxMode === FetchResult_FXmode.fetchJSON) {
+                    return response.json();
+                }
+            });
+    }
+    else {
+        // novelmtCom: redirect???
+
+        return new Promise((resolve, reject) => {
+            GM_xmlhttpRequest(Object.assign(_param, {
+                url: _url,
+                onload: function (response) {
+                    //for (let o in response)
+                    //    console.warn(o, response[o]);
+
+                    //console.info(response["response"]);
+                    //console.warn(response.response);
+
+                    if (_fxMode === FetchResult_FXmode.xhrHTML) {
+                        let parser = new DOMParser();
+                        resolve(parser.parseFromString(response.response, 'text/html'));
+                    }
+
+                    if (FetchResult_FXmode === FetchResult_FXmode.xhrJSON) {
+                        resolve(JSON.parse(response.responseText));
+                    }
+
+                    reject(response);
+                },
+                onerror: function (response) {
+                    reject(response);
+                }
+            }));
+        });
+    }
+}
+
+function FetchResult_fetchCatch(_error, _site) {
+    if (_error instanceof TypeError) {
+        if (_error.message == "Failed to fetch") {
+            console.warn('TypeError: ' + new URL(_site));
+            console.warn(_error);
+            return "Fetch";
+        }
+    }
+
+    if (_error instanceof Response) {
+        if (!_error.ok) {
+            console.warn('Response: ' + new URL(_site));
+            console.warn(_error);
+            return "F" + _error.status;
+        }
+    }
+
+    console.warn('Error: ' + new URL(_site));
+    console.warn(_error);
+    return "Err";
+}
 ;// CONCATENATED MODULE: ./src/js/Domain/webNovel.js
 
 
@@ -582,8 +656,7 @@ function glavaWebNovel(loc) {
 async function downloadBookIfno(_loc) {
     let url = _loc.origin + '/go/pcm/book/get-book-detail?_csrfToken=' + getCookie("_csrfToken") + '&bookId=' + bookWebNovel(_loc);
 
-    return await fetch(url)
-        .then(res => fetchStatusJSON(res))
+    return await fetchXHR(FXmode.fetchJSON, url)
         .then(data => {
             return data;
         })
@@ -600,7 +673,6 @@ async function downloadBookChapters(_loc) {
             headers: { 'User-Agent': 'Mozilla/mobile QDHWReaderAndroid/5.9.3/643/2000002/000000005bfaef39ffffffffd99fa8a4' },
             onload: function (data) {
                 resolve(JSON.parse(data.response));
-
             },
             onerror: function (error) {
                 reject(error);
@@ -656,45 +728,6 @@ function GetIndexLastChapterLock(_bookChapters) {
     }
 
     return _bookChapters.Data.Chapters[_bookChapters.Data.Chapters.length - 1].Index;
-}
-;// CONCATENATED MODULE: ./src/js/Domain/FetchResult.js
-async function ResponseToHTML(response) {
-    let bodyText = await response.text();
-
-    let parser = new DOMParser();
-    let bodyHtml = parser.parseFromString(bodyText, 'text/html');
-
-    return bodyHtml;
-}
-
-function fetchStatusHTML(response) {
-    return response.ok ? ResponseToHTML(response) : Promise.reject(response)
-}
-
-function FetchResult_fetchStatusJSON(response) {
-    return response.ok ? response.json() : Promise.reject(response)
-}
-
-function FetchResult_fetchCatch(_error, _site) {
-    if (_error instanceof TypeError) {
-        if (_error.message == "Failed to fetch") {
-            console.warn('TypeError: ' + new URL(_site));
-            console.warn(_error);
-            return "Fetch";
-        }
-    }
-
-    if (_error instanceof Response) {
-        if (!_error.ok) {
-            console.warn('Response: ' + new URL(_site));
-            console.warn(_error);
-            return "F" + _error.status;
-        }
-    }
-
-    console.warn('Error: ' + new URL(_site));
-    console.warn(_error);
-    return "Err";
 }
 ;// CONCATENATED MODULE: ./src/js/Tag/tag.js
 function ceTagId(_tagName, _id, _translate) {
@@ -895,8 +928,7 @@ async function downloadList(_csrfToken, type, order, pageIndex, tagName) {
     let url = location.origin + '/go/pcm/seo/getTagBookList?_csrfToken=' + _csrfToken + '&type=' + type + '&order=' + order + '&pageIndex=' + pageIndex + '&tagName=' + tagName; //r18
 
     let bodyJson = "";
-    await fetch(url)
-        .then(res => FetchResult_fetchStatusJSON(res))
+    await FetchResult_fetchXHR(FetchResult_FXmode.fetchJSON, url)
         .then(data => {
             bodyJson = data.data.items;
         })

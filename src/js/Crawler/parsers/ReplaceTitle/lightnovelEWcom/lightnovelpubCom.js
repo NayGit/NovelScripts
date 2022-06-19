@@ -1,5 +1,5 @@
 import { ParserChapter } from 'CrawlerClass/ParserClass';
-import { fetchStatusHTML, fetchStatusJSON, fetchCatch } from 'Domain/FetchResult';
+import { fetchXHR, FXmode, fetchCatch } from 'Domain/FetchResult';
 import { ReplaceName } from 'Domain/domain';
 
 export default class lightnovelpubCom extends ParserChapter {
@@ -18,8 +18,7 @@ export default class lightnovelpubCom extends ParserChapter {
     }
 
     async totalChapters() {
-        await fetch(this.siteSearch.href)
-            .then(res => fetchStatusHTML(res))
+        await fetchXHR(FXmode.fetchHTML, this.siteSearch.href)
             .then(data => {
                 this.total = data.querySelector("#novel > div.novel-body.container > nav > a.grdbtn.chapter-latest-container > div > p.latest.text1row").textContent.match(/\D*(\d+)/)[1];
                 return;

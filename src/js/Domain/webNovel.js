@@ -1,4 +1,4 @@
-import { fetchStatusHTML, fetchStatusJSON, fetchCatch } from 'Domain/FetchResult';
+import { fetchXHR, FXmode, fetchCatch } from 'Domain/FetchResult';
 
 // возвращает куки с указанным name. Или undefined, если ничего не найдено
 export function getCookie(name) {
@@ -33,8 +33,7 @@ export function glavaWebNovel(loc) {
 export async function downloadBookIfno(_loc) {
     let url = _loc.origin + '/go/pcm/book/get-book-detail?_csrfToken=' + getCookie("_csrfToken") + '&bookId=' + bookWebNovel(_loc);
 
-    return await fetch(url)
-        .then(res => fetchStatusJSON(res))
+    return await fetchXHR(FXmode.fetchJSON, url)
         .then(data => {
             return data;
         })
@@ -51,7 +50,6 @@ export async function downloadBookChapters(_loc) {
             headers: { 'User-Agent': 'Mozilla/mobile QDHWReaderAndroid/5.9.3/643/2000002/000000005bfaef39ffffffffd99fa8a4' },
             onload: function (data) {
                 resolve(JSON.parse(data.response));
-
             },
             onerror: function (error) {
                 reject(error);

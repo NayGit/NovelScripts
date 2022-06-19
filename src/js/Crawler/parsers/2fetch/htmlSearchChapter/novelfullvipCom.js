@@ -1,5 +1,5 @@
 import { ParserChapter } from 'CrawlerClass/ParserClass';
-import { fetchStatusHTML, fetchStatusJSON, fetchCatch } from 'Domain/FetchResult';
+import { fetchXHR, FXmode, fetchCatch } from 'Domain/FetchResult';
 import { ReplaceName } from 'Domain/domain';
 import tanimoto from 'Domain/StringProcent/tanimoto';
 
@@ -20,8 +20,7 @@ export default class novelfullvipCom extends ParserChapter {
     async totalChapters() {
         if (this.checkBookUndefined()) {
             let isError = '';
-            await fetch(this.siteSearch.href)
-                .then(res => fetchStatusHTML(res))
+            await fetchXHR(FXmode.fetchHTML, this.siteSearch.href)
                 .then(data => {
                     let block = data.querySelectorAll("#truyen-slide > div.list.list-thumbnail.col-xs-12.col-md-9 > div.row > div.col-xs-4.col-sm-3.col-md-3");
 
@@ -51,8 +50,7 @@ export default class novelfullvipCom extends ParserChapter {
         }
 
         if (this.checkBookSite()) {
-            return await fetch(this.siteBook.href)
-                .then(res => fetchStatusHTML(res))
+            return await fetchXHR(FXmode.fetchHTML, this.siteBook.href)
                 .then(data => {
                     this.total = data.querySelector("#truyen > div.col-xs-12.col-sm-12.col-md-9.col-truyen-main > div.col-xs-12.col-info-desc > div.col-xs-12.col-sm-8.col-md-8.desc > div.l-chapter > ul > li:nth-child(1) > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
                     return;

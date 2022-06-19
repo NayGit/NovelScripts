@@ -1,5 +1,5 @@
 import { ParserChapter } from 'CrawlerClass/ParserClass';
-import { fetchStatusHTML, fetchStatusJSON, fetchCatch } from 'Domain/FetchResult';
+import { fetchXHR, FXmode, fetchCatch } from 'Domain/FetchResult';
 import { ReplaceName } from 'Domain/domain';
 import tanimoto from 'Domain/StringProcent/tanimoto';
 
@@ -22,14 +22,13 @@ export default class octopiiCo extends ParserChapter {
     async totalChapters() {
         this.apiSearch = new URL(this.site.origin + "/api/advance-search");
 
-        await fetch(this.apiSearch.href, {
+        await fetchXHR(FXmode.fetchJSON, this.apiSearch.href, {
             "headers": {
                 "content-type": "application/json",
             },
             "body": "{\"clicked\":false,\"limit\":\"24\",\"page\":0,\"pageCount\":1,\"value\":\"" + this.bTitle + "\",\"sort\":3,\"selected\":{\"genre\":[],\"status\":[],\"sort\":[],\"author\":[]},\"results\":[],\"label\":\"searching ....\"}",
             "method": "POST",
         })
-            .then(res => fetchStatusJSON(res))
             .then(data => {
                 if (Object.keys(data.results).length == 0) {
                     this.total = "B0";

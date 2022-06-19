@@ -1,5 +1,5 @@
 import { ParserChapter } from 'CrawlerClass/ParserClass';
-import { fetchStatusHTML, fetchStatusJSON, fetchCatch } from 'Domain/FetchResult';
+import { fetchXHR, FXmode, fetchCatch } from 'Domain/FetchResult';
 import { ReplaceName } from 'Domain/domain';
 import tanimoto from 'Domain/StringProcent/tanimoto';
 
@@ -17,8 +17,7 @@ export default class novelbuddyCom extends ParserChapter {
     }
 
     async totalChapters() {
-        await fetch(this.siteSearch.href)
-            .then(res => fetchStatusHTML(res))
+        await fetchXHR(FXmode.fetchHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.section-body > div.list > div.book-item");
 

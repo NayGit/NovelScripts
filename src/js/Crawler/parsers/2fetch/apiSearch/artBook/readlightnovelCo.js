@@ -1,5 +1,5 @@
 import { ParserBook } from 'CrawlerClass/ParserClass';
-import { fetchStatusHTML, fetchStatusJSON, fetchCatch } from 'Domain/FetchResult';
+import { fetchXHR, FXmode, fetchCatch } from 'Domain/FetchResult';
 import { ReplaceName } from 'Domain/domain';
 import tanimoto from 'Domain/StringProcent/tanimoto';
 
@@ -16,8 +16,7 @@ export default class readlightnovelCo extends ParserBook {
     async totalChapters() {
         if (this.checkBookUndefined()) {
             let isError = '';
-            await fetch(this.siteSearch.href)
-                .then(res => fetchStatusHTML(res))
+            await fetchXHR(FXmode.fetchHTML, this.siteSearch.href)
                 .then(data => {
                     let block = data.querySelectorAll("div.result-container_2.result-container > ul.result-list > li.list-item");
 
@@ -47,8 +46,7 @@ export default class readlightnovelCo extends ParserBook {
         }
 
         if (this.checkBookSite()) {
-            return await fetch(this.siteBook.href)
-                .then(res => fetchStatusHTML(res))
+            return await fetchXHR(FXmode.fetchHTML, this.siteBook.href)
                 .then(data => {
                     let allCH = data.querySelector("#detail > div.chapter-wrapper > ul").getElementsByTagName("a");
                     for (let i = allCH.length - 1; i >= 0; i--) {

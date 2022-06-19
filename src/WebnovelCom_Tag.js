@@ -12,7 +12,7 @@
 import './css/tag.css';
 
 import { getCookie } from 'Domain/webNovel';
-import { fetchStatusHTML, fetchStatusJSON, fetchCatch } from 'Domain/FetchResult';
+import { fetchXHR, FXmode, fetchCatch } from 'Domain/FetchResult';
 import { ceTagId, ceNav, ceInputButton, ceInputNumber, ceInputCheckbox } from 'Tag/tag';
 
 async function StartCreate() {
@@ -151,8 +151,7 @@ async function downloadList(_csrfToken, type, order, pageIndex, tagName) {
     let url = location.origin + '/go/pcm/seo/getTagBookList?_csrfToken=' + _csrfToken + '&type=' + type + '&order=' + order + '&pageIndex=' + pageIndex + '&tagName=' + tagName; //r18
 
     let bodyJson = "";
-    await fetch(url)
-        .then(res => fetchStatusJSON(res))
+    await fetchXHR(FXmode.fetchJSON, url)
         .then(data => {
             bodyJson = data.data.items;
         })

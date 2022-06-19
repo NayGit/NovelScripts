@@ -1,5 +1,5 @@
 import { ParserBook } from 'CrawlerClass/ParserClass';
-import { fetchStatusHTML, fetchStatusJSON, fetchCatch } from 'Domain/FetchResult';
+import { fetchXHR, FXmode, fetchCatch } from 'Domain/FetchResult';
 import { ReplaceName } from 'Domain/domain';
 import tanimoto from 'Domain/StringProcent/tanimoto';
 
@@ -15,8 +15,7 @@ export default class pandanovelCom extends ParserBook {
     async totalChapters() {
         let isLucky = false;
         var isError = '';
-        await fetch(this.siteSearch.href)
-            .then(res => fetchStatusHTML(res))
+        await fetchXHR(FXmode.fetchHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("#panda-app > div.sr-body > div.novel-list > ul > li");
 
@@ -45,8 +44,7 @@ export default class pandanovelCom extends ParserBook {
         }
 
         if (isLucky) {
-            return await fetch(this.siteBook.href)
-                .then(res => fetchStatusHTML(res))
+            return await fetchXHR(FXmode.fetchHTML, this.siteBook.href)
                 .then(data => {
                     this.total = data.querySelector("#detailsBody > div > div.details-chapters > dl > dt > p > a").textContent.match(/\D*(\d+)/)[1] * -1;
                     return;

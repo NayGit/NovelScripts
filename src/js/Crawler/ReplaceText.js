@@ -1,6 +1,6 @@
 'use strict';
 
-import { fetchStatusHTML, fetchStatusJSON, fetchCatch } from 'Domain/FetchResult';
+import { fetchXHR, FXmode, fetchCatch } from 'Domain/FetchResult';
 
 //async function GetChapter(_url, _cId) {
 //    return new Promise((resolve, reject) => {
@@ -57,8 +57,7 @@ import { fetchStatusHTML, fetchStatusJSON, fetchCatch } from 'Domain/FetchResult
 //}
 
 async function GetChapterFetch(_url, _cId) {
-    return await fetch(_url)
-        .then(res => fetchStatusHTML(res))
+    return await fetchXHR(FXmode.fetchHTML, _url)
         .then(data => {
             let pOrig = data.querySelectorAll("#content-" + _cId + " > p");
 
