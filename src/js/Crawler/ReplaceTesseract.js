@@ -100,13 +100,6 @@ export async function ReplaceTesseract(_cId) {
     // Сортировка
     let pOrder = contentCheck.querySelectorAll("p._cfcmp");
     if (pOrder.length > 0) {
-        let pAll = document.querySelectorAll("#content-" + _cId + " > p");
-        for (let p of pAll) {
-            p.translate = false;
-        }
-
-        contentCheck.translate = true;
-
         WorkerCfnp(_cId);
         WorkerCfcmp(_cId);
     }

@@ -199,14 +199,9 @@ export async function ReplaceText(_bId, _cId) {
                 RemoveTag(p);
 
                 ReplaceSymbol(p, dict);
-            }
 
-            let p_cfcmp = document.querySelectorAll("#content-" + _cId + " > p._cfcmp");
-            for (let p of p_cfcmp) {
-                p.translate = false;
+                p.translate = true;
             }
-
-            contentCheck.translate = true;
 
             // создаем наблюдатель
             let observer = new IntersectionObserver((entries, observer) => {
@@ -224,6 +219,7 @@ export async function ReplaceText(_bId, _cId) {
                         pTr.innerText = await ArraySortOrder(pObserve);
                         ReplaceSymbol(pTr, dict);
 
+                        pTr.translate = true;
 
                         pObserve.after(pTr);
 

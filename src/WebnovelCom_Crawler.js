@@ -8,7 +8,7 @@
 // @match       https://m.webnovel.com/book/*/*
 // @match       https://passport.webnovel.com/emaillogin.html*
 // @grant       GM_xmlhttpRequest
-// @version     0.8.5
+// @version     0.8.6
 // ==/UserScript==
 
 'use strict';
@@ -220,6 +220,8 @@ const SitesGetText = [
         return;
     }
 
+    document.body.translate = false;
+
     let BookInfo = await downloadBookIfno(location);
     console.info(BookInfo);
 
@@ -254,11 +256,10 @@ const SitesGetText = [
         for (let c of contents) {
             let chapterId = c.id.match(/^content-(\d+)$/);
             if (chapterId && c.parentElement.querySelector(DivMainId + "_" + chapterId[1]) === null) {
-                c.translate = false;
+                let contentTitle = c.parentElement.querySelector("div.ChapterTitle_chapter_title_container__Wq5T8");
+                contentTitle.translate = true;
 
                 let divMain = await CreateDivMain(SitesParser, SitesGetText, BookChapters, BookId, ChLast, ChIndexLastLocked, StatusChapter.LOCKED, chapterId[1]);
-
-                let contentTitle = c.parentElement.querySelector("div.ChapterTitle_chapter_title_container__Wq5T8");
                 contentTitle.after(divMain);
             }
             //else {
@@ -280,6 +281,9 @@ const SitesGetText = [
                         divMain.classList.add(StatusChapter.FREE);
                         c.translate = true;
                     }
+
+                    c.parentElement.querySelector("div.lazyload-wrapper").translate = true;
+                    //c.parentElement.querySelector("div.lazyload-wrapper > div").translate = true;
                 }
             }
         }

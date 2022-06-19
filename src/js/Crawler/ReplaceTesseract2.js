@@ -102,14 +102,9 @@ export async function ReplaceTesseract2(_cId) {
     // Сортировка
     let pOrder = contentCheck.querySelectorAll("p._cfcmp");
     if (pOrder.length > 0) {
-        let pAll = document.querySelectorAll("#content-" + _cId + " > p");
-        for (let p of pAll) {
-            p.translate = false;
-        }
-
-        let _workerPre = await WorkerNew();
-        let dict = await Dict(_cId, _workerPre, {}, 1);
-        await _workerPre.terminate();
+        let workerPre = await WorkerNew();
+        let dict = await Dict(_cId, workerPre, {}, 1);
+        await workerPre.terminate();
 
         let p_cfnp = document.querySelectorAll("#content-" + _cId + " > p._cfnp");
         for (let p of p_cfnp) {
@@ -119,13 +114,6 @@ export async function ReplaceTesseract2(_cId) {
 
             p.translate = true;
         }
-
-        //let p_cfcmp = document.querySelectorAll("#content-" + _cId + " > p._cfcmp");
-        //for (let p of p_cfcmp) {
-        //    p.translate = false;
-        //}
-
-        contentCheck.translate = true;
 
         // создаем наблюдатель
         let observer = new IntersectionObserver((entries, observer) => {
@@ -142,6 +130,8 @@ export async function ReplaceTesseract2(_cId) {
 
                     pTr.innerText = await ArraySortOrder(pObserve);
                     ReplaceSymbol(pTr, dict);
+
+                    pTr.translate = true;
 
 
                     pObserve.after(pTr);

@@ -13694,14 +13694,9 @@ async function ReplaceText(_bId, _cId) {
                 RemoveTag(p);
 
                 ReplaceSymbol(p, dict);
-            }
 
-            let p_cfcmp = document.querySelectorAll("#content-" + _cId + " > p._cfcmp");
-            for (let p of p_cfcmp) {
-                p.translate = false;
+                p.translate = true;
             }
-
-            contentCheck.translate = true;
 
             // ������� �����������
             let observer = new IntersectionObserver((entries, observer) => {
@@ -13719,6 +13714,7 @@ async function ReplaceText(_bId, _cId) {
                         pTr.innerText = await ArraySortOrder(pObserve);
                         ReplaceSymbol(pTr, dict);
 
+                        pTr.translate = true;
 
                         pObserve.after(pTr);
 
@@ -13857,14 +13853,9 @@ async function ReplaceTesseract2(_cId) {
     // ����������
     let pOrder = contentCheck.querySelectorAll("p._cfcmp");
     if (pOrder.length > 0) {
-        let pAll = document.querySelectorAll("#content-" + _cId + " > p");
-        for (let p of pAll) {
-            p.translate = false;
-        }
-
-        let _workerPre = await WorkerNew();
-        let dict = await Dict(_cId, _workerPre, {}, 1);
-        await _workerPre.terminate();
+        let workerPre = await WorkerNew();
+        let dict = await Dict(_cId, workerPre, {}, 1);
+        await workerPre.terminate();
 
         let p_cfnp = document.querySelectorAll("#content-" + _cId + " > p._cfnp");
         for (let p of p_cfnp) {
@@ -13874,13 +13865,6 @@ async function ReplaceTesseract2(_cId) {
 
             p.translate = true;
         }
-
-        //let p_cfcmp = document.querySelectorAll("#content-" + _cId + " > p._cfcmp");
-        //for (let p of p_cfcmp) {
-        //    p.translate = false;
-        //}
-
-        contentCheck.translate = true;
 
         // ������� �����������
         let observer = new IntersectionObserver((entries, observer) => {
@@ -13897,6 +13881,8 @@ async function ReplaceTesseract2(_cId) {
 
                     pTr.innerText = await ReplaceTesseract2_ArraySortOrder(pObserve);
                     ReplaceTesseract2_ReplaceSymbol(pTr, dict);
+
+                    pTr.translate = true;
 
 
                     pObserve.after(pTr);
@@ -17054,7 +17040,7 @@ function md5(d) { return rstr2hex(binl2rstr(binl_md5(rstr2binl(d), 8 * d.length)
 // @match       https://m.webnovel.com/book/*/*
 // @match       https://passport.webnovel.com/emaillogin.html*
 // @grant       GM_xmlhttpRequest
-// @version     0.8.5
+// @version     0.8.6
 // ==/UserScript==
 
 
@@ -17266,6 +17252,8 @@ const SitesGetText = [
         return;
     }
 
+    document.body.translate = false;
+
     let BookInfo = await downloadBookIfno(location);
     console.info(BookInfo);
 
@@ -17300,11 +17288,10 @@ const SitesGetText = [
         for (let c of contents) {
             let chapterId = c.id.match(/^content-(\d+)$/);
             if (chapterId && c.parentElement.querySelector(DivMainId + "_" + chapterId[1]) === null) {
-                c.translate = false;
+                let contentTitle = c.parentElement.querySelector("div.ChapterTitle_chapter_title_container__Wq5T8");
+                contentTitle.translate = true;
 
                 let divMain = await CreateDivMain(SitesParser, SitesGetText, BookChapters, BookId, ChLast, ChIndexLastLocked, StatusChapter.LOCKED, chapterId[1]);
-
-                let contentTitle = c.parentElement.querySelector("div.ChapterTitle_chapter_title_container__Wq5T8");
                 contentTitle.after(divMain);
             }
             //else {
@@ -17326,6 +17313,9 @@ const SitesGetText = [
                         divMain.classList.add(StatusChapter.FREE);
                         c.translate = true;
                     }
+
+                    c.parentElement.querySelector("div.lazyload-wrapper").translate = true;
+                    //c.parentElement.querySelector("div.lazyload-wrapper > div").translate = true;
                 }
             }
         }
