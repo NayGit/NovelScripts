@@ -18,7 +18,7 @@ export default class webnovelonlineNet extends ParserChapter {
     }
 
     async totalChapters() {
-        await fetchXHR(FXmode.fetchHTML, this.siteSearch.href)
+        await fetchXHR(FXmode.xhrHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.row.c-tabs-item__content");
 

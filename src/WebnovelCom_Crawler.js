@@ -8,7 +8,7 @@
 // @match       https://m.webnovel.com/book/*/*
 // @match       https://passport.webnovel.com/emaillogin.html*
 // @grant       GM_xmlhttpRequest
-// @version     0.8.8
+// @version     0.8.9
 // ==/UserScript==
 
 'use strict';

@@ -15,7 +15,7 @@ export default class mMylovenovelCom extends ParserBook {
     async totalChapters() {
         if (this.checkBookUndefined()) {
             let isError = '';
-            await fetchXHR(FXmode.fetchHTML, this.siteSearch.href)
+            await fetchXHR(FXmode.xhrHTML, this.siteSearch.href)
                 .then(data => {
                     let block = data.querySelectorAll("div.main > ul.list > li");
 
@@ -45,7 +45,7 @@ export default class mMylovenovelCom extends ParserBook {
         }
 
         if (this.checkBookSite()) {
-            return await fetchXHR(FXmode.fetchHTML, this.siteBook.href)
+            return await fetchXHR(FXmode.xhrHTML, this.siteBook.href)
                 .then(data => {
                     this.total = data.querySelector("#info > div.main > div.detail > p.chapter > a").textContent.match(/\D*(\d+)/)[1] * -1;
                     return;

@@ -20,7 +20,7 @@ export default class freewebnovelCom extends ParserChapter {
     async totalChapters() {
         if (this.checkBookUndefined()) {
             let isError = '';
-            await fetchXHR(FXmode.fetchHTML, this.siteSearch.href)
+            await fetchXHR(FXmode.xhrHTML, this.siteSearch.href)
                 .then(data => {
                     let block = data.querySelectorAll("div.col-content > div > div.li-row");
 
@@ -50,7 +50,7 @@ export default class freewebnovelCom extends ParserChapter {
         }
 
         if (this.checkBookSite()) {
-            return await fetchXHR(FXmode.fetchHTML, this.siteBook.href)
+            return await fetchXHR(FXmode.xhrHTML, this.siteBook.href)
                 .then(data => {
                     this.total = data.querySelector("body > div.main > div > div > div.col-content > div.m-newest1 > ul > li:nth-child(1) > a").textContent.match(/\D*(\d+)/)[1] * -1;
                     return;

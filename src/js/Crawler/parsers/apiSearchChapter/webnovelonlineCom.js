@@ -22,7 +22,7 @@ export default class webnovelonlineCom extends ParserChapter {
     async totalChapters() {
         this.apiSearch = new URL(this.site.protocol + "//api." + this.site.hostname + "/api/v1/wuxia/search?name=" + this.bTitle);
 
-        await fetchXHR(FXmode.fetchJSON, this.apiSearch.href)
+        await fetchXHR(FXmode.xhrJSON, this.apiSearch.href)
             .then(data => {
                 if (Object.keys(data.data).length == 0) {
                     this.total = "B0";

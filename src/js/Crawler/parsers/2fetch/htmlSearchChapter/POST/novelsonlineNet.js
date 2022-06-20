@@ -23,7 +23,7 @@ export default class novelsonlineNet extends ParserChapter {
             let url = new URL(this.site.origin + "/sResults.php");
 
             let isError = '';
-            await fetchXHR(FXmode.fetchHTML, url.href, {
+            await fetchXHR(FXmode.xhrHTML, url.href, {
                 headers: new Headers({
                     "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
                     "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.54 Safari/537.36"
@@ -65,7 +65,7 @@ export default class novelsonlineNet extends ParserChapter {
         }
 
         if (this.checkBookSite()) {
-            return await fetchXHR(FXmode.fetchHTML, this.siteBook.href)
+            return await fetchXHR(FXmode.xhrHTML, this.siteBook.href)
                 .then(data => {
                     this.total = data.querySelector("#collapse-1 > div > div > div.tab-pane.active > ul > li:last-child").textContent.match(/\D*(\d+)/)[1];
                     return;

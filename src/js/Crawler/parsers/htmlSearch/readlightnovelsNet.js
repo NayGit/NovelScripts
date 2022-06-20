@@ -14,7 +14,7 @@ export default class readlightnovelsNet extends ParserBook {
     }
 
     async totalChapters() {
-        await fetchXHR(FXmode.fetchHTML, this.siteSearch.href)
+        await fetchXHR(FXmode.xhrHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.col-md-3.col-sm-6.col-xs-6.home-truyendecu");
 

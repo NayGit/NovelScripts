@@ -16,7 +16,7 @@ export default class novelupdatesCc extends ParserBook {
     async totalChapters() {
         if (this.checkBookUndefined()) {
             let isError = '';
-            await fetchXHR(FXmode.fetchHTML, this.siteSearch.href)
+            await fetchXHR(FXmode.xhrHTML, this.siteSearch.href)
                 .then(data => {
                     let block = data.querySelectorAll("div.result-container_2.result-container > ul.result-list > li.list-item");
 
@@ -46,7 +46,7 @@ export default class novelupdatesCc extends ParserBook {
         }
 
         if (this.checkBookSite()) {
-            return await fetchXHR(FXmode.fetchHTML, this.siteBook.href)
+            return await fetchXHR(FXmode.xhrHTML, this.siteBook.href)
                 .then(data => {
                     let allCH = data.querySelector("#detail > div.chapter-wrapper > ul").getElementsByTagName("a");
                     for (let i = allCH.length - 1; i >= 0; i--) {

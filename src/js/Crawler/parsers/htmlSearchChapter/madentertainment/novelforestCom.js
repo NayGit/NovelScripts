@@ -17,7 +17,7 @@ export default class novelforestCom extends ParserChapter {
     }
 
     async totalChapters() {
-        await fetchXHR(FXmode.fetchHTML, this.siteSearch.href)
+        await fetchXHR(FXmode.xhrHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.section-body > div.list > div.book-item");
 

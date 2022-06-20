@@ -25,7 +25,7 @@ export default class readwnCom extends ParserChapter {
             this.apiSearch = new URL(this.site.origin + "/e/search/index.php");
 
             let isError = '';
-            await fetchXHR(FXmode.fetchHTML, this.apiSearch.href, {
+            await fetchXHR(FXmode.xhrHTML, this.apiSearch.href, {
                 "headers": {
                     "content-type": "application/x-www-form-urlencoded",
                 },
@@ -61,7 +61,7 @@ export default class readwnCom extends ParserChapter {
         }
 
         if (this.checkBookSite()) {
-            return await fetchXHR(FXmode.fetchHTML, this.siteBook.href)
+            return await fetchXHR(FXmode.xhrHTML, this.siteBook.href)
                 .then(data => {
                     this.total = data.querySelector("div.novel-info > div.header-stats > span:nth-child(1) > strong").textContent.trim();
                     return;

@@ -13,7 +13,7 @@ export default class topwebnovelCom extends ParserBook {
     }
 
     async totalChapters() {
-        await fetchXHR(FXmode.fetchHTML, this.siteSearch.href)
+        await fetchXHR(FXmode.xhrHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-novel-main.archive > div.list.list-novel.col-xs-12 > div.row");
 

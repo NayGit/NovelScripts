@@ -13,7 +13,7 @@ export default class novelhallCom extends ParserBook {
     }
 
     async totalChapters() {
-        await fetchXHR(FXmode.fetchHTML, this.siteSearch.href)
+        await fetchXHR(FXmode.xhrHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("#main > div.container > div > table > tbody > tr");
 

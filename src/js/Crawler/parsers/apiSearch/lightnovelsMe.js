@@ -18,7 +18,7 @@ export default class lightnovelsMe extends ParserBook {
     async totalChapters() {
         this.apiSearch = new URL(this.site.origin + "/api/search?keyword=" + this.bTitle + "&index=0&limit=20");
 
-        await fetchXHR(FXmode.fetchJSON, this.apiSearch.href)
+        await fetchXHR(FXmode.xhrJSON, this.apiSearch.href)
             .then(data => {
                 if (Object.keys(data.results).length == 0) {
                     this.total = "B0";

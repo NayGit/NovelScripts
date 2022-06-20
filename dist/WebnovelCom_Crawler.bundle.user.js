@@ -12676,6 +12676,14 @@ const LS_Login_LP = "WebNovel_Login_LP";
 const FetchXHR_FXmode = { fetchHTML: 'fetchHTML', fetchJSON: 'fetchJSON', xhrHTML: 'xhrHTML', xhrJSON: 'xhrJSON' };
 
 async function FetchXHR_fetchXHR(_fxMode, _url, _param = {}) {
+    _param = Object.assign({},
+        {},
+        //{
+            //headers: { 'User-Agent': 'Mozilla/5.0 (Linux; Android 12) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Mobile Safari/537.36' },
+            //headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36' },
+        //},
+        _param
+    )
     if (_fxMode === FetchXHR_FXmode.fetchHTML || _fxMode === FetchXHR_FXmode.fetchJSON) {
         if (_param["body"] === undefined && _param["data"] !== undefined) {
             _param["body"] = _param["data"];
@@ -12714,7 +12722,7 @@ async function FetchXHR_fetchXHR(_fxMode, _url, _param = {}) {
 
                     let response = convertResponse(xhr);
                     if (!response.ok) {
-                        return Promise.reject(response);
+                        return reject(response);
                     }
 
                     try {
@@ -13615,7 +13623,7 @@ function ParsingAll() {
 //}
 
 async function GetChapterFetch(_url, _cId) {
-    return await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, _url)
+    return await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, _url)
         .then(data => {
             let pOrig = data.querySelectorAll("#content-" + _cId + " > p");
 
@@ -14283,7 +14291,7 @@ class mWuxiaworldCo extends ParserBook {
     async totalChapters() {
         if (this.checkBookUndefined()) {
             let isError = '';
-            await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteSearch.href)
+            await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteSearch.href)
                 .then(data => {
                     let block = data.querySelectorAll("div.result-container_2.result-container > ul.result-list > li.list-item");
 
@@ -14313,7 +14321,7 @@ class mWuxiaworldCo extends ParserBook {
         }
 
         if (this.checkBookSite()) {
-            return await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteBook.href)
+            return await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteBook.href)
                 .then(data => {
                     let allCH = data.querySelector("#detail > div.chapter-wrapper > ul").getElementsByTagName("a");
                     for (let i = allCH.length - 1; i >= 0; i--) {
@@ -14353,7 +14361,7 @@ class novelupdatesCc extends ParserBook {
     async totalChapters() {
         if (this.checkBookUndefined()) {
             let isError = '';
-            await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteSearch.href)
+            await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteSearch.href)
                 .then(data => {
                     let block = data.querySelectorAll("div.result-container_2.result-container > ul.result-list > li.list-item");
 
@@ -14383,7 +14391,7 @@ class novelupdatesCc extends ParserBook {
         }
 
         if (this.checkBookSite()) {
-            return await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteBook.href)
+            return await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteBook.href)
                 .then(data => {
                     let allCH = data.querySelector("#detail > div.chapter-wrapper > ul").getElementsByTagName("a");
                     for (let i = allCH.length - 1; i >= 0; i--) {
@@ -14423,7 +14431,7 @@ class readlightnovelCc extends ParserBook {
     async totalChapters() {
         if (this.checkBookUndefined()) {
             let isError = '';
-            await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteSearch.href)
+            await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteSearch.href)
                 .then(data => {
                     let block = data.querySelectorAll("div.result-container_2.result-container > ul.result-list > li.list-item");
 
@@ -14453,7 +14461,7 @@ class readlightnovelCc extends ParserBook {
         }
 
         if (this.checkBookSite()) {
-            return await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteBook.href)
+            return await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteBook.href)
                 .then(data => {
                     let allCH = data.querySelector("#detail > div.chapter-wrapper > ul").getElementsByTagName("a");
                     for (let i = allCH.length - 1; i >= 0; i--) {
@@ -14493,7 +14501,7 @@ class readlightnovelCo extends ParserBook {
     async totalChapters() {
         if (this.checkBookUndefined()) {
             let isError = '';
-            await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteSearch.href)
+            await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteSearch.href)
                 .then(data => {
                     let block = data.querySelectorAll("div.result-container_2.result-container > ul.result-list > li.list-item");
 
@@ -14523,7 +14531,7 @@ class readlightnovelCo extends ParserBook {
         }
 
         if (this.checkBookSite()) {
-            return await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteBook.href)
+            return await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteBook.href)
                 .then(data => {
                     let allCH = data.querySelector("#detail > div.chapter-wrapper > ul").getElementsByTagName("a");
                     for (let i = allCH.length - 1; i >= 0; i--) {
@@ -14571,7 +14579,7 @@ class lightnovelreaderOrg extends ParserClass_ParserChapter {
             this.apiSearch = new URL(this.site.origin + "/search/autocomplete?query=" + this.bTitle);
 
             let isError = '';
-            await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchJSON, this.apiSearch.href)
+            await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrJSON, this.apiSearch.href)
                 .then(data => {
                     if (Object.keys(data).length == 0) {
                         isError = "B0";
@@ -14599,7 +14607,7 @@ class lightnovelreaderOrg extends ParserClass_ParserChapter {
         }
 
         if (this.checkBookSite()) {
-            return await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteBook.href)
+            return await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteBook.href)
                 .then(data => {
                     this.total = data.querySelector("body > section:nth-child(4) > div > div > div.col-12.col-xl-9 > div > div:nth-child(2) > div > div.novels-detail-right > ul > li:nth-child(9) > div.novels-detail-right-in-right > a:nth-child(1)").textContent.match(/\D*(\d+)/)[1];
                     return;
@@ -14638,7 +14646,7 @@ class ltnovelCom extends ParserClass_ParserChapter {
             this.apiSearch = new URL(this.site.origin + "/e/search/index.php");
 
             let isError = '';
-            await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.apiSearch.href, {
+            await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.apiSearch.href, {
                 "headers": {
                     "content-type": "application/x-www-form-urlencoded",
                 },
@@ -14674,7 +14682,7 @@ class ltnovelCom extends ParserClass_ParserChapter {
         }
 
         if (this.checkBookSite()) {
-            return await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteBook.href)
+            return await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteBook.href)
                 .then(data => {
                     this.total = data.querySelector("div.novel-info > div.header-stats > span:nth-child(1) > strong").textContent.trim();
                     return;
@@ -14713,7 +14721,7 @@ class novelmtCom extends ParserClass_ParserChapter {
             this.apiSearch = new URL(this.site.origin + "/e/search/index.php");
 
             let isError = '';
-            await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.apiSearch.href, {
+            await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.apiSearch.href, {
                 "headers": {
                     "content-type": "application/x-www-form-urlencoded",
                 },
@@ -14749,7 +14757,7 @@ class novelmtCom extends ParserClass_ParserChapter {
         }
 
         if (this.checkBookSite()) {
-            return await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteBook.href)
+            return await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteBook.href)
                 .then(data => {
                     this.total = data.querySelector("div.novel-info > div.header-stats > span:nth-child(1) > strong").textContent.trim();
                     return;
@@ -14788,7 +14796,7 @@ class readwnCom extends ParserClass_ParserChapter {
             this.apiSearch = new URL(this.site.origin + "/e/search/index.php");
 
             let isError = '';
-            await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.apiSearch.href, {
+            await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.apiSearch.href, {
                 "headers": {
                     "content-type": "application/x-www-form-urlencoded",
                 },
@@ -14824,7 +14832,7 @@ class readwnCom extends ParserClass_ParserChapter {
         }
 
         if (this.checkBookSite()) {
-            return await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteBook.href)
+            return await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteBook.href)
                 .then(data => {
                     this.total = data.querySelector("div.novel-info > div.header-stats > span:nth-child(1) > strong").textContent.trim();
                     return;
@@ -14863,7 +14871,7 @@ class wuxiahereCom extends ParserClass_ParserChapter {
             this.apiSearch = new URL(this.site.origin + "/e/search/index.php");
 
             let isError = '';
-            await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.apiSearch.href, {
+            await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.apiSearch.href, {
                 "headers": {
                     "content-type": "application/x-www-form-urlencoded",
                 },
@@ -14899,7 +14907,7 @@ class wuxiahereCom extends ParserClass_ParserChapter {
         }
 
         if (this.checkBookSite()) {
-            return await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteBook.href)
+            return await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteBook.href)
                 .then(data => {
                     this.total = data.querySelector("div.novel-info > div.header-stats > span:nth-child(1) > strong").textContent.trim();
                     return;
@@ -14938,7 +14946,7 @@ class wuxiapubCom extends ParserClass_ParserChapter {
             this.apiSearch = new URL(this.site.origin + "/e/search/index.php");
 
             let isError = '';
-            await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.apiSearch.href, {
+            await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.apiSearch.href, {
                 "headers": {
                     "content-type": "application/x-www-form-urlencoded",
                 },
@@ -14974,7 +14982,7 @@ class wuxiapubCom extends ParserClass_ParserChapter {
         }
 
         if (this.checkBookSite()) {
-            return await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteBook.href)
+            return await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteBook.href)
                 .then(data => {
                     this.total = data.querySelector("div.novel-info > div.header-stats > span:nth-child(1) > strong").textContent.trim();
                     return;
@@ -15003,7 +15011,7 @@ class mMylovenovelCom extends ParserBook {
     async totalChapters() {
         if (this.checkBookUndefined()) {
             let isError = '';
-            await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteSearch.href)
+            await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteSearch.href)
                 .then(data => {
                     let block = data.querySelectorAll("div.main > ul.list > li");
 
@@ -15033,7 +15041,7 @@ class mMylovenovelCom extends ParserBook {
         }
 
         if (this.checkBookSite()) {
-            return await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteBook.href)
+            return await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteBook.href)
                 .then(data => {
                     this.total = data.querySelector("#info > div.main > div.detail > p.chapter > a").textContent.match(/\D*(\d+)/)[1] * -1;
                     return;
@@ -15062,7 +15070,7 @@ class readnoveldailyCom extends ParserBook {
     async totalChapters() {
         if (this.checkBookUndefined()) {
             let isError = '';
-            await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteSearch.href)
+            await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteSearch.href)
                 .then(data => {
                     let block = data.querySelectorAll("#list-posts div.row.special > div");
 
@@ -15092,7 +15100,7 @@ class readnoveldailyCom extends ParserBook {
         }
 
         if (this.checkBookSite()) {
-            return await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteBook.href)
+            return await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteBook.href)
                 .then(data => {
                     this.total = data.querySelector("div.latest-chapters.list-chapter > ul.list > li:first-child").textContent.match(/\D*(\d+)/)[1] * -1;
                     return;
@@ -15126,7 +15134,7 @@ class freewebnovelCom extends ParserClass_ParserChapter {
     async totalChapters() {
         if (this.checkBookUndefined()) {
             let isError = '';
-            await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteSearch.href)
+            await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteSearch.href)
                 .then(data => {
                     let block = data.querySelectorAll("div.col-content > div > div.li-row");
 
@@ -15156,7 +15164,7 @@ class freewebnovelCom extends ParserClass_ParserChapter {
         }
 
         if (this.checkBookSite()) {
-            return await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteBook.href)
+            return await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteBook.href)
                 .then(data => {
                     this.total = data.querySelector("body > div.main > div > div > div.col-content > div.m-newest1 > ul > li:nth-child(1) > a").textContent.match(/\D*(\d+)/)[1] * -1;
                     return;
@@ -15190,7 +15198,7 @@ class novelfullvipCom extends ParserClass_ParserChapter {
     async totalChapters() {
         if (this.checkBookUndefined()) {
             let isError = '';
-            await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteSearch.href)
+            await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteSearch.href)
                 .then(data => {
                     let block = data.querySelectorAll("#truyen-slide > div.list.list-thumbnail.col-xs-12.col-md-9 > div.row > div.col-xs-4.col-sm-3.col-md-3");
 
@@ -15220,7 +15228,7 @@ class novelfullvipCom extends ParserClass_ParserChapter {
         }
 
         if (this.checkBookSite()) {
-            return await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteBook.href)
+            return await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteBook.href)
                 .then(data => {
                     this.total = data.querySelector("#truyen > div.col-xs-12.col-sm-12.col-md-9.col-truyen-main > div.col-xs-12.col-info-desc > div.col-xs-12.col-sm-8.col-md-8.desc > div.l-chapter > ul > li:nth-child(1) > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
                     return;
@@ -15295,7 +15303,7 @@ class novelscafeCom extends ParserClass_ParserChapter {
     async totalChapters() {
         if (this.checkBookUndefined()) {
             let isError = '';
-            await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteSearch.href)
+            await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteSearch.href)
                 .then(data => {
                     let block = data.querySelectorAll("div.posts.row > div.col-4.col-md-3.col-lg-2.post-column.mt-3");
 
@@ -15325,7 +15333,7 @@ class novelscafeCom extends ParserClass_ParserChapter {
         }
 
         if (this.checkBookSite()) {
-            return await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteBook.href)
+            return await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteBook.href)
                 .then(data => {
                     this.total = data.querySelector("#primary > div:nth-child(2) > div.col-12.col-md-9 > div.last-10-chapters > div > div:nth-child(1) > h3 > a").textContent.match(/\D*(\d+)/)[1] * -1;
                     return;
@@ -15362,7 +15370,7 @@ class novelsonlineNet extends (/* unused pure expression or super */ null && (Pa
             let url = new URL(this.site.origin + "/sResults.php");
 
             let isError = '';
-            await fetchXHR(FXmode.fetchHTML, url.href, {
+            await fetchXHR(FXmode.xhrHTML, url.href, {
                 headers: new Headers({
                     "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
                     "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.54 Safari/537.36"
@@ -15404,7 +15412,7 @@ class novelsonlineNet extends (/* unused pure expression or super */ null && (Pa
         }
 
         if (this.checkBookSite()) {
-            return await fetchXHR(FXmode.fetchHTML, this.siteBook.href)
+            return await fetchXHR(FXmode.xhrHTML, this.siteBook.href)
                 .then(data => {
                     this.total = data.querySelector("#collapse-1 > div > div > div.tab-pane.active > ul > li:last-child").textContent.match(/\D*(\d+)/)[1];
                     return;
@@ -15442,7 +15450,7 @@ class lightnovelplusCom extends ParserSearch {
 
         let isLucky = false;
         var isError = '';
-        await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.site.href)
+        await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.site.href)
             .then(data => {
                 let block = data.querySelectorAll("#list-page > div.col-xs-12.col-sm-12.col-md-9.col-truyen-main_1.archive > div > div.row");
 
@@ -15475,7 +15483,7 @@ class lightnovelplusCom extends ParserSearch {
 
         if (isLucky) {
             isLucky = false;
-            await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.site.href)
+            await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.site.href)
                 .then(data => {
                     this.site = new URL(this.site.origin + data.querySelector("#list-chapter > ul > li.last > a").pathname + data.querySelector("#list-chapter > ul > li.last > a").search);
                     isLucky = true;
@@ -15493,7 +15501,7 @@ class lightnovelplusCom extends ParserSearch {
                 window.open(this.site);
                 return;
 
-                //return await fetchXHR(FXmode.fetchHTML, this.site)
+                //return await fetchXHR(FXmode.xhrHTML, this.site)
                 //    .then(data => {
                 //        return data.querySelector("#list-chapter > div.row > div:nth-child(1) > ul:last-child- > li > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
                 //    })
@@ -15526,7 +15534,7 @@ class lightnovelsMe extends ParserBook {
     async totalChapters() {
         this.apiSearch = new URL(this.site.origin + "/api/search?keyword=" + this.bTitle + "&index=0&limit=20");
 
-        await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchJSON, this.apiSearch.href)
+        await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrJSON, this.apiSearch.href)
             .then(data => {
                 if (Object.keys(data.results).length == 0) {
                     this.total = "B0";
@@ -15576,7 +15584,7 @@ class octopiiCo extends ParserClass_ParserChapter {
     async totalChapters() {
         this.apiSearch = new URL(this.site.origin + "/api/advance-search");
 
-        await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchJSON, this.apiSearch.href, {
+        await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrJSON, this.apiSearch.href, {
             "headers": {
                 "content-type": "application/json",
             },
@@ -15632,7 +15640,7 @@ class webnovelonlineCom extends ParserClass_ParserChapter {
     async totalChapters() {
         this.apiSearch = new URL(this.site.protocol + "//api." + this.site.hostname + "/api/v1/wuxia/search?name=" + this.bTitle);
 
-        await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchJSON, this.apiSearch.href)
+        await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrJSON, this.apiSearch.href)
             .then(data => {
                 if (Object.keys(data.data).length == 0) {
                     this.total = "B0";
@@ -15673,7 +15681,7 @@ class lightnovelWorld extends ParserBook {
     }
 
     async totalChapters() {
-        await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteSearch.href)
+        await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.book_info");
 
@@ -15717,7 +15725,7 @@ class novelhallCom extends ParserBook {
     }
 
     async totalChapters() {
-        await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteSearch.href)
+        await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("#main > div.container > div > table > tbody > tr");
 
@@ -15760,40 +15768,47 @@ class pandanovelCom extends ParserBook {
     }
 
     async totalChapters() {
-        let isLucky = false;
-        var isError = '';
-        await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteSearch.href)
-            .then(data => {
-                let block = data.querySelectorAll("#panda-app > div.sr-body > div.novel-list > ul > li");
+        if (this.checkBookUndefined()) {
+            let isError = '';
+            await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteSearch.href, {
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36'
+                },
+            })
+                .then(data => {
+                    //let block = data.querySelectorAll("#panda-app > div.sr-body > div.novel-list > ul > li"); //mobile
+                    let block = data.querySelectorAll("#panda-app > div.sr-body div.novel-list > ul > li")
 
-                if (block.length == 0) {
-                    isError = this.total = "B0";
-                    return;
-                }
-
-                for (let book of block) {
-                    let titleParser = book.querySelector("div.novel-desc > h4").textContent;
-
-                    let diff = tanimoto_tanimoto(this.bTitle, titleParser);
-
-                    if (diff > 0.8) {
-                        this.siteBook = this.site.origin + book.querySelector("a").pathname;
-                        isLucky = true;
+                    if (block.length == 0) {
+                        isError = this.total = "B0";
                         return;
                     }
-                }
-            })
-            .catch(err => isError = FetchXHR_fetchCatch(err, this.siteSearch.href));
 
-        if (isError != '') {
-            this.total = isError;
-            return;
+                    for (let book of block) {
+                        let titleParser = book.querySelector("div.novel-desc > h4").textContent;
+
+                        let diff = tanimoto_tanimoto(this.bTitle, titleParser);
+
+                        if (diff > 0.8) {
+                            this.siteBook = this.site.origin + book.querySelector("a").pathname;
+                            this.setBookLocal();
+                            return;
+                        }
+                    }
+                })
+                .catch(err => isError = FetchXHR_fetchCatch(err, this.siteSearch.href));
+
+            if (isError != '') {
+                this.total = isError;
+                return;
+            }
         }
 
-        if (isLucky) {
-            return await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteBook.href)
+        if (this.checkBookSite()) {
+            return await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteBook.href)
                 .then(data => {
-                    this.total = data.querySelector("#detailsBody > div > div.details-chapters > dl > dt > p > a").textContent.match(/\D*(\d+)/)[1] * -1;
+                    //this.total = data.querySelector("#detailsBody > div > div.details-chapters > dl > dt > p > a").textContent.match(/\D*(\d+)/)[1] * -1; //mobile
+                    this.total = data.querySelector("div.details-chapters > dl > dt > p > a").textContent.match(/\D*(\d+)/)[1] * -1;
                     return;
                 })
                 .catch(err => this.total = FetchXHR_fetchCatch(err, this.siteBook.href));
@@ -15819,7 +15834,7 @@ class readlightnovelsNet extends ParserBook {
     }
 
     async totalChapters() {
-        await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteSearch.href)
+        await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.col-md-3.col-sm-6.col-xs-6.home-truyendecu");
 
@@ -15866,7 +15881,7 @@ class madnovelCom extends ParserClass_ParserChapter {
     }
 
     async totalChapters() {
-        await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteSearch.href)
+        await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.section-body > div.list > div.book-item");
 
@@ -15913,7 +15928,7 @@ class novelbuddyCom extends ParserClass_ParserChapter {
     }
 
     async totalChapters() {
-        await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteSearch.href)
+        await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.section-body > div.list > div.book-item");
 
@@ -15960,7 +15975,7 @@ class novelforestCom extends ParserClass_ParserChapter {
     }
 
     async totalChapters() {
-        await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteSearch.href)
+        await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.section-body > div.list > div.book-item");
 
@@ -16007,7 +16022,7 @@ class novelfullMe extends ParserClass_ParserChapter {
     }
 
     async totalChapters() {
-        await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteSearch.href)
+        await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.section-body > div.list > div.book-item");
 
@@ -16054,7 +16069,7 @@ class novelfullplusCom extends ParserClass_ParserChapter {
     }
 
     async totalChapters() {
-        await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteSearch.href)
+        await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-novel-main.archive > div.list.list-novel.col-xs-12 > div.row");
 
@@ -16101,7 +16116,7 @@ class novelpokiCom extends ParserClass_ParserChapter {
     }
 
     async totalChapters() {
-        await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteSearch.href)
+        await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-novel-main.archive > div.list.list-novel.col-xs-12 > div.row");
 
@@ -16148,7 +16163,7 @@ class noveltop1Com extends ParserClass_ParserChapter {
     }
 
     async totalChapters() {
-        await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteSearch.href)
+        await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-novel-main.archive > div.list.list-novel.col-xs-12 > div.row");
 
@@ -16196,7 +16211,7 @@ class readnovelfullCom extends ParserClass_ParserChapter {
     }
 
     async totalChapters() {
-        await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteSearch.href)
+        await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-novel-main.archive > div.list.list-novel.col-xs-12 > div.row");
 
@@ -16239,7 +16254,7 @@ class topwebnovelCom extends ParserBook {
     }
 
     async totalChapters() {
-        await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteSearch.href)
+        await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-novel-main.archive > div.list.list-novel.col-xs-12 > div.row");
 
@@ -16287,7 +16302,7 @@ class allnovelfullCom extends ParserClass_ParserChapter {
     }
 
     async totalChapters() {
-        await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteSearch.href)
+        await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-truyen-main.archive > div.list.list-truyen.col-xs-12 > div.row");
 
@@ -16335,7 +16350,7 @@ class allnovelOrg extends ParserClass_ParserChapter {
     }
 
     async totalChapters() {
-        await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteSearch.href)
+        await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-truyen-main.archive > div.list.list-truyen.col-xs-12 > div.row");
 
@@ -16383,7 +16398,7 @@ class novelfullCom extends ParserClass_ParserChapter {
     }
 
     async totalChapters() {
-        await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteSearch.href)
+        await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-truyen-main.archive > div.list.list-truyen.col-xs-12 > div.row");
 
@@ -16426,7 +16441,7 @@ class novelgreatNet extends ParserBook {
     }
 
     async totalChapters() {
-        await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteSearch.href)
+        await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.col-xs-12.col-sm-12.col-md-9.col-truyen-main.archive > div.list.list-truyen.col-xs-12 > div.row");
 
@@ -16474,7 +16489,7 @@ class oneStkissnovelLove extends ParserClass_ParserChapter {
     }
 
     async totalChapters() {
-        await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteSearch.href)
+        await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.row.c-tabs-item__content");
 
@@ -16521,7 +16536,7 @@ class latestnovelNet extends ParserClass_ParserChapter {
     }
 
     async totalChapters() {
-        await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteSearch.href)
+        await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.row.c-tabs-item__content");
 
@@ -16569,7 +16584,7 @@ class lightnovelMobi extends ParserClass_ParserChapter {
     }
 
     async totalChapters() {
-        await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteSearch.href)
+        await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.row.c-tabs-item__content");
 
@@ -16617,7 +16632,7 @@ class novelteamNet extends ParserClass_ParserChapter {
     }
 
     async totalChapters() {
-        await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteSearch.href)
+        await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.row.c-tabs-item__content");
 
@@ -16665,7 +16680,7 @@ class noveltrenchCom extends ParserClass_ParserChapter {
     }
 
     async totalChapters() {
-        await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteSearch.href)
+        await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.row.c-tabs-item__content");
 
@@ -16713,7 +16728,7 @@ class readnovelsOrg extends ParserClass_ParserChapter {
     }
 
     async totalChapters() {
-        await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteSearch.href)
+        await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.row.c-tabs-item__content");
 
@@ -16761,7 +16776,7 @@ class webnovelonlineNet extends ParserClass_ParserChapter {
     }
 
     async totalChapters() {
-        await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteSearch.href)
+        await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteSearch.href)
             .then(data => {
                 let block = data.querySelectorAll("div.row.c-tabs-item__content");
 
@@ -16813,7 +16828,7 @@ class readlightnovelMe extends ParserClass_ParserChapter {
     }
 
     async totalChapters() {
-        await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteSearch.href)
+        await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteSearch.href)
             .then(data => {
                 this.total = data.querySelector("div.novel-detail-item[style='display:flex;'] > div.novel-detail-body > ul > li:first-child > a").textContent.match(/\D*(\d+)/)[1];
                 return;
@@ -16842,7 +16857,7 @@ class lightnovelpubCom extends ParserClass_ParserChapter {
     }
 
     async totalChapters() {
-        await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteSearch.href)
+        await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteSearch.href)
             .then(data => {
                 this.total = data.querySelector("#novel > div.novel-body.container > nav > a.grdbtn.chapter-latest-container > div > p.latest.text1row").textContent.match(/\D*(\d+)/)[1];
                 return;
@@ -16871,7 +16886,7 @@ class lightnovelworldCom extends ParserClass_ParserChapter {
     }
 
     async totalChapters() {
-        await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchHTML, this.siteSearch.href)
+        await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteSearch.href)
             .then(data => {
                 this.total = data.querySelector("#novel > div.novel-body.container > nav > a.grdbtn.chapter-latest-container > div > p.latest.text1row").textContent.match(/\D*(\d+)/)[1];
                 return;
@@ -17120,7 +17135,7 @@ function md5(d) { return rstr2hex(binl2rstr(binl_md5(rstr2binl(d), 8 * d.length)
 // @match       https://m.webnovel.com/book/*/*
 // @match       https://passport.webnovel.com/emaillogin.html*
 // @grant       GM_xmlhttpRequest
-// @version     0.8.8
+// @version     0.8.9
 // ==/UserScript==
 
 

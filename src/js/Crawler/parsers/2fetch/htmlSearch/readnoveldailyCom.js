@@ -15,7 +15,7 @@ export default class readnoveldailyCom extends ParserBook {
     async totalChapters() {
         if (this.checkBookUndefined()) {
             let isError = '';
-            await fetchXHR(FXmode.fetchHTML, this.siteSearch.href)
+            await fetchXHR(FXmode.xhrHTML, this.siteSearch.href)
                 .then(data => {
                     let block = data.querySelectorAll("#list-posts div.row.special > div");
 
@@ -45,7 +45,7 @@ export default class readnoveldailyCom extends ParserBook {
         }
 
         if (this.checkBookSite()) {
-            return await fetchXHR(FXmode.fetchHTML, this.siteBook.href)
+            return await fetchXHR(FXmode.xhrHTML, this.siteBook.href)
                 .then(data => {
                     this.total = data.querySelector("div.latest-chapters.list-chapter > ul.list > li:first-child").textContent.match(/\D*(\d+)/)[1] * -1;
                     return;

@@ -24,7 +24,7 @@ export default class lightnovelreaderOrg extends ParserChapter {
             this.apiSearch = new URL(this.site.origin + "/search/autocomplete?query=" + this.bTitle);
 
             let isError = '';
-            await fetchXHR(FXmode.fetchJSON, this.apiSearch.href)
+            await fetchXHR(FXmode.xhrJSON, this.apiSearch.href)
                 .then(data => {
                     if (Object.keys(data).length == 0) {
                         isError = "B0";
@@ -52,7 +52,7 @@ export default class lightnovelreaderOrg extends ParserChapter {
         }
 
         if (this.checkBookSite()) {
-            return await fetchXHR(FXmode.fetchHTML, this.siteBook.href)
+            return await fetchXHR(FXmode.xhrHTML, this.siteBook.href)
                 .then(data => {
                     this.total = data.querySelector("body > section:nth-child(4) > div > div > div.col-12.col-xl-9 > div > div:nth-child(2) > div > div.novels-detail-right > ul > li:nth-child(9) > div.novels-detail-right-in-right > a:nth-child(1)").textContent.match(/\D*(\d+)/)[1];
                     return;

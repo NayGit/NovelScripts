@@ -1,6 +1,14 @@
 export const FXmode = { fetchHTML: 'fetchHTML', fetchJSON: 'fetchJSON', xhrHTML: 'xhrHTML', xhrJSON: 'xhrJSON' };
 
 export async function fetchXHR(_fxMode, _url, _param = {}) {
+    _param = Object.assign({},
+        {},
+        //{
+            //headers: { 'User-Agent': 'Mozilla/5.0 (Linux; Android 12) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Mobile Safari/537.36' },
+            //headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36' },
+        //},
+        _param
+    )
     if (_fxMode === FXmode.fetchHTML || _fxMode === FXmode.fetchJSON) {
         if (_param["body"] === undefined && _param["data"] !== undefined) {
             _param["body"] = _param["data"];
@@ -39,7 +47,7 @@ export async function fetchXHR(_fxMode, _url, _param = {}) {
 
                     let response = convertResponse(xhr);
                     if (!response.ok) {
-                        return Promise.reject(response);
+                        return reject(response);
                     }
 
                     try {

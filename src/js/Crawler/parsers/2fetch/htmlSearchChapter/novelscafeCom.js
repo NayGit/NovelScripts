@@ -20,7 +20,7 @@ export default class novelscafeCom extends ParserChapter {
     async totalChapters() {
         if (this.checkBookUndefined()) {
             let isError = '';
-            await fetchXHR(FXmode.fetchHTML, this.siteSearch.href)
+            await fetchXHR(FXmode.xhrHTML, this.siteSearch.href)
                 .then(data => {
                     let block = data.querySelectorAll("div.posts.row > div.col-4.col-md-3.col-lg-2.post-column.mt-3");
 
@@ -50,7 +50,7 @@ export default class novelscafeCom extends ParserChapter {
         }
 
         if (this.checkBookSite()) {
-            return await fetchXHR(FXmode.fetchHTML, this.siteBook.href)
+            return await fetchXHR(FXmode.xhrHTML, this.siteBook.href)
                 .then(data => {
                     this.total = data.querySelector("#primary > div:nth-child(2) > div.col-12.col-md-9 > div.last-10-chapters > div > div:nth-child(1) > h3 > a").textContent.match(/\D*(\d+)/)[1] * -1;
                     return;

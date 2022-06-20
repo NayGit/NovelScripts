@@ -550,6 +550,14 @@ var update = injectStylesIntoStyleTag_default()(tag/* default */.Z, options);
 const FetchXHR_FXmode = { fetchHTML: 'fetchHTML', fetchJSON: 'fetchJSON', xhrHTML: 'xhrHTML', xhrJSON: 'xhrJSON' };
 
 async function FetchXHR_fetchXHR(_fxMode, _url, _param = {}) {
+    _param = Object.assign({},
+        {},
+        //{
+            //headers: { 'User-Agent': 'Mozilla/5.0 (Linux; Android 12) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Mobile Safari/537.36' },
+            //headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36' },
+        //},
+        _param
+    )
     if (_fxMode === FetchXHR_FXmode.fetchHTML || _fxMode === FetchXHR_FXmode.fetchJSON) {
         if (_param["body"] === undefined && _param["data"] !== undefined) {
             _param["body"] = _param["data"];
@@ -588,7 +596,7 @@ async function FetchXHR_fetchXHR(_fxMode, _url, _param = {}) {
 
                     let response = convertResponse(xhr);
                     if (!response.ok) {
-                        return Promise.reject(response);
+                        return reject(response);
                     }
 
                     try {

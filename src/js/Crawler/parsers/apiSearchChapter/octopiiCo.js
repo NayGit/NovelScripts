@@ -22,7 +22,7 @@ export default class octopiiCo extends ParserChapter {
     async totalChapters() {
         this.apiSearch = new URL(this.site.origin + "/api/advance-search");
 
-        await fetchXHR(FXmode.fetchJSON, this.apiSearch.href, {
+        await fetchXHR(FXmode.xhrJSON, this.apiSearch.href, {
             "headers": {
                 "content-type": "application/json",
             },

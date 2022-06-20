@@ -21,7 +21,7 @@ export default class lightnovelplusCom extends ParserSearch {
 
         let isLucky = false;
         var isError = '';
-        await fetchXHR(FXmode.fetchHTML, this.site.href)
+        await fetchXHR(FXmode.xhrHTML, this.site.href)
             .then(data => {
                 let block = data.querySelectorAll("#list-page > div.col-xs-12.col-sm-12.col-md-9.col-truyen-main_1.archive > div > div.row");
 
@@ -54,7 +54,7 @@ export default class lightnovelplusCom extends ParserSearch {
 
         if (isLucky) {
             isLucky = false;
-            await fetchXHR(FXmode.fetchHTML, this.site.href)
+            await fetchXHR(FXmode.xhrHTML, this.site.href)
                 .then(data => {
                     this.site = new URL(this.site.origin + data.querySelector("#list-chapter > ul > li.last > a").pathname + data.querySelector("#list-chapter > ul > li.last > a").search);
                     isLucky = true;
@@ -72,7 +72,7 @@ export default class lightnovelplusCom extends ParserSearch {
                 window.open(this.site);
                 return;
 
-                //return await fetchXHR(FXmode.fetchHTML, this.site)
+                //return await fetchXHR(FXmode.xhrHTML, this.site)
                 //    .then(data => {
                 //        return data.querySelector("#list-chapter > div.row > div:nth-child(1) > ul:last-child- > li > a > span").textContent.match(/\D*(\d+)/)[1] * -1;
                 //    })

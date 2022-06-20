@@ -57,7 +57,7 @@ import { fetchXHR, FXmode, fetchCatch } from 'Domain/FetchXHR';
 //}
 
 async function GetChapterFetch(_url, _cId) {
-    return await fetchXHR(FXmode.fetchHTML, _url)
+    return await fetchXHR(FXmode.xhrHTML, _url)
         .then(data => {
             let pOrig = data.querySelectorAll("#content-" + _cId + " > p");
 
