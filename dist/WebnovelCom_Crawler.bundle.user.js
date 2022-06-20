@@ -12676,6 +12676,13 @@ const LS_Login_LP = "WebNovel_Login_LP";
 const FetchXHR_FXmode = { fetchHTML: 'fetchHTML', fetchJSON: 'fetchJSON', xhrHTML: 'xhrHTML', xhrJSON: 'xhrJSON' };
 
 async function FetchXHR_fetchXHR(_fxMode, _url, _param = {}) {
+    //let uA = window.navigator.userAgent.replace(/\(.*?\)/, "(Windows NT 10.0; Win64; x64)").replace(" Mobile", "");
+    //, {
+    //    headers: {
+    //        'User-Agent': uA
+    //    }
+    //}
+
     _param = Object.assign({},
         {},
         //{
@@ -12684,6 +12691,7 @@ async function FetchXHR_fetchXHR(_fxMode, _url, _param = {}) {
         //},
         _param
     )
+
     if (_fxMode === FetchXHR_FXmode.fetchHTML || _fxMode === FetchXHR_FXmode.fetchJSON) {
         if (_param["body"] === undefined && _param["data"] !== undefined) {
             _param["body"] = _param["data"];
@@ -15052,6 +15060,67 @@ class mMylovenovelCom extends ParserBook {
         this.total = "S0";
     }
 }
+;// CONCATENATED MODULE: ./src/js/Crawler/parsers/2fetch/htmlSearch/pandanovelCom.js
+
+
+
+
+
+class pandanovelCom extends ParserBook {
+    constructor() {
+        super('https://www.panda-novel.com/');
+    }
+
+    SetSiteSearch() {
+        this.siteSearch = this.site.origin + '/search/' + this.bTitle;
+    }
+
+    async totalChapters() {
+        if (this.checkBookUndefined()) {
+            let isError = '';
+            await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteSearch.href)
+                .then(data => {
+                    //let block = data.querySelectorAll("#panda-app > div.sr-body > div.novel-list > ul > li"); //mobile
+                    let block = data.querySelectorAll("#panda-app > div.sr-body div.novel-list > ul > li")
+
+                    if (block.length == 0) {
+                        isError = this.total = "B0";
+                        return;
+                    }
+
+                    for (let book of block) {
+                        let titleParser = book.querySelector("div.novel-desc > h4").textContent;
+
+                        let diff = tanimoto_tanimoto(this.bTitle, titleParser);
+
+                        if (diff > 0.8) {
+                            this.siteBook = this.site.origin + book.querySelector("a").pathname;
+                            this.setBookLocal();
+                            return;
+                        }
+                    }
+                })
+                .catch(err => isError = FetchXHR_fetchCatch(err, this.siteSearch.href));
+
+            if (isError != '') {
+                this.total = isError;
+                return;
+            }
+        }
+
+        if (this.checkBookSite()) {
+            return await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteBook.href)
+                .then(data => {
+                    //this.total = data.querySelector("#detailsBody > div > div.details-chapters > dl > dt > p > a").textContent.match(/\D*(\d+)/)[1] * -1; //mobile
+                    this.total = data.querySelector("div.details-chapters > dl > dt > p > a").textContent.match(/\D*(\d+)/)[1] * -1;
+                    return;
+                })
+                .catch(err => this.total = FetchXHR_fetchCatch(err, this.siteBook.href));
+        }
+
+        this.total = "S0";
+    }
+}
 ;// CONCATENATED MODULE: ./src/js/Crawler/parsers/2fetch/htmlSearch/readnoveldailyCom.js
 
 
@@ -15750,71 +15819,6 @@ class novelhallCom extends ParserBook {
                 return;
             })
             .catch(err => this.total = FetchXHR_fetchCatch(err, this.siteSearch.href));
-    }
-}
-;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearch/pandanovelCom.js
-
-
-
-
-
-class pandanovelCom extends ParserBook {
-    constructor() {
-        super('https://www.panda-novel.com/');
-    }
-
-    SetSiteSearch() {
-        this.siteSearch = this.site.origin + '/search/' + this.bTitle;
-    }
-
-    async totalChapters() {
-        if (this.checkBookUndefined()) {
-            let isError = '';
-            await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteSearch.href, {
-                headers: {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36'
-                },
-            })
-                .then(data => {
-                    //let block = data.querySelectorAll("#panda-app > div.sr-body > div.novel-list > ul > li"); //mobile
-                    let block = data.querySelectorAll("#panda-app > div.sr-body div.novel-list > ul > li")
-
-                    if (block.length == 0) {
-                        isError = this.total = "B0";
-                        return;
-                    }
-
-                    for (let book of block) {
-                        let titleParser = book.querySelector("div.novel-desc > h4").textContent;
-
-                        let diff = tanimoto_tanimoto(this.bTitle, titleParser);
-
-                        if (diff > 0.8) {
-                            this.siteBook = this.site.origin + book.querySelector("a").pathname;
-                            this.setBookLocal();
-                            return;
-                        }
-                    }
-                })
-                .catch(err => isError = FetchXHR_fetchCatch(err, this.siteSearch.href));
-
-            if (isError != '') {
-                this.total = isError;
-                return;
-            }
-        }
-
-        if (this.checkBookSite()) {
-            return await FetchXHR_fetchXHR(FetchXHR_FXmode.xhrHTML, this.siteBook.href)
-                .then(data => {
-                    //this.total = data.querySelector("#detailsBody > div > div.details-chapters > dl > dt > p > a").textContent.match(/\D*(\d+)/)[1] * -1; //mobile
-                    this.total = data.querySelector("div.details-chapters > dl > dt > p > a").textContent.match(/\D*(\d+)/)[1] * -1;
-                    return;
-                })
-                .catch(err => this.total = FetchXHR_fetchCatch(err, this.siteBook.href));
-        }
-
-        this.total = "S0";
     }
 }
 ;// CONCATENATED MODULE: ./src/js/Crawler/parsers/htmlSearch/readlightnovelsNet.js
@@ -17135,7 +17139,7 @@ function md5(d) { return rstr2hex(binl2rstr(binl_md5(rstr2binl(d), 8 * d.length)
 // @match       https://m.webnovel.com/book/*/*
 // @match       https://passport.webnovel.com/emaillogin.html*
 // @grant       GM_xmlhttpRequest
-// @version     0.8.9
+// @version     0.8.10
 // ==/UserScript==
 
 
@@ -17169,6 +17173,7 @@ function md5(d) { return rstr2hex(binl2rstr(binl_md5(rstr2binl(d), 8 * d.length)
 
 
 
+
 // 2fetch/htmlSearchChapter
 
 
@@ -17187,7 +17192,6 @@ function md5(d) { return rstr2hex(binl2rstr(binl_md5(rstr2binl(d), 8 * d.length)
 
 
 // htmlSearch
-
 
 
 
@@ -17255,6 +17259,7 @@ const SitesParser = [
 
         // 2fetch/htmlSearch
         new mMylovenovelCom(),
+    //new pandanovelCom(),
         new readnoveldailyCom(),
 
         // 2fetch/htmlSearchChapter
@@ -17276,7 +17281,6 @@ const SitesParser = [
         // htmlSearch
         new lightnovelWorld(),
         new novelhallCom(),
-    //new pandanovelCom(),
         new readlightnovelsNet(),
 
         // htmlSearchChapter

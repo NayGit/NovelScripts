@@ -550,6 +550,13 @@ var update = injectStylesIntoStyleTag_default()(tag/* default */.Z, options);
 const FetchXHR_FXmode = { fetchHTML: 'fetchHTML', fetchJSON: 'fetchJSON', xhrHTML: 'xhrHTML', xhrJSON: 'xhrJSON' };
 
 async function FetchXHR_fetchXHR(_fxMode, _url, _param = {}) {
+    //let uA = window.navigator.userAgent.replace(/\(.*?\)/, "(Windows NT 10.0; Win64; x64)").replace(" Mobile", "");
+    //, {
+    //    headers: {
+    //        'User-Agent': uA
+    //    }
+    //}
+
     _param = Object.assign({},
         {},
         //{
@@ -558,6 +565,7 @@ async function FetchXHR_fetchXHR(_fxMode, _url, _param = {}) {
         //},
         _param
     )
+
     if (_fxMode === FetchXHR_FXmode.fetchHTML || _fxMode === FetchXHR_FXmode.fetchJSON) {
         if (_param["body"] === undefined && _param["data"] !== undefined) {
             _param["body"] = _param["data"];
