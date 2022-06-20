@@ -15,11 +15,7 @@ export default class pandanovelCom extends ParserBook {
     async totalChapters() {
         if (this.checkBookUndefined()) {
             let isError = '';
-            await fetchXHR(FXmode.xhrHTML, this.siteSearch.href, {
-                headers: {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36'
-                },
-            })
+            await fetchXHR(FXmode.xhrHTML, this.siteSearch.href)
                 .then(data => {
                     //let block = data.querySelectorAll("#panda-app > div.sr-body > div.novel-list > ul > li"); //mobile
                     let block = data.querySelectorAll("#panda-app > div.sr-body div.novel-list > ul > li")

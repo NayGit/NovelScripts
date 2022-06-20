@@ -8,7 +8,7 @@
 // @match       https://m.webnovel.com/book/*/*
 // @match       https://passport.webnovel.com/emaillogin.html*
 // @grant       GM_xmlhttpRequest
-// @version     0.8.9
+// @version     0.8.10
 // ==/UserScript==
 
 'use strict';
@@ -40,6 +40,7 @@ import wuxiapubCom from './js/Crawler/parsers/2fetch/apiSearchChapter/bookWings/
 
 // 2fetch/htmlSearch
 import mMylovenovelCom from './js/Crawler/parsers/2fetch/htmlSearch/mMylovenovelCom';
+import pandanovelCom from './js/Crawler/parsers/2fetch/htmlSearch/pandanovelCom';
 import readnoveldailyCom from './js/Crawler/parsers/2fetch/htmlSearch/readnoveldailyCom';
 
 // 2fetch/htmlSearchChapter
@@ -62,7 +63,6 @@ import webnovelonlineCom from './js/Crawler/parsers/apiSearchChapter/webnovelonl
 // htmlSearch
 import lightnovelWorld from './js/Crawler/parsers/htmlSearch/lightnovelWorld';
 import novelhallCom from './js/Crawler/parsers/htmlSearch/novelhallCom';
-import pandanovelCom from './js/Crawler/parsers/htmlSearch/pandanovelCom';
 import readlightnovelsNet from './js/Crawler/parsers/htmlSearch/readlightnovelsNet';
 
 // htmlSearchChapter
@@ -128,6 +128,7 @@ const SitesParser = [
 
         // 2fetch/htmlSearch
         new mMylovenovelCom(),
+    //new pandanovelCom(),
         new readnoveldailyCom(),
 
         // 2fetch/htmlSearchChapter
@@ -149,7 +150,6 @@ const SitesParser = [
         // htmlSearch
         new lightnovelWorld(),
         new novelhallCom(),
-    //new pandanovelCom(),
         new readlightnovelsNet(),
 
         // htmlSearchChapter

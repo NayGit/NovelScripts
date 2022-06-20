@@ -1,6 +1,13 @@
 export const FXmode = { fetchHTML: 'fetchHTML', fetchJSON: 'fetchJSON', xhrHTML: 'xhrHTML', xhrJSON: 'xhrJSON' };
 
 export async function fetchXHR(_fxMode, _url, _param = {}) {
+    //let uA = window.navigator.userAgent.replace(/\(.*?\)/, "(Windows NT 10.0; Win64; x64)").replace(" Mobile", "");
+    //, {
+    //    headers: {
+    //        'User-Agent': uA
+    //    }
+    //}
+
     _param = Object.assign({},
         {},
         //{
@@ -9,6 +16,7 @@ export async function fetchXHR(_fxMode, _url, _param = {}) {
         //},
         _param
     )
+
     if (_fxMode === FXmode.fetchHTML || _fxMode === FXmode.fetchJSON) {
         if (_param["body"] === undefined && _param["data"] !== undefined) {
             _param["body"] = _param["data"];
