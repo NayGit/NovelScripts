@@ -2,6 +2,10 @@ export const FXmode = { fetchHTML: 'fetchHTML', fetchJSON: 'fetchJSON', xhrHTML:
 
 export async function fetchXHR(_fxMode, _url, _param = {}) {
     if (_fxMode === FXmode.fetchHTML || _fxMode === FXmode.fetchJSON) {
+        if (_param["body"] === undefined && _param["data"] !== undefined) {
+            _param["body"] = _param["data"];
+        }
+
         return await fetch(_url, _param)
             .then(async response => {
                 if (!response.ok) {
@@ -19,35 +23,61 @@ export async function fetchXHR(_fxMode, _url, _param = {}) {
             });
     }
     else {
-        // novelmtCom: redirect???
+        if (_param["data"] === undefined && _param["body"] !== undefined) {
+            _param["data"] = _param["body"];
+        }
 
         return new Promise((resolve, reject) => {
             GM_xmlhttpRequest(Object.assign(_param, {
                 url: _url,
-                onload: function (response) {
-                    //for (let o in response)
-                    //    console.warn(o, response[o]);
+                onload: function (xhr) {
+                    //for (let o in xhr)
+                    //    console.warn(o, xhr[o]);
 
-                    //console.info(response["response"]);
-                    //console.warn(response.response);
+                    //console.info(xhr["response"]);
+                    //console.warn(xhr.response);
 
-                    if (_fxMode === FXmode.xhrHTML) {
-                        let parser = new DOMParser();
-                        resolve(parser.parseFromString(response.response, 'text/html'));
+                    let response = convertResponse(xhr);
+                    if (!response.ok) {
+                        return Promise.reject(response);
                     }
 
-                    if (FXmode === FXmode.xhrJSON) {
-                        resolve(JSON.parse(response.responseText));
+                    try {
+                        if (_fxMode === FXmode.xhrHTML) {
+                            let parser = new DOMParser();
+                            resolve(parser.parseFromString(xhr.response, 'text/html'));
+                        }
+
+                        if (_fxMode === FXmode.xhrJSON) {
+                            resolve(JSON.parse(xhr.responseText));
+                        }
+                    }
+                    catch {
+                        reject(response);
                     }
 
-                    reject(response);
                 },
-                onerror: function (response) {
-                    reject(response);
+                onerror: function (xhr) {
+                    reject(convertResponse(xhr));
                 }
             }));
         });
     }
+}
+
+function convertResponse(_xhr) {
+    return new Response(
+        _xhr.response,
+        {
+            "status": (_xhr.status > 0) ? _xhr.status : 599,
+            "statusText": "XMLHttpRequest: Error. " + _xhr.statusText,
+        }
+    );
+
+    //for (let r in tmpR)
+    //    console.info(r, tmpR[r]);
+
+    //return tmpR;
 }
 
 export function fetchCatch(_error, _site) {

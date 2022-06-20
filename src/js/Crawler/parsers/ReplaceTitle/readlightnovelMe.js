@@ -1,5 +1,5 @@
 import { ParserChapter } from 'CrawlerClass/ParserClass';
-import { fetchXHR, FXmode, fetchCatch } from 'Domain/FetchResult';
+import { fetchXHR, FXmode, fetchCatch } from 'Domain/FetchXHR';
 import { ReplaceName } from 'Domain/domain';
 
 export default class readlightnovelMe extends ParserChapter {

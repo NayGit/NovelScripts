@@ -546,60 +546,90 @@ var update = injectStylesIntoStyleTag_default()(tag/* default */.Z, options);
 
        /* harmony default export */ const css_tag = (tag/* default */.Z && tag/* default.locals */.Z.locals ? tag/* default.locals */.Z.locals : undefined);
 
-;// CONCATENATED MODULE: ./src/js/Domain/FetchResult.js
-const FetchResult_FXmode = { fetchHTML: 'fetchHTML', fetchJSON: 'fetchJSON', xhrHTML: 'xhrHTML', xhrJSON: 'xhrJSON' };
+;// CONCATENATED MODULE: ./src/js/Domain/FetchXHR.js
+const FetchXHR_FXmode = { fetchHTML: 'fetchHTML', fetchJSON: 'fetchJSON', xhrHTML: 'xhrHTML', xhrJSON: 'xhrJSON' };
 
-async function FetchResult_fetchXHR(_fxMode, _url, _param = {}) {
-    if (_fxMode === FetchResult_FXmode.fetchHTML || _fxMode === FetchResult_FXmode.fetchJSON) {
+async function FetchXHR_fetchXHR(_fxMode, _url, _param = {}) {
+    if (_fxMode === FetchXHR_FXmode.fetchHTML || _fxMode === FetchXHR_FXmode.fetchJSON) {
+        if (_param["body"] === undefined && _param["data"] !== undefined) {
+            _param["body"] = _param["data"];
+        }
+
         return await fetch(_url, _param)
             .then(async response => {
                 if (!response.ok) {
                     return Promise.reject(response);
                 }
 
-                if (_fxMode === FetchResult_FXmode.fetchHTML) {
+                if (_fxMode === FetchXHR_FXmode.fetchHTML) {
                     let parser = new DOMParser();
                     return parser.parseFromString(await response.text(), 'text/html');
                 }
 
-                if (_fxMode === FetchResult_FXmode.fetchJSON) {
+                if (_fxMode === FetchXHR_FXmode.fetchJSON) {
                     return response.json();
                 }
             });
     }
     else {
-        // novelmtCom: redirect???
+        if (_param["data"] === undefined && _param["body"] !== undefined) {
+            _param["data"] = _param["body"];
+        }
 
         return new Promise((resolve, reject) => {
             GM_xmlhttpRequest(Object.assign(_param, {
                 url: _url,
-                onload: function (response) {
-                    //for (let o in response)
-                    //    console.warn(o, response[o]);
+                onload: function (xhr) {
+                    //for (let o in xhr)
+                    //    console.warn(o, xhr[o]);
 
-                    //console.info(response["response"]);
-                    //console.warn(response.response);
+                    //console.info(xhr["response"]);
+                    //console.warn(xhr.response);
 
-                    if (_fxMode === FetchResult_FXmode.xhrHTML) {
-                        let parser = new DOMParser();
-                        resolve(parser.parseFromString(response.response, 'text/html'));
+                    let response = convertResponse(xhr);
+                    if (!response.ok) {
+                        return Promise.reject(response);
                     }
 
-                    if (FetchResult_FXmode === FetchResult_FXmode.xhrJSON) {
-                        resolve(JSON.parse(response.responseText));
+                    try {
+                        if (_fxMode === FetchXHR_FXmode.xhrHTML) {
+                            let parser = new DOMParser();
+                            resolve(parser.parseFromString(xhr.response, 'text/html'));
+                        }
+
+                        if (_fxMode === FetchXHR_FXmode.xhrJSON) {
+                            resolve(JSON.parse(xhr.responseText));
+                        }
+                    }
+                    catch {
+                        reject(response);
                     }
 
-                    reject(response);
                 },
-                onerror: function (response) {
-                    reject(response);
+                onerror: function (xhr) {
+                    reject(convertResponse(xhr));
                 }
             }));
         });
     }
 }
 
-function FetchResult_fetchCatch(_error, _site) {
+function convertResponse(_xhr) {
+    return new Response(
+        _xhr.response,
+        {
+            "status": (_xhr.status > 0) ? _xhr.status : 599,
+            "statusText": "XMLHttpRequest: Error. " + _xhr.statusText,
+        }
+    );
+
+    //for (let r in tmpR)
+    //    console.info(r, tmpR[r]);
+
+    //return tmpR;
+}
+
+function FetchXHR_fetchCatch(_error, _site) {
     if (_error instanceof TypeError) {
         if (_error.message == "Failed to fetch") {
             console.warn('TypeError: ' + new URL(_site));
@@ -928,11 +958,11 @@ async function downloadList(_csrfToken, type, order, pageIndex, tagName) {
     let url = location.origin + '/go/pcm/seo/getTagBookList?_csrfToken=' + _csrfToken + '&type=' + type + '&order=' + order + '&pageIndex=' + pageIndex + '&tagName=' + tagName; //r18
 
     let bodyJson = "";
-    await FetchResult_fetchXHR(FetchResult_FXmode.fetchJSON, url)
+    await FetchXHR_fetchXHR(FetchXHR_FXmode.fetchJSON, url)
         .then(data => {
             bodyJson = data.data.items;
         })
-        .catch(err => FetchResult_fetchCatch(err, url));
+        .catch(err => FetchXHR_fetchCatch(err, url));
 
     return bodyJson;
 }

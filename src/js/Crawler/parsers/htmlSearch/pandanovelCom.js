@@ -1,5 +1,5 @@
 import { ParserBook } from 'CrawlerClass/ParserClass';
-import { fetchXHR, FXmode, fetchCatch } from 'Domain/FetchResult';
+import { fetchXHR, FXmode, fetchCatch } from 'Domain/FetchXHR';
 import { ReplaceName } from 'Domain/domain';
 import tanimoto from 'Domain/StringProcent/tanimoto';
 

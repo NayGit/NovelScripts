@@ -1,6 +1,6 @@
 'use strict';
 
-import { fetchXHR, FXmode, fetchCatch } from 'Domain/FetchResult';
+import { fetchXHR, FXmode, fetchCatch } from 'Domain/FetchXHR';
 
 //async function GetChapter(_url, _cId) {
 //    return new Promise((resolve, reject) => {

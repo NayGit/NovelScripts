@@ -1,4 +1,4 @@
-import { fetchXHR, FXmode, fetchCatch } from 'Domain/FetchResult';
+import { fetchXHR, FXmode, fetchCatch } from 'Domain/FetchXHR';
 
 // возвращает куки с указанным name. Или undefined, если ничего не найдено
 export function getCookie(name) {

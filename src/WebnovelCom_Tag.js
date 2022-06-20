@@ -12,7 +12,7 @@
 import './css/tag.css';
 
 import { getCookie } from 'Domain/webNovel';
-import { fetchXHR, FXmode, fetchCatch } from 'Domain/FetchResult';
+import { fetchXHR, FXmode, fetchCatch } from 'Domain/FetchXHR';
 import { ceTagId, ceNav, ceInputButton, ceInputNumber, ceInputCheckbox } from 'Tag/tag';
 
 async function StartCreate() {
