@@ -31,6 +31,8 @@ export function glavaWebNovel(loc) {
 }
 
 export async function downloadBookIfno(_loc) {
+    // https://idruid.webnovel.com/app/api/book/get-book?bookId=18200729405674805
+    //User-Agent: Mozilla/mobile QDHWReaderAndroid/5.9.8/653/2000002/
     let url = _loc.origin + '/go/pcm/book/get-book-detail?_csrfToken=' + getCookie("_csrfToken") + '&bookId=' + bookWebNovel(_loc);
 
     return await fetchXHR(FXmode.fetchJSON, url)
@@ -47,7 +49,13 @@ export async function downloadBookChapters(_loc) {
             url: "https://idruid.webnovel.com/app/api/book/get-chapters?bookId=" + bookWebNovel(_loc) + "&maxUpdateTime=0&maxIndex=0&sign=",
             anonymous: true,
             type: 'json',
-            headers: { 'User-Agent': 'Mozilla/mobile QDHWReaderAndroid/5.9.3/643/2000002/000000005bfaef39ffffffffd99fa8a4' },
+            headers: {
+                'User-Agent': 'Mozilla/mobile QDHWReaderAndroid/5.9.8/653/2000002/',
+                'Referer': 'https://android.webnovel.com',
+                'Host': 'idruid.webnovel.com',
+                'wdToken': 'wKC4ABNTDOZs4SkBgJO/3HVO8HLT/uMgFkpQ1ZTCs129Bh/WcEFwsqCYEX/NyShN6aBk1998Ju7LtDKGqO6zQ5Q4+/v1bIA3X+PctjObEMCmehHIsJQpvd5kL8aPfJedCEymxvOO9KTwiJJCkWtcog=='
+            },
+            //headers: { 'User-Agent': 'Mozilla/mobile QDHWReaderAndroid/5.9.3/643/2000002/000000005bfaef39ffffffffd99fa8a4' },
             onload: function (data) {
                 resolve(JSON.parse(data.response));
             },
